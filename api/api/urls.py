@@ -93,4 +93,6 @@ urlpatterns = [
 	path('reservation/apply/', reservation.apply),
 	#取消已申请预约
 	path('reservation/cancel/', reservation.cancel),
+	#获取预约密钥
+	path('reservation/token/', reservation.getToken),
 ]

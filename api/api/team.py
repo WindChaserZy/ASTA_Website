@@ -103,7 +103,7 @@ def admin(request):
 			if datetime.datetime.now() > contest.registerTimeUp:
 				return HttpResponse("Time for registration is up.", status = 400)
 			
-			if len(tools.getTeamByUserContest(request.user, contest))>0:
+			if tools.getTeamByUserContest(request.user, contest) != None:
 				return HttpResponse("Already in a team now.", status = 400)
 				
 			team = Team(captain = user, contest = contest, name = request.POST.get('name'))
@@ -188,7 +188,7 @@ def apply(request):
 	
 	
 	contest = team.contest
-	if (len(tools.getTeamByUserContest(request.user, contest))):
+	if tools.getTeamByUserContest(request.user, contest) != None:
 		return HttpResponse("Already in a team now.", status = 400)
 	
 	if datetime.datetime.now() > contest.registerTimeUp:

@@ -3,11 +3,13 @@ import { Link } from 'react-router-dom';
 import $ from 'jquery';
 import React, { Component } from 'react';
 import './detail.css';
-import { message, Button, Card, Modal, Tag, Tabs, List, DatePicker, TimePicker, Tooltip} from 'antd';
+import { Icon, message, Button, Card, Modal, Tag, Tabs, List, DatePicker, TimePicker, Tooltip} from 'antd';
 import MarkdownView from '../markdown/view.js';
 import UserShow from '../user/show.js';
 import Loading from '../loading.js';
 import moment from 'moment';
+import copy from  'copy-to-clipboard';
+import { icon } from 'react-syntax-highlighter/dist/esm/languages/prism';
 
 const { confirm } = Modal;
 const { TabPane } = Tabs;
@@ -393,6 +395,7 @@ class TimeShow extends Component{
 					id: used[j].id,
 					st: new Date(itemStartTime - DateNow),
 					et: new Date(itemEndTime - DateNow),
+					finalEnd: new Date(used[j].endTime),
 					user: used[j].user,
 					title: title
 				});
@@ -400,7 +403,6 @@ class TimeShow extends Component{
 			}
 			timeData[i] = item;
 		}
-		
 		return(
 			<div
 				onPointerUp={(e) =>{
@@ -567,7 +569,7 @@ class TimeShow extends Component{
 									{dayItem.used.map((item, index) =>{
 										let top = (time2percent4UTCDay(item.st) - startPercent) / lengthPercent * this.timelineHeight;
 										let height = (time2percent4UTCDay(item.et)-time2percent4UTCDay(item.st)) / lengthPercent *this.timelineHeight;
-										let cancelShow = this.props.user != null && item.user == this.props.user.id && ((item.et.getTime() + dayItem.detailDate.getTime()) > new Date().getTime());
+										let cancelShow = this.props.user != null && item.user == this.props.user.id && (item.finalEnd > new Date());
 										let insideNode = (
 											<div className = "timeShow-used-inside">
 												<UserShow id={item.user}/>
@@ -674,6 +676,7 @@ class TimeShow extends Component{
 				<Button type="primary" onClick={()=>this.showForm()}>
 					Edit Reservation
 				</Button>
+				{this.props.extra}
 			</div>
 		)
 	}
@@ -694,7 +697,25 @@ class Detail extends Component{
 			async: true,
 			success: function (result) {
 				this.setState({data: result});
-				this.forceUpdate();
+			}.bind(this),
+			error: function (result) {
+				message.error(result.responseText);
+			}.bind(this),
+		})
+	}
+	getToken = (id = this.props.match.params.id) => {
+		let url = global.constants.server + 'reservation/token/'
+		$.get({
+			url: url,
+			crossDomain: true,
+			data: {'id': id},
+			xhrFields: {
+				withCredentials: true,
+			},
+			async: true,
+			success: function (result) {
+				copy(result);
+				message.success('Copy Successfully.');
 			}.bind(this),
 			error: function (result) {
 				message.error(result.responseText);
@@ -717,18 +738,31 @@ class Detail extends Component{
 		const { user } = this.props;
 		const { id } = this.props.match.params;
 		const { data } = this.state;
+		let getToken;
+		if (data.haveToken){
+			getToken = (
+				<Button type="danger" onClick={()=>this.getToken()}>
+					Copy my token
+				</Button>
+			)
+		}
 		return (
 			<div id = "root">
-				<div className='title'> {data.name} </div>
-				
+				<div className='title'>
+					 {data.name}&nbsp;
+					 <Tooltip placement="bottom" title={(
+						<div style={{backgroundColor: "rgba(255,255,255,0.8)"}}>
+							<MarkdownView
+								source={data.introduction}
+							/>
+						</div>
+					)}>
+						<Icon style={{fontSize : 28}} type="question-circle" />
+					</Tooltip>
+				</div>
 				
 				<div align='center'>
-					<TimeShow id = {id} {...this.props}/>
-				</div>
-				<div style={{padding: 30}}>
-					<MarkdownView
-						source={data.introduction}
-					/>
+					<TimeShow id={id} extra={getToken} {...this.props}/>
 				</div>
 			</div>
 		)

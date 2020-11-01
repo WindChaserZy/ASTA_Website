@@ -21,7 +21,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 config=ConfigParser(allow_no_value=True)
 config.read(os.path.join(BASE_DIR, 'asta.ini'), encoding="utf-8")
@@ -31,6 +31,8 @@ if DEBUG:
 else:
 	SECRET_KEY = config.get('global', 'SECRET_KEY')
 
+RESERVATION_TOKEN_KEY = config.get('reservation', 'KEY').encode('utf-8')
+RESERVATION_TOKEN_IV = config.get('reservation', 'IV').encode('utf-8')
 
 ALLOWED_HOSTS = ['*']
 
@@ -142,6 +144,7 @@ CORS_ORIGIN_WHITELIST = [
 	'http://166.111.73.151:5001/',
 	'http://182.92.230.1/',
 	'http://www.thuasta.cn/',
+	'https://www.thuasta.cn/',
 ]
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')

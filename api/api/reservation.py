@@ -6,6 +6,7 @@ from django.contrib import auth
 from django.db.models import Q
 from api import tools
 import json
+from api import settings
 
 
 def list(request):
@@ -79,12 +80,12 @@ def apply(request):
 	try:
 		startTime = tools.timestamp2datetime(int(request.POST.get('startTime')))
 		endTime = tools.timestamp2datetime(int(request.POST.get('endTime')))
-		assert startTime < endTime;
+		assert startTime < endTime
 	except:
 		return HttpResponse("Wrong start time or end time.", status = 400)
 	
 	#检查是否为过去时间
-	if (startTime.date() - datetime.timedelta(days=1) <= datetime.datetime.now().date()):
+	if (startTime.timestamp() - project.timeLimit <= datetime.datetime.now().timestamp()):
 		return HttpResponse("Can't reserve a past time.", status = 400)
 	#检查是否在开放时间内
 	if (startTime < avaiTime.startTime or endTime > avaiTime.endTime):
@@ -94,20 +95,19 @@ def apply(request):
 	if (project.contest):
 		team = tools.getTeamByUserContest(user, project.contest)
 		# 跟队伍挂钩的项目必须组了队才能申请
-		if (len(team) == 0):
+		if (team == None):
 			return HttpResponse("Not in a team now.", status = 400)
 		else:
-			team = team[0]
 			timeUsedList = RsrvTimeUsed.objects.filter(availableTime__project = project, endTime__gt = datetime.datetime.now(), user__in = team.members.all())
 			if (len(timeUsedList) >= 1):
 				return HttpResponse("Already have a reservation.", status = 400)
 	else:
-		timeUsedList = RsrvTimeUsed.objects.filter(project = project, endTime__gt = datetime.datetime.now(), user = user)
+		timeUsedList = RsrvTimeUsed.objects.filter(availableTime__project = project, endTime__gt = datetime.datetime.now(), user = user)
 		if (len(timeUsedList) >= 1):
 			return HttpResponse("Already have a reservation.", status = 400)
 	
 	# 检查跟已预约时间是否冲突
-	timeUsedList = avaiTime.rsrvtimeused_set.all()
+	timeUsedList = avaiTime.rsrvtimeused_set.filter(startTime__lt = endTime, endTime__gt = startTime)
 	for timeUsed in timeUsedList:
 		if timeUsed.startTime < endTime and timeUsed.endTime > startTime:
 			return HttpResponse("Conflict with existing reservation.", status = 400)
@@ -135,12 +135,31 @@ def cancel(request):
 		return HttpResponse("Can't cancel a past reservation.", status = 400)
 	
 	# 判断权限
-	if (usedTime.user != request.user):
+	if (usedTime.user != user):
 		return HttpResponse("Permission denied.", status = 400)
 	
 	usedTime.delete()
 	return HttpResponse('Cancel successfully')
-	
-	
 
+def getToken(request):
+	#登录了才能获取自己的密钥
+	if (request.user and request.user.is_authenticated):
+		user = request.user
+	else:
+		return HttpResponse("Please log in.", status = 400)
+	
+	# 用project的id找到该project对象，定位现在可用的usedTime
+	try:
+		project = RsrvProject.objects.get(id = int(request.GET.get('id')))
+	except:
+		return HttpResponse("Project not found.", status = 400)
+
+	usedTime = RsrvTimeUsed.objects.filter(user = user, availableTime__project = project, startTime__lte = datetime.datetime.now(), endTime__gte = datetime.datetime.now())
+	
+	if (len(usedTime) == 0):
+		return HttpResponse("Permission denied.", status = 400)
+	usedTime = usedTime[0]
+	
+	AES = tools.myAES(key = settings.RESERVATION_TOKEN_KEY, iv = settings.RESERVATION_TOKEN_IV)
+	return HttpResponse(AES.encrypt(usedTime.startTime, usedTime.endTime))
 	

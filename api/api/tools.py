@@ -1,8 +1,34 @@
 from database.models import User, Team, Blog, Tag, RsrvProject, RsrvTimeAvailable, RsrvTimeUsed
 import json
+import base64
 import datetime
+from Crypto.Cipher import AES
 
 #一些简单的工具，主要是把类转成字典或者json字符串的工具
+class myAES:
+    def __init__(self, key, iv):
+        #从asta.ini读入配置
+        self.key = key
+        self.iv = iv
+    
+    def encrypt(self, start, end):
+        #输入两个时间，加密为字符串
+        text = str(start.timestamp())+' '+str(end.timestamp())
+        l = len(text)&15
+        if l>0:
+            text += ' '*(16-l)
+        self.aes = AES.new(self.key, AES.MODE_CBC, self.iv)
+        res = self.aes.encrypt(text.encode('utf-8'))
+        res_b64 = base64.b64encode(res)
+        return res_b64
+    
+    def decrypt(self, text):
+        #输入密文解密为开始、结束时间
+        self.aes = AES.new(self.key, AES.MODE_CBC, self.iv)
+        text = self.aes.decrypt(base64.b64decode(text))
+        start, end = [datetime.fromtimestamp(float(a)) for a in text.split()]
+        return start, end
+
 
 def timestamp2datetime(dateTime):
 	return datetime.datetime.fromtimestamp(dateTime/1000)
@@ -46,6 +72,7 @@ def rsrvProjectToDict(project, detail = False):
 	result = {}
 	result['id'] = project.id
 	result['name'] = project.name
+	result['haveToken'] = project.haveToken
 	if detail:
 		result['introduction'] = project.intro
 	if project.contest:
@@ -85,4 +112,8 @@ def blogToDict(blog):
 def getTeamByUsernameContestid(username, contestID):
 	return User.objects.get(username = username).belong.filter(contest__id = contestID)
 def getTeamByUserContest(user, contest):
-	return user.belong.filter(contest = contest)
+	team = user.belong.filter(contest = contest)
+	if len(team) == 0:
+		return None
+	else:
+		return team[0]

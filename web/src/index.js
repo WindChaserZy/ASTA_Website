@@ -22,6 +22,7 @@ import TeamAdmin from './team/admin.js';
 import ReservationList from './reservation/list.js';
 import ReservationDetail from './reservation/detail.js';
 import ASTA_logo from './assets/logo_1.jpg';
+import record_logo from './assets/record.png';
 
 const { Header, Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
@@ -257,7 +258,14 @@ class App extends React.Component {
 								/>}
 							/>
 						</Content>
-						<Footer style={{ textAlign: 'center' }}>&copy; ASTA, 2020</Footer>
+						<Footer style={{ textAlign: 'center' }}>
+							&copy; ASTA, 2020 京ICP备2020038246号
+							<div>
+								<img src={record_logo} style={{display:'inline'}}/>
+								<span>京公网安备 11010802033147号</span>
+							</div>
+		 
+						</Footer>
 					</Layout>
 				</Layout>
 			</Router>

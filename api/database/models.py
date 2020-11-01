@@ -61,6 +61,9 @@ class RsrvProject(models.Model):
 	contest = models.ForeignKey(to = Contest, on_delete = models.SET_NULL, null = True, blank = True)
 	name = models.CharField(max_length = 50, default = '')
 	intro = MDTextField(blank = True)
+	haveToken = models.BooleanField(blank = True, default = False)
+	#预约需要在开始前多长时间
+	timeLimit = models.IntegerField(default = 0)
 
 class RsrvTimeAvailable(models.Model):
 	project = models.ForeignKey(to = RsrvProject, on_delete = models.SET_NULL, null = True)
