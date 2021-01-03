@@ -1,4 +1,4 @@
-from database.models import User, Team, Blog, Tag, RsrvProject, RsrvTimeAvailable, RsrvTimeUsed
+from database.models import User, Team, Blog, Tag, RsrvProject, RsrvTimeAvailable, RsrvTimeUsed, Problem, ProblemSubmission, ProblemHighestScore
 import json
 import base64
 import datetime
@@ -38,20 +38,31 @@ def datetime2timestamp(dateTime):
 def userToDict(user, detail = False):
 	result = {}
 	if detail:
-		result['id'] = user.id
 		result['studentId'] = user.studentId
 		result['email'] = user.email
 		result['name'] = user.name
 		result['className'] = user.className
 		result['isStaff'] = user.is_staff
 		
+	result['id'] = user.id
 	result['avatar'] = 'media/' + str(user.avatar)
 	result['username'] = user.username
 	return result
 	
 def userToJson(user, detail = False):
 	return json.dumps(userToDict(user, detail))
-	
+
+def contestToDict(contest, detail = False):
+	result = {}
+	result['id'] = contest.id
+	result['name'] = contest.name
+	result['introduction'] = contest.introduction
+	result['register'] = datetime.datetime.now() <= contest.registerTimeUp
+	result['going'] = datetime.datetime.now() <= contest.timeUp
+	if (detail):
+		result['detail'] = contest.detail
+		result['problems'] = [problemToDict(item, False) for item in contest.problems.all()]
+	return result
 
 def usedTimeToDict(usedTime):
 	result = {}
@@ -109,6 +120,29 @@ def blogToDict(blog):
 		result['tags'].append(tag.name)
 	return result
 
+def problemToDict(problem, detail = True):
+	result = {}
+	result['id'] = problem.id
+	result['title'] = problem.title
+	result['author'] = problem.author.username
+	result['time'] = problem.timestamp.strftime('%Y-%m-%d %H:%M:%S')
+	if detail:
+		result['content'] = problem.content
+	return result
+def submissionToDict(submission, detail = False):
+	result = {}
+	result['id'] = submission.id
+	result['problem'] = {'id': submission.problem.id, 'title': submission.problem.title}
+	result['user'] = submission.user.username
+	result['date'] = submission.timestamp.strftime('%Y-%m-%d %H:%M:%S')
+	result['time'] = submission.timeUsed
+	result['score'] = submission.score
+	result['status'] = submission.status
+	if detail:
+		result['code'] = 'media/' + str(submission.code)
+	return result
+
+
 def getTeamByUsernameContestid(username, contestID):
 	return User.objects.get(username = username).belong.filter(contest__id = contestID)
 def getTeamByUserContest(user, contest):
@@ -117,3 +151,35 @@ def getTeamByUserContest(user, contest):
 		return None
 	else:
 		return team[0]
+def updateHighestScore(submission, inContest = False):
+	if (submission.score < 0):
+		return
+	if (inContest):
+		record = ProblemHighestScore.objects.filter(team = submission.team, problem = submission.problem)
+	else:
+		record = ProblemHighestScore.objects.filter(user = submission.user, problem = submission.problem)
+
+	if (record.count() == 0):
+		ProblemHighestScore(user = submission.user, problem = submission.problem, team = submission.team, submission = submission).save()
+	elif (record[0].submission.score < submission.score):
+		s = record[0]
+		s.submission = submission
+		s.save()
+
+def getSubmissionScore(submission):
+	if (submission.problem.timestamp < datetime.datetime.now()):
+		return submission.score
+	else:
+		return 0
+
+def getHighestScoreByContest(contest):
+	records = ProblemHighestScore.objects.none()
+	for problem in contest.problems.all():
+		records = records | problem.highestScore.filter(team__isnull = False).order_by('team__id').all()
+	return records
+
+def getSubmissionByContest(contest):
+	records = ProblemSubmission.objects.none()
+	for problem in contest.problems.all():
+		records = records | problem.submissions.filter(team__isnull = False).order_by('team__id').all()
+	return records

@@ -178,9 +178,9 @@ class Detail extends Component{
 									className='comment'
 									author={item.author}
 									avatar={global.constants.server + item.avatar}
-									content=<MarkdownView
+									content={<MarkdownView
 											source={item.content}
-										/>
+										/>}
 									datetime={item.time}
 								/>
 							</li>

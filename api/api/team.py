@@ -23,7 +23,7 @@ def list(request):
 			
 	elif (request.GET and request.GET.get('contest')):
 		try:
-			list = contest.get(id = int(request.GET.get('contest'))).team_set.all()
+			list = Contest.objects.get(id = int(request.GET.get('contest'))).team_set.all()
 		except:
 			return HttpResponse("Contest error.", status = 400)
 	else:
@@ -62,7 +62,6 @@ def detail(request):
 		list = tools.getTeamByUsernameContestid(request.GET.get('username'), id)
 		if (len(list) > 0):
 			item = list[0]
-		print(item)
 		
 	if (item == None):
 		return HttpResponse("Team not found.", status = 400)

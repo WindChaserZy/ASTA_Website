@@ -47,7 +47,7 @@ function time2percent4Day(time){
 }
 function time2percent4UTCDay(time){
 	let res;
-	return ((time.getUTCHours()*60 + time.getUTCMinutes())*60 + time.getUTCSeconds())/24/60/60;
+	return ((((time.getUTCDate()-1)*24 + time.getUTCHours())*60 + time.getUTCMinutes())*60 + time.getUTCSeconds())/24/60/60;
 }
 function timeDivide(number){
 	let list = new Array(new Array(1, 2, 3, 4, 6, 12, 24), new Array(1, 2, 4, 6, 12, 30, 60), new Array(1, 2, 4, 6, 12, 30, 60));
@@ -342,6 +342,7 @@ class TimeShow extends Component{
 				
 			let startTime = new Date(DateNow.getTime() + this.state.startTime.getTime());
 			let endTime = new Date(DateNow.getTime() + this.state.endTime.getTime());
+			console.log(i, startTime, endTime)
 			for (let j = 0; j < n; j++){
 				let itemStartTime = new Date(available[j].startTime);
 				let itemEndTime = new Date(available[j].endTime);
@@ -350,9 +351,13 @@ class TimeShow extends Component{
 				}
 				let title;
 				if (itemStartTime.getSeconds() == 0 && itemEndTime.getSeconds() == 0){
-					title = getTimeString(itemStartTime, false, true, true, false) + '~' + getTimeString(itemEndTime, false, true, true, false);
+					title = {start: getTimeString(itemStartTime, false, true, true, false), end: getTimeString(itemEndTime, false, true, true, false)};
 				}else{
-					title = getTimeString(itemStartTime) + '~' + getTimeString(itemEndTime);
+					title = {start: getTimeString(itemStartTime), end: getTimeString(itemEndTime)};
+					
+				}
+				if (itemEndTime.getUTCDate()!=itemStartTime.getUTCDate){
+					title.end = '24'+title.end.substring(2);
 				}
 				
 				if (itemStartTime < startTime){
@@ -371,6 +376,7 @@ class TimeShow extends Component{
 				});
 				avaiCount++;
 			}
+			console.log(item)
 			for (let j = 0; j < m; j++){
 				let itemStartTime = new Date(used[j].startTime);
 				let itemEndTime = new Date(used[j].endTime);
@@ -382,6 +388,10 @@ class TimeShow extends Component{
 					title = {start: getTimeString(itemStartTime, false, true, true, false), end: getTimeString(itemEndTime, false, true, true, false)};
 				}else{
 					title = {start: getTimeString(itemStartTime), end: getTimeString(itemEndTime)};
+					
+				}
+				if (itemEndTime.getUTCDate()!=itemStartTime.getUTCDate){
+					title.end = '24'+title.end.substring(2);
 				}
 				
 				if (itemStartTime < startTime){
@@ -614,7 +624,7 @@ class TimeShow extends Component{
 										let height = (time2percent4UTCDay(item.et) - time2percent4UTCDay(item.st)) / lengthPercent * this.timelineHeight;
 										
 										return(
-											<Tooltip title={item.title} key = {index} placement="right">
+											<Tooltip title={item.title.start + '~' + item.title.end} key = {index} placement="right">
 												{/* 开放时间的核心div，onPointerXXXX的都是表示鼠标事件，鼠标按下了干啥，移动了干啥之类的*/}
 												<div 
 													className = "timeShow-item-block timeShow-item-block-available"
@@ -750,8 +760,8 @@ class Detail extends Component{
 			<div id = "root">
 				<div className='title'>
 					 {data.name}&nbsp;
-					 <Tooltip placement="bottom" title={(
-						<div style={{backgroundColor: "rgba(255,255,255,0.8)"}}>
+					 <Tooltip id='introduction' placement='bottom' title={(
+						<div>
 							<MarkdownView
 								source={data.introduction}
 							/>

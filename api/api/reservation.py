@@ -133,6 +133,8 @@ def cancel(request):
 	# 如果预约已经结束就不能删除
 	if (usedTime.endTime < datetime.datetime.now()):
 		return HttpResponse("Can't cancel a past reservation.", status = 400)
+	if (usedTime.endTime.timestamp() - usedTime.availableTime.project.timeLimit <= datetime.datetime.now().timestamp()):
+		return HttpResponse("Can't cancel it.", status = 400)
 	
 	# 判断权限
 	if (usedTime.user != user):

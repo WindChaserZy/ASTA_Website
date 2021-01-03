@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 import os
 from configparser import ConfigParser
 
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -47,8 +48,10 @@ INSTALLED_APPS = [
 	'django.contrib.messages',
 	'django.contrib.staticfiles',
 	'database',
+	'judge',
 	'stdimage',
 	'mdeditor',
+	'djcelery',
 ]
 
 MIDDLEWARE = [
@@ -158,3 +161,7 @@ EMAIL_PORT = config.get('global', 'EMAIL_PORT')
 EMAIL_HOST_USER = config.get('global', 'EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = config.get('global', 'EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = config.get('global', 'DEFAULT_FROM_EMAIL')
+
+
+BROKER_URL='redis://127.0.0.1:6379/0' 
+BROKER_TRANSPORT='redis'

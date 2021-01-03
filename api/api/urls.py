@@ -19,7 +19,7 @@ from django.conf.urls import url
 from django.views.static import serve
 from django.urls import include
 from api import settings
-from api import user, contest, blog, team, reservation
+from api import user, contest, blog, team, reservation, problem
 
 urlpatterns = [
 	#mdeditor编辑器用的，目前只发现上传图片有用到
@@ -55,6 +55,9 @@ urlpatterns = [
 	path('contest/', contest.detail),
 	#获取比赛列表
 	path('contest/list/', contest.list),
+	#获取比赛排行榜
+	path('contest/leaderboard/', contest.leaderboard),
+	path('contest/leaderboard/count/', contest.leaderboardCount),
 	
 	
 	#获取单个博客详细信息
@@ -87,7 +90,7 @@ urlpatterns = [
 	path('reservation/', reservation.detail),
 	#获取预约项目预约数据
 	path('reservation/data/', reservation.getData),
-	# 获取预约项目列表
+	#获取预约项目列表
 	path('reservation/list/', reservation.list),
 	#提出预约申请
 	path('reservation/apply/', reservation.apply),
@@ -95,4 +98,12 @@ urlpatterns = [
 	path('reservation/cancel/', reservation.cancel),
 	#获取预约密钥
 	path('reservation/token/', reservation.getToken),
+
+	#题库系统
+	path('problem/', problem.detail),
+	path('problem/list/', problem.list),
+	path('problem/submit/', problem.submit),
+	path('submission/', problem.submissionDetail),
+	path('submission/list/', problem.submissionList),
+	path('submission/count/', problem.submissionCount),
 ]

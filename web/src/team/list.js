@@ -14,8 +14,8 @@ class List extends Component{
 	getList = () => {
 		let url = global.constants.server + 'team/list/'
 		let data = {}
-		if (this.props.contest){
-			data['contest'] = this.props.contest.id
+		if (this.props.contestId){
+			data['contest'] = this.props.contestId
 		}
 		this.teamListRequest = $.get({
 			url: url,

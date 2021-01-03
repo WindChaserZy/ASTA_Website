@@ -8,6 +8,9 @@ import Loading from '../loading.js'
 import TeamList from '../team/list.js';
 import TeamAdmin from '../team/admin.js';
 import BlogList from '../blog/list.js';
+import ProblemList from '../problem/list.js';
+import SubmissionList from '../problem/list_submission.js';
+import ContestLeaderboard from './leaderboard.js';
 import MarkdownView from '../markdown/view.js'
 const { confirm } = Modal;
 const { TabPane } = Tabs;
@@ -55,26 +58,46 @@ class Detail extends Component{
 		}
 		const { user } = this.props;
 		const { id, tab } = this.props.match.params;
-		let team = this.state.data;
+		let contest = this.state.data;
 		let key = 'home';
 		if (tab) key = tab;
 		return (
 			<div id = "root">
-				<div className='title'> {team.name} </div>
+				<div className='title'> {contest.name} </div>
 				<Tabs activeKey={key} onTabClick={this.tabChage}>
 					<TabPane tab="Home" key="home">
 						<div style={{marginLeft: 10}}>
 							<MarkdownView
-								source={team.detail}
+								source={contest.detail}
 							/>
 						</div>
 					</TabPane>
 					
+					{contest.problems.length>0 && <TabPane tab="Problem List" key="problemlist">
+						<ProblemList
+							contestId={id}
+							going={contest.going}
+							padding={30}
+						/>
+					</TabPane>}
+					{contest.problems.length>0 && <TabPane tab="Leaderboard" key="leaderboard">
+						<ContestLeaderboard
+							contestId={id}
+							problems={contest.problems}
+							padding={10}
+						/>
+					</TabPane>}
+					{contest.problems.length>0 && <TabPane tab="Submission List" key="submission">
+						<SubmissionList
+							contestId={id}
+							padding={10}
+						/>
+					</TabPane>}
 					<TabPane tab="Blogs" key="blog">
 						<BlogList
 							user={this.props.user}
 							padding={10}
-							tag={team.name}
+							tag={contest.name}
 							author='ASTA'
 							{...this.props}
 						/>
@@ -87,6 +110,7 @@ class Detail extends Component{
 							{...this.props}
 						/>
 					</TabPane>
+
 					<TabPane tab="Team List" key="team">
 						<TeamList
 							user={this.props.user}

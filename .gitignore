@@ -1,4 +1,6 @@
 *__pycache__*
 upload.bat
+upload.sh
+api/judge/data/
 api/asta.ini
 *.pyc

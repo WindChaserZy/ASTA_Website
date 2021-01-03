@@ -15,29 +15,6 @@ class Token(models.Model):
 	key = models.CharField(max_length = 1024, default = '')
 	updateTime = models.DateTimeField(default = timezone.now)
 
-class Contest(models.Model):
-	name = models.CharField(max_length = 100, default = '')
-	introduction = models.CharField(max_length = 1024, default = '')
-	detail = MDTextField()
-	timestamp = models.DateTimeField(auto_now_add = True)
-	limitOfMember = models.IntegerField(default = 100)
-	registerTimeUp = models.DateTimeField()
-
-class Team(models.Model):
-	name = models.CharField(max_length = 100, default = '')
-	introduction = models.CharField(max_length = 1024, default = '')
-	captain = models.ForeignKey(to = User, on_delete = models.SET_NULL, null = True)
-	contest = models.ForeignKey(to = Contest, on_delete = models.SET_NULL, null = True)
-	members = models.ManyToManyField(to = User, blank = True, through = 'Membership', related_name = 'belong')
-	candidates = models.ManyToManyField(to = User, blank = True, through = 'Application', related_name = 'apply')
-
-#描述用户和队伍之间的归属关系、申请情况
-class Membership(models.Model):
-	user = models.ForeignKey(to = User, on_delete = models.CASCADE, null = True)
-	team = models.ForeignKey(to = Team, on_delete = models.CASCADE, null = True)
-class Application(models.Model):
-	user = models.ForeignKey(to = User, on_delete = models.CASCADE, null = True)
-	team = models.ForeignKey(to = Team, on_delete = models.CASCADE, null = True)
 	
 	
 class Tag(models.Model):
@@ -56,6 +33,61 @@ class Comment(models.Model):
 	author = models.ForeignKey(to = User, on_delete = models.SET_NULL, null = True)
 	blog = models.ForeignKey(to = Blog, on_delete = models.SET_NULL, null = True)
 
+
+class Contest(models.Model):
+	name = models.CharField(max_length = 100, default = '', blank=True)
+	introduction = models.CharField(max_length = 1024, default = '', blank=True)
+	detail = MDTextField(blank=True)
+	timestamp = models.DateTimeField(auto_now_add = True)
+	limitOfMember = models.IntegerField(default = 100)
+	registerTimeUp = models.DateTimeField()
+	timeUp = models.DateTimeField()
+
+class Problem(models.Model):
+	title = models.CharField(max_length = 128, default = '')
+	weight = models.FloatField(default=1)
+	content = MDTextField()
+	contest = models.ForeignKey(to = Contest, on_delete = models.SET_NULL, null = True, related_name='problems')
+	timestamp = models.DateTimeField(default = timezone.now)
+	author = models.ForeignKey(to = User, on_delete = models.SET_NULL, null = True)
+
+class Team(models.Model):
+	name = models.CharField(max_length = 100, default = '')
+	introduction = models.CharField(max_length = 1024, default = '')
+	captain = models.ForeignKey(to = User, on_delete = models.SET_NULL, null = True)
+	contest = models.ForeignKey(to = Contest, on_delete = models.SET_NULL, null = True)
+	members = models.ManyToManyField(to = User, blank = True, through = 'Membership', related_name = 'belong')
+	candidates = models.ManyToManyField(to = User, blank = True, through = 'Application', related_name = 'apply')
+
+#描述用户和队伍之间的归属关系、申请情况
+class Membership(models.Model):
+	user = models.ForeignKey(to = User, on_delete = models.CASCADE, null = True)
+	team = models.ForeignKey(to = Team, on_delete = models.CASCADE, null = True)
+class Application(models.Model):
+	user = models.ForeignKey(to = User, on_delete = models.CASCADE, null = True)
+	team = models.ForeignKey(to = Team, on_delete = models.CASCADE, null = True)
+
+def PS_dirpath(instance, filename):
+	fileType = filename.split('.')[-1]
+	if (not (fileType in ['cpp', 'zip'])):
+		fileType = 'zip'
+	return './submission/%08d.%s'%(instance.id, fileType)
+class ProblemSubmission(models.Model):
+	user = models.ForeignKey(to = User, on_delete = models.SET_NULL, null = True)
+	team = models.ForeignKey(to = Team, on_delete = models.CASCADE, null = True)
+	problem = models.ForeignKey(to = Problem, on_delete = models.SET_NULL, null = True, related_name='submissions')
+	timestamp = models.DateTimeField(default = timezone.now)
+	score = models.FloatField(default = 0)
+	status = models.CharField(max_length = 20, default = '')
+	code = models.FileField(upload_to = PS_dirpath, null=True)
+	timeUsed = models.FloatField(default=0)
+
+class ProblemHighestScore(models.Model):
+	user = models.ForeignKey(to = User, on_delete = models.CASCADE, null = True, related_name='highestScore')
+	team = models.ForeignKey(to = Team, on_delete = models.CASCADE, null = True, related_name='highestScore')
+	problem = models.ForeignKey(to = Problem, on_delete = models.CASCADE, null = True, related_name='highestScore')
+	submission = models.ForeignKey(to = ProblemSubmission, on_delete = models.CASCADE, null = True)
+	
 #预约系统
 class RsrvProject(models.Model):
 	contest = models.ForeignKey(to = Contest, on_delete = models.SET_NULL, null = True, blank = True)

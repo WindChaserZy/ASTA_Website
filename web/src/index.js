@@ -21,6 +21,9 @@ import TeamList from './team/list.js';
 import TeamAdmin from './team/admin.js';
 import ReservationList from './reservation/list.js';
 import ReservationDetail from './reservation/detail.js';
+import ProblemList from './problem/list.js';
+import ProblemDetail from './problem/detail.js';
+import SubmissionList from './problem/list_submission.js';
 import ASTA_logo from './assets/logo_1.jpg';
 import record_logo from './assets/record.png';
 
@@ -149,6 +152,26 @@ class App extends React.Component {
 									<span>Contest</span>
 								</Link>
 							</Menu.Item>
+							<SubMenu
+								key="problem"
+								title={
+									<span>
+										<Icon type="bulb" />
+										<span>Problem</span>
+									</span>
+								}
+							>
+								<Menu.Item key="list" >
+									<Link to="/problem">
+										<span>List</span>
+									</Link>
+								</Menu.Item>
+								<Menu.Item key="submission" >
+									<Link to="/submission">
+										<span>Submission</span>
+									</Link>
+								</Menu.Item>
+							</SubMenu>
 							<Menu.Item key="Blog">
 								<Link to="/blog">
 									<Icon type="read" />
@@ -253,6 +276,30 @@ class App extends React.Component {
 							/>
 							<Route path="/reservation/:id" exact render={props =>
 								<ReservationDetail
+									user={this.state.user}
+									{...props}
+								/>}
+							/>
+							<Route path="/problem" exact render={props =>
+								<ProblemList
+									user={this.state.user}
+									{...props}
+								/>}
+							/>
+							<Route path="/problem/:id" exact render={props =>
+								<ProblemDetail
+									user={this.state.user}
+									{...props}
+								/>}
+							/>
+							<Route path="/contest/:contestId/problem/:id" exact render={props =>
+								<ProblemDetail
+									user={this.state.user}
+									{...props}
+								/>}
+							/>
+							<Route path="/submission" exact render={props =>
+								<SubmissionList
 									user={this.state.user}
 									{...props}
 								/>}

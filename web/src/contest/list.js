@@ -30,25 +30,30 @@ class ListElement extends Component{
 		}
 		return (
 			<div id = "root" style = {{padding: 60}}>
-				<h1 style={{lineHeight: 5, fontSize: 20,fontWeight: 700}}>Contests</h1>
+				<h1 style={{lineHeight: 4, fontSize: 20,fontWeight: 700}}>Contests</h1>
 				<Collapse accordion>
 					{
 						this.state.list.map((item, index) => {
 							let title = item.name
 							return (
-								<Panel header={item.name} key={index} extra=<div>
+								<Panel header={item.name} key={index} extra={<div>
 									{item.register?(
 										<span style={{color:'#3A5FCD'}}>
 											报名进行中
 										</span>
+									):item.register?(
+										<span style={{color:'red'}}>
+											比赛进行中
+										</span>
 									):(
 										<span style={{color:'grey'}}>
-											已结束报名
+											比赛已结束
 										</span>
 									)}
 									&emsp;
 									{item.time}
-								</div>>
+								</div>}
+								>
 									<p>{item.introduction}</p>
 									<Link to={"/contest/" + item.id + "/home"} style={{display: 'inline'}}>
 										<Button style={{display: 'inline'}}>Enter</Button>

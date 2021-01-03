@@ -11,22 +11,15 @@ import logo_Tra from './assets/学培部logo.jpg';
 import logo_Com from './assets/竞赛部logo.jpg';
 import logo_Tec from './assets/技术部logo.jpg';
 import logo_Pro from './assets/项目部logo.jpg';
-import img1 from './assets/img_1.jpg'
-import img2 from './assets/img_2.jpg'
+import img3 from './assets/img_3.jpg'
 const { Title, Paragraph, Text } = Typography;
 
 const pictures = [
 	{
-	  title: "第二十二届电子设计大赛——防疫先锋",
-	  link: "/contest/1",
+	  title: "学生科协寒假训练项目",
+	  link: "/blog/14",
 	  content: "",
-	  image: img1,
-	},
-	{
-	  title: "第二十二届电子设计大赛——防疫先锋",
-	  link: "/contest/1",
-	  content: "",
-	  image: img2,
+	  image: img3,
 	},
   ];
 
