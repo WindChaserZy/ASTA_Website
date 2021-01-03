@@ -59,8 +59,12 @@ def submit(request):
 		code = request.FILES['file']
 	else:
 		return HttpResponse("File missing.", status = 400)
+		
+	if (code.size > 100*1024):
+		return HttpResponse("File can't be larger than 100KB.", status = 400)
 	
 	submission = ProblemSubmission(user=user, problem=problem, status='Waiting')
+	result = {}
 
 	if (request.POST.get('contest')):
 		try:
@@ -70,14 +74,16 @@ def submit(request):
 		if (datetime.datetime.now() < contest.timeUp):
 			team = tools.getTeamByUserContest(user, contest)
 			if (team):
-				submission.contest = contest
 				submission.team = team
+				result['inContest'] = True
+				
 	submission.save()
 	submission.code = code
 	submission.save()
 	problemJudge.delay(submission)
+	result['message'] = 'Submitted successfully'
 	
-	return HttpResponse("Submitted successfully")
+	return HttpResponse(json.dumps(result))
 
 def submissionList(request):
 	if (request.GET and request.GET.get('contest')):

@@ -74,7 +74,7 @@ def PS_dirpath(instance, filename):
 	return './submission/%08d.%s'%(instance.id, fileType)
 class ProblemSubmission(models.Model):
 	user = models.ForeignKey(to = User, on_delete = models.SET_NULL, null = True)
-	team = models.ForeignKey(to = Team, on_delete = models.CASCADE, null = True)
+	team = models.ForeignKey(to = Team, on_delete = models.SET_NULL, null = True)
 	problem = models.ForeignKey(to = Problem, on_delete = models.SET_NULL, null = True, related_name='submissions')
 	timestamp = models.DateTimeField(default = timezone.now)
 	score = models.FloatField(default = 0)

@@ -43,7 +43,7 @@ class ListElement extends Component{
 					dataSource={this.state.list}
 					renderItem={item => (
 						<List.Item>
-							<Link to={(this.props.going?"problem/":"/problem/")+item.id}>
+							<Link to={"problem/"+item.id}>
 								<h1>
 									{item.title}
 								</h1>

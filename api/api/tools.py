@@ -157,10 +157,14 @@ def updateHighestScore(submission, inContest = False):
 	if (inContest):
 		record = ProblemHighestScore.objects.filter(team = submission.team, problem = submission.problem)
 	else:
-		record = ProblemHighestScore.objects.filter(user = submission.user, problem = submission.problem)
+		record = ProblemHighestScore.objects.filter(user = submission.user, team__isnull = True, problem = submission.problem)
 
 	if (record.count() == 0):
-		ProblemHighestScore(user = submission.user, problem = submission.problem, team = submission.team, submission = submission).save()
+		team = None
+		if (inContest):
+			team = submission.team
+		
+		ProblemHighestScore(user = submission.user, problem = submission.problem, team = team, submission = submission).save()
 	elif (record[0].submission.score < submission.score):
 		s = record[0]
 		s.submission = submission

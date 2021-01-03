@@ -69,8 +69,9 @@ class Detail extends Component{
 						accept='.zip,.cpp'
 						onChange={(info)=>{
 							if (info.file.status === 'done') {
-								message.success(info.file.response);
-								if (contestId){
+								console.log(info.file.response);
+								message.success(info.file.response.message);
+								if (contestId && info.file.response.inContest){
 									this.props.history.push(`/contest/${contestId}/submission`)
 								}else{
 									this.props.history.push('/submission')
