@@ -67,8 +67,17 @@ def leaderboard(request):
 		item['totalScore'] = sum(item['stdScore'])
 
 	board.sort(key=lambda item: item['totalScore'], reverse=True)
-	for index, item in enumerate(board):
-		item['rank'] = index+1
+	
+
+	for index in range(len(board)):
+		if (index>0 and board[index]['totalScore']==board[index-1]['totalScore']):
+			board[index]['rank'] = board[index-1]['rank']
+		else:
+			board[index]['rank'] = index+1
+
+	if (request.GET and request.GET.get('sortField') and request.GET.get('sortOrder')):
+		if (request.GET.get('sortField') == 'rank' and request.GET.get('sortOrder') == 'descend'):
+			board.sort(key=lambda item: item['totalScore'])
 
 	if (request.GET and request.GET.get('pageSize') and request.GET.get('page')):
 		pageSize = int(request.GET.get('pageSize'))

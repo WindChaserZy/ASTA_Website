@@ -11,7 +11,7 @@ import UserShow from '../user/show.js';
 class ListElement extends Component{
 	state = {
 		data: [],
-		pagination: {pageSize: 10},
+		pagination: {pageSize: 6},
 		loading: false,
 	}
 	getTotalCount = (params = {}) => {
@@ -102,6 +102,7 @@ class ListElement extends Component{
 			columns.push({
 				title: this.props.problems[i].title,
 				dataIndex: 'stdScore',
+				key: 'score' + i,
 				align: 'center',
 				render: (stdScore, record)=>{return <span><b>{Math.round(stdScore[i]*100000)/100000}</b>({record.score[i]})</span>},
 			});
@@ -113,7 +114,7 @@ class ListElement extends Component{
 				}
 				<Table
 					columns={columns}
-					rowKey={record => record.rank}
+					rowKey='teamId'
 					dataSource={this.state.data}
 					pagination={this.state.pagination}
 					loading={this.state.loading}
