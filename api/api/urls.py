@@ -13,6 +13,7 @@ Including another URLconf
 	1. Import the include() function: from django.urls import include, path
 	2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+import os
 from django.contrib import admin
 from django.urls import path
 from django.conf.urls import url
@@ -26,7 +27,8 @@ urlpatterns = [
 	url(r'mdeditor/', include('mdeditor.urls')),
 	
 	#媒体文件，多为用户上传的
-	url(r'^media/(?P<path>.*)$', serve, {"document_root": settings.MEDIA_ROOT}),
+	url(r'^media/editor/(?P<path>.*)$', serve, {"document_root": os.path.join(settings.MEDIA_ROOT, 'editor')}),
+	url(r'^media/avatars/(?P<path>.*)$', serve, {"document_root": os.path.join(settings.MEDIA_ROOT, 'avatars')}),
 	
 	#静态文件，多为开发者自己整的
 	url(r'^static/(?P<path>.*)$', serve, {"document_root": settings.STATIC_ROOT}),
