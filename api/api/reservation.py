@@ -48,7 +48,7 @@ def getData(request):
 		return HttpResponse("Wrong start time or end time.", status = 400)
 		
 	# 用start_time, end_time与project对象得到availableTime列表
-	avaiTimeList = RsrvTimeAvailable.objects.filter(project = project, startTime__gte = startTime, endTime__lte = endTime)
+	avaiTimeList = RsrvTimeAvailable.objects.filter(project = project, endTime__gte = startTime, startTime__lte = endTime)
 	# 用available列表得到相应的UsedTime列表
 	result = []
 	for avaiTime in avaiTimeList:

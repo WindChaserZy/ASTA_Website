@@ -7,7 +7,6 @@ from Crypto.Cipher import AES
 #一些简单的工具，主要是把类转成字典或者json字符串的工具
 class myAES:
     def __init__(self, key, iv):
-        #从asta.ini读入配置
         self.key = key
         self.iv = iv
     
