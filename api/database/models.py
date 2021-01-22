@@ -47,9 +47,9 @@ class Problem(models.Model):
 	title = models.CharField(max_length = 128, default = '')
 	weight = models.FloatField(default=1)
 	content = MDTextField()
-	contest = models.ForeignKey(to = Contest, on_delete = models.SET_NULL, null = True, related_name='problems')
+	contest = models.ForeignKey(to = Contest, on_delete = models.SET_NULL, null = True, blank=True, related_name='problems')
 	timestamp = models.DateTimeField(default = timezone.now)
-	author = models.ForeignKey(to = User, on_delete = models.SET_NULL, null = True)
+	author = models.ForeignKey(to = User, on_delete = models.SET_NULL, null = True, blank=True)
 
 class Team(models.Model):
 	name = models.CharField(max_length = 100, default = '')
@@ -73,8 +73,8 @@ def PS_dirpath(instance, filename):
 		fileType = 'zip'
 	return './submission/%08d.%s'%(instance.id, fileType)
 class ProblemSubmission(models.Model):
-	user = models.ForeignKey(to = User, on_delete = models.SET_NULL, null = True)
-	team = models.ForeignKey(to = Team, on_delete = models.SET_NULL, null = True)
+	user = models.ForeignKey(to = User, on_delete = models.SET_NULL, null = True, blank=True)
+	team = models.ForeignKey(to = Team, on_delete = models.SET_NULL, null = True, blank=True)
 	problem = models.ForeignKey(to = Problem, on_delete = models.SET_NULL, null = True, related_name='submissions')
 	timestamp = models.DateTimeField(default = timezone.now)
 	score = models.FloatField(default = 0)
@@ -83,8 +83,8 @@ class ProblemSubmission(models.Model):
 	timeUsed = models.FloatField(default=0)
 
 class ProblemHighestScore(models.Model):
-	user = models.ForeignKey(to = User, on_delete = models.CASCADE, null = True, related_name='highestScore')
-	team = models.ForeignKey(to = Team, on_delete = models.CASCADE, null = True, related_name='highestScore')
+	user = models.ForeignKey(to = User, on_delete = models.CASCADE, null = True, blank=True, related_name='highestScore')
+	team = models.ForeignKey(to = Team, on_delete = models.CASCADE, null = True, blank=True, related_name='highestScore')
 	problem = models.ForeignKey(to = Problem, on_delete = models.CASCADE, null = True, related_name='highestScore')
 	submission = models.ForeignKey(to = ProblemSubmission, on_delete = models.CASCADE, null = True)
 	

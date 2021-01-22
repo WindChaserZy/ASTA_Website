@@ -123,7 +123,10 @@ def problemToDict(problem, detail = True):
 	result = {}
 	result['id'] = problem.id
 	result['title'] = problem.title
-	result['author'] = problem.author.username
+	if (problem.author):
+		result['author'] = problem.author.username
+	else:
+		result['author'] = User.objects.get(id = 1).username
 	result['time'] = problem.timestamp.strftime('%Y-%m-%d %H:%M:%S')
 	if detail:
 		result['content'] = problem.content
