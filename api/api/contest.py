@@ -45,7 +45,11 @@ def leaderboard(request):
 	
 	records = tools.getHighestScoreByContest(contest)
 	teamList = contest.team_set.order_by('id').all()
-	board = [{'teamId': team.id, 'teamName': team.name, 'captain': tools.userToDict(team.captain), 'score':[0]*problemNum} for team in teamList]
+	board = [{'teamId': team.id, 'teamName': team.name, 'captain': tools.userToDict(team.captain)} for team in teamList]
+	
+	for item in board:
+		for i in range(problemNum):
+			item['score%04d'%i] = [0, 0]
 	index = 0
 	highestScore = [0]*problemNum
 	for record in records:
@@ -56,15 +60,15 @@ def leaderboard(request):
 		problemId = getProblemIndex(record.problem)
 		score = tools.getSubmissionScore(record.submission)
 		highestScore[problemId] = max(highestScore[problemId], score)
-		board[index]['score'][problemId] = score
+		board[index]['score%04d'%problemId][1] = score
 
 	for item in board:
-		item['stdScore'] = [0]*problemNum
+		item['totalScore'] = 0
 		for i in range(problemNum):
-			item['stdScore'][i] = item['score'][i] * problemList[i].weight
+			item['score%04d'%i][0] = item['score%04d'%i][1] * problemList[i].weight
 			if (highestScore[i] > 0):
-				item['stdScore'][i] /= highestScore[i]
-		item['totalScore'] = sum(item['stdScore'])
+				item['score%04d'%i][0] /= highestScore[i]
+			item['totalScore'] += item['score%04d'%i][0]
 
 	board.sort(key=lambda item: item['totalScore'], reverse=True)
 	
@@ -76,8 +80,7 @@ def leaderboard(request):
 			board[index]['rank'] = index+1
 
 	if (request.GET and request.GET.get('sortField') and request.GET.get('sortOrder')):
-		if (request.GET.get('sortField') == 'rank' and request.GET.get('sortOrder') == 'descend'):
-			board.sort(key=lambda item: item['totalScore'])
+		board.sort(key=lambda item: item[request.GET.get('sortField')], reverse=request.GET.get('sortOrder') == 'ascend')
 
 	if (request.GET and request.GET.get('pageSize') and request.GET.get('page')):
 		pageSize = int(request.GET.get('pageSize'))

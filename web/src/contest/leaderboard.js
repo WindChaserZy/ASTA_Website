@@ -101,10 +101,11 @@ class ListElement extends Component{
 		for (let i = 0; i < this.props.problems.length; i++){
 			columns.push({
 				title: this.props.problems[i].title,
-				dataIndex: 'stdScore',
+				dataIndex: 'score'+i.toString().padStart(4,'0'),
 				key: 'score' + i,
 				align: 'center',
-				render: (stdScore, record)=>{return <span><b>{Math.round(stdScore[i]*100000)/100000}</b>({record.score[i]})</span>},
+				sorter: true,
+				render: score=>{return <span><b>{Math.round(score[0]*100000)/100000}</b>({score[1]})</span>},
 			});
 		}
 		return (
