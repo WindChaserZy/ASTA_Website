@@ -13,7 +13,7 @@ if __name__ == "__main__":
     program = os.path.join(path, 'program')
     Compile = subprocess.Popen('./'+args.type+'.sh ' + program, shell=True, cwd='/compile', stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     try:
-        Compile.wait(1)
+        Compile.wait(20)
     except subprocess.TimeoutExpired:
         Compile.terminate()
         print(' '.join(['CompileTimeout', '0', '0']))
