@@ -22,10 +22,10 @@ class Detail extends Component{
 			content: value,
 		});
 	}
-	getCommentList = () => {
+	getCommentList = (id = this.props.match.params.id) => {
 		$.get({
 			url: global.constants.server + 'comment/list/',
-			data: { blog: this.props.match.params.id },
+			data: { blog: id },
 			crossDomain: true,
 			xhrFields: {
 				withCredentials: true
@@ -89,9 +89,10 @@ class Detail extends Component{
 		this.getCommentList()
 	}
 	componentWillReceiveProps(nextProps){
-		this.props = nextProps
-		this.getInfo()
-		this.getCommentList()
+		if (this.props.match.params.id != nextProps.match.params.id){
+			this.getInfo(nextProps.match.params.id)
+			this.getCommentList(nextProps.match.params.id)
+		}
 	}
 	deleteBlog(id = this.props.match.params.id){
 		let url = global.constants.server + 'blog/delete/';
@@ -120,7 +121,7 @@ class Detail extends Component{
 		const { user } = this.props
 		const { id } = this.props.match.params
 		return (
-			<div id = "root">
+			<div className = "root">
 				<div className='title'> {this.state.data.title} </div>
 				<div className='info'>
 					<UserShow username={this.state.data.author}/>

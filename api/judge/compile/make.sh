@@ -1,7 +1,5 @@
-cp /code/code.zip .
-unzip code.zip
-rm code.zip
+unzip -o -q $1 -d .
 make
-mv work.exe $1
+mv work.exe $2
 
 

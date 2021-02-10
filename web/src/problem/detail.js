@@ -44,8 +44,9 @@ class Detail extends Component{
 		this.getInfo()
 	}
 	componentWillReceiveProps(nextProps){
-		this.props = nextProps
-		this.getInfo()
+		if (this.props.match.params.id != nextProps.match.params.id){
+			this.getInfo(nextProps.match.params.id);
+		}
 	}
 	render(){
 		if (this.state.data == null){
@@ -58,7 +59,7 @@ class Detail extends Component{
 		let submitData = { id : id };
 		if (contestId) submitData['contest'] = contestId;
 		return (
-			<div id = "root">
+			<div className = "root">
 				<div className='title'> {this.state.data.title} </div>
 				<div className='info'>
 					<UserShow username={this.state.data.author}/>
@@ -67,6 +68,7 @@ class Detail extends Component{
 					<Upload
 						action={global.constants.server + 'problem/submit/'}
 						accept='.zip,.cpp'
+						name='code'
 						onChange={(info)=>{
 							if (info.file.status === 'done') {
 								console.log(info.file.response);

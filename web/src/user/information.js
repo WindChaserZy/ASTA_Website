@@ -88,7 +88,7 @@ class Informathion extends Component{
 			return (
 				<div id = 'root' >
 					<Result
-						title=<div>Please <Link to="/login">log in</Link> first.</div>
+						title={(<div>Please <Link to="/login">log in</Link> first.</div>)}
 						extra={
 							<div>
 								This is a page to show your <b>personal information</b>. <br/>
@@ -99,9 +99,8 @@ class Informathion extends Component{
 				</div>
 			)
 		}
-		console.log(user)
 		return (
-			<div id = "root" style={{ alignItems : 'center', justifyContent: 'center', display : 'flex', flexDirection: 'column' }}>
+			<div className = "root" style={{ alignItems : 'center', justifyContent: 'center', display : 'flex', flexDirection: 'column' }}>
 				<Upload
 					name="avatar"
 					listType="picture-card"

@@ -69,7 +69,7 @@ class Login extends Component{
 	render(){
 		const { getFieldDecorator } = this.props.form;
 		return (
-			<div  id = "root" style={{ alignItems : 'center', justifyContent: 'center', display : 'flex', flexDirection: 'column' }}>
+			<div  className = "root" style={{ alignItems : 'center', justifyContent: 'center', display : 'flex', flexDirection: 'column' }}>
 				<div className="title">Log In</div>
 				<Card style = {{width: '70%'}}>
 					<Form {...formItemLayout} onSubmit={this.handleSubmit} className="form">

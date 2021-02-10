@@ -7,7 +7,10 @@ import json
 from api import settings
 from django.contrib import admin
 from django.http import HttpResponse
-from database.models import Team, User, Contest, Blog, Tag, Token, Comment, Membership, Application, RsrvProject, RsrvTimeAvailable, RsrvTimeUsed, Problem, ProblemSubmission, ProblemHighestScore
+from database.models import Team, User, Contest, Blog, Tag, Token, Comment, Membership, Application
+from database.models import RsrvProject, RsrvTimeAvailable, RsrvTimeUsed
+from database.models import Problem, ProblemSubmission, ProblemHighestScore, ProblemJudgeDetail
+from database.models import Game, GameAi, GameBot, GameRecord
 
 def Download_Selected(modeladmin, request, queryset):
 	csvPath = settings.MEDIA_ROOT + 'teams.csv'
@@ -48,4 +51,9 @@ admin.site.register(RsrvTimeAvailable)
 admin.site.register(RsrvTimeUsed)
 admin.site.register(Problem)
 admin.site.register(ProblemSubmission)
+admin.site.register(ProblemJudgeDetail)
 admin.site.register(ProblemHighestScore)
+admin.site.register(Game)
+admin.site.register(GameAi)
+admin.site.register(GameBot)
+admin.site.register(GameRecord)

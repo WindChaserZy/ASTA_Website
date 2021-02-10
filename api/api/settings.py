@@ -52,6 +52,7 @@ INSTALLED_APPS = [
 	'stdimage',
 	'mdeditor',
 	'djcelery',
+	'django_apscheduler',
 ]
 
 MIDDLEWARE = [
@@ -141,13 +142,13 @@ CSRF_COOKIE_SAMESITE = None
 CORS_ALLOW_CREDENTIALS = True
 #SESSION_COOKIE_SAMESITE = 'lax'
 CORS_ORIGIN_WHITELIST = [
-	'http://localhost:3000/',
-	'http://localhost:5000/',
-	'http://127.0.0.1:3000/',
-	'http://166.111.73.151:5001/',
-	'http://182.92.230.1/',
-	'http://www.thuasta.cn/',
-	'https://www.thuasta.cn/',
+	'http://localhost:3000',
+	'http://localhost:5000',
+	'http://127.0.0.1:3000',
+	'http://166.111.73.151:5001',
+	'http://182.92.230.1',
+	'http://www.thuasta.cn',
+	'https://www.thuasta.cn',
 ]
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
@@ -163,5 +164,11 @@ EMAIL_HOST_PASSWORD = config.get('global', 'EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = config.get('global', 'DEFAULT_FROM_EMAIL')
 
 
+BASE_SCORE = 1000
+ScoreUpdateSpeed = 0.1
+GameEps = 1e-5
+
+
 BROKER_URL='redis://127.0.0.1:6379/0' 
 BROKER_TRANSPORT='redis'
+CELERY_TIMEZONE = TIME_ZONE

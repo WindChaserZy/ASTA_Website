@@ -34,7 +34,7 @@ class ListElement extends Component{
 			)
 		}
 		return (
-			<div id = "root"  style = {{padding: this.props.padding ? this.props.padding : 60}}>
+			<div className = "root"  style = {{padding: this.props.padding!==undefined ? this.props.padding : 60}}>
 				{this.props.contestId===undefined &&
 					<h1 style={{lineHeight: 4, fontSize: 20,fontWeight: 700}}>Problems</h1>
 				}

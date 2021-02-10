@@ -1,2 +1,2 @@
-cp /code/code.cpp .
-g++ code.cpp -o $1 -O2
+cp $1 ./code.cpp
+g++ code.cpp -o $2 -O2

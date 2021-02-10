@@ -58,7 +58,7 @@ def leaderboard(request):
 			if (index >= len(board)):
 				index = 0
 		problemId = getProblemIndex(record.problem)
-		score = tools.getSubmissionScore(record.submission)
+		score = tools.getSubmissionScore(record.submission, request)
 		highestScore[problemId] = max(highestScore[problemId], score)
 		board[index]['score%04d'%problemId][1] = score
 

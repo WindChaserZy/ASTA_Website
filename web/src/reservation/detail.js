@@ -736,8 +736,9 @@ class Detail extends Component{
 		this.getInfo();
 	}
 	componentWillReceiveProps(nextProps){
-		this.props = nextProps;
-		this.getInfo();
+		if (this.props.match.params.id != nextProps.match.params.id){
+			this.getInfo(nextProps.match.params.id);
+		}
 	}
 	render(){
 		if (this.state.data == null){
@@ -757,7 +758,7 @@ class Detail extends Component{
 			)
 		}
 		return (
-			<div id = "root">
+			<div className = "root">
 				<div className='title'>
 					 {data.name}&nbsp;
 					 <Tooltip id='introduction' placement='bottom' title={(

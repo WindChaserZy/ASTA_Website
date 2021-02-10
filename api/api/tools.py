@@ -1,4 +1,7 @@
-from database.models import User, Team, Blog, Tag, RsrvProject, RsrvTimeAvailable, RsrvTimeUsed, Problem, ProblemSubmission, ProblemHighestScore
+from database.models import User, Team, Blog, Tag
+from database.models import RsrvProject, RsrvTimeAvailable, RsrvTimeUsed
+from database.models import Problem, ProblemSubmission, ProblemHighestScore, ProblemJudgeDetail
+from database.models import Game, GameAi, GameBot, GameRecord
 import json
 import base64
 import datetime
@@ -63,6 +66,57 @@ def contestToDict(contest, detail = False):
 		result['problems'] = [problemToDict(item, False) for item in contest.problems.all()]
 	return result
 
+def gameToDict(game, detail = False):
+	result = {}
+	result['id'] = game.id
+	result['name'] = game.name
+	result['introduction'] = game.introduction
+	result['date'] = game.timestamp.strftime('%Y-%m-%d %H:%M:%S')
+	if (game.contest):
+		result['contest'] = game.contest.id
+	if (detail):
+		result['detail'] = game.detail
+	return result
+
+def gameAiToDict(gameAi):
+	result = {}
+	result['id'] = gameAi.id
+	result['name'] = gameAi.name
+	result['introduction'] = gameAi.introduction
+	if gameAi.user:
+		result['user'] = userToDict(gameAi.user)
+	if gameAi.team:
+		result['team'] = teamToDict(gameAi.team)
+		result['captain'] = userToDict(gameAi.team.captain)
+
+	return result
+
+def gameBotToDict(gameBot, detail = False):
+	result = {}
+	result['id'] = gameBot.id
+	result['date'] = gameBot.timestamp.strftime('%Y-%m-%d %H:%M:%S')
+	result['addition'] = gameBot.addition
+	result['compileStatus'] = gameBot.compileStatus
+	result['ranking'] = gameBot.ranking
+	return result
+
+def gameRecordToDict(gameRecord, detail = False):
+	result = {}
+	result['id'] = gameRecord.id
+	result['game'] = {'id': gameRecord.game.id, 'name': gameRecord.game.name}
+	result['date'] = gameRecord.timestamp.strftime('%Y-%m-%d %H:%M:%S')
+	result['time'] = gameRecord.timeUsed
+	result['status'] = gameRecord.status
+	result['ranking'] = gameRecord.ranking
+	result['bot'] = []
+	for botPlay in gameRecord.botplay.all():
+		result['bot'].append({	'id': botPlay.bot.id, \
+								'ai': gameAiToDict(botPlay.bot.ai), \
+								'oldRankingScore': botPlay.oldRankingScore, \
+								'deltaRankingScore': botPlay.deltaRankingScore, \
+								'originalScore': botPlay.originalScore})
+	return result
+
 def usedTimeToDict(usedTime):
 	result = {}
 	result['id'] = usedTime.id
@@ -106,17 +160,18 @@ def teamToDict(team, detail = False):
 def teamToJson(team, detail = False):
 	return json.dumps(teamToDict(team, detail))
 	
-def blogToDict(blog):
+def blogToDict(blog, detail=False):
 	result = {}
 	result['id'] = blog.id
 	result['title'] = blog.title
-	result['content'] = blog.content
 	result['author'] = blog.author.username
 	result['time'] = blog.timestamp.strftime('%Y-%m-%d %H:%M:%S')
 	result['tags'] = []
 	tags = blog.tags.all()
 	for tag in tags:
 		result['tags'].append(tag.name)
+	if detail:
+		result['content'] = blog.content
 	return result
 
 def problemToDict(problem, detail = True):
@@ -131,6 +186,7 @@ def problemToDict(problem, detail = True):
 	if detail:
 		result['content'] = problem.content
 	return result
+
 def submissionToDict(submission, detail = False):
 	result = {}
 	result['id'] = submission.id
@@ -140,19 +196,31 @@ def submissionToDict(submission, detail = False):
 	result['time'] = submission.timeUsed
 	result['score'] = submission.score
 	result['status'] = submission.status
+	if submission.team:
+		result['team'] = submission.team.name
 	if detail:
 		result['code'] = 'media/' + str(submission.code)
+	return result
+
+def judgeDetailToDict(judgeDetail, detail = False):
+	result = {}
+	result['time'] = judgeDetail.timeUsed
+	result['memory'] = judgeDetail.memoryUsed
+	result['score'] = judgeDetail.score
+	result['status'] = judgeDetail.status
 	return result
 
 
 def getTeamByUsernameContestid(username, contestID):
 	return User.objects.get(username = username).belong.filter(contest__id = contestID)
+
 def getTeamByUserContest(user, contest):
 	team = user.belong.filter(contest = contest)
 	if len(team) == 0:
 		return None
 	else:
 		return team[0]
+
 def updateHighestScore(submission, inContest = False):
 	if (submission.score < 0):
 		return
@@ -172,8 +240,17 @@ def updateHighestScore(submission, inContest = False):
 		s.submission = submission
 		s.save()
 
-def getSubmissionScore(submission):
-	if (submission.problem.timestamp < datetime.datetime.now()):
+def isProblemOpen(problem, request = None):
+	if (request and request.user.is_authenticated and request.user.is_staff):
+		return True
+
+	if (problem.timestamp < datetime.datetime.now()):
+		return True
+
+	return False
+
+def getSubmissionScore(submission, request = None):
+	if isProblemOpen(submission.problem, request):
 		return submission.score
 	else:
 		return 0
@@ -189,3 +266,33 @@ def getSubmissionByContest(contest):
 	for problem in contest.problems.all():
 		records = records | problem.submissions.filter(team__isnull = False).order_by('team__id').all()
 	return records
+
+def isUserInTeam(user, team):
+	if user == team.captain:
+		return True
+	return user in team.members
+
+def userHasAiPermission(user, game):
+	if (game.user and game.user!=user):
+		return False
+		
+	if (game.team and tools.isUserInTeam(user, game.team)==False):
+		return False
+	
+	return True
+
+def getBotByUserGame(user, game):
+	if game.contest:
+		team = getTeamByUserContest(user, game.contest)
+		if team:
+			bot = GameBot.objects.filter(ai__team = team, ranking=True)
+		else:
+			return None
+	else:
+		bot = GameBot.objects.filter(ai__user = user, ranking=True)
+
+	if len(bot):
+		return bot[0]
+	else:
+		return None
+		

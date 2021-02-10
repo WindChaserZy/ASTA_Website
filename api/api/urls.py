@@ -20,7 +20,8 @@ from django.conf.urls import url
 from django.views.static import serve
 from django.urls import include
 from api import settings
-from api import user, contest, blog, team, reservation, problem
+from api import user, contest, blog, team, reservation, problem, game
+from . import scheduler_job
 
 urlpatterns = [
 	#mdeditor编辑器用的，目前只发现上传图片有用到
@@ -106,6 +107,21 @@ urlpatterns = [
 	path('problem/list/', problem.list),
 	path('problem/submit/', problem.submit),
 	path('submission/', problem.submissionDetail),
+	path('submission/code/', problem.submissionCodeDownload),
 	path('submission/list/', problem.submissionList),
 	path('submission/count/', problem.submissionCount),
+
+	#游戏系统
+	path('game/', game.detail),
+	path('game/list/', game.list),
+	path('game/leaderboard/', game.leaderboard),
+	path('game/leaderboard/count/', game.leaderboardCount),
+	path('game/ai/', game.aiDetail),
+	path('game/ai/modify/', game.aiModify),
+	path('game/ai/addbot/', game.aiAddBot),
+	path('game/ai/list/', game.aiList),
+	path('game/bot/code/', game.botCodeDownload),
+	path('game/bot/ranking/', game.botRanking),
+	path('game/record/list/', game.recordList),
+	path('game/record/count/', game.recordListCount),
 ]

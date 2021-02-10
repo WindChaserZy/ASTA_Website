@@ -69,7 +69,7 @@ class Notice extends Component{
         )}
       />
 		return (
-			<div  id = "root">
+			<div  className = "root">
 				{teamList}
 			</div>
 		)

@@ -23,7 +23,10 @@ import ReservationList from './reservation/list.js';
 import ReservationDetail from './reservation/detail.js';
 import ProblemList from './problem/list.js';
 import ProblemDetail from './problem/detail.js';
-import SubmissionList from './problem/list_submission.js';
+import SubmissionList from './submission/list.js';
+import SubmissionDetail from './submission/detail.js';
+import GameList from './game/list.js';
+import GameDetail from './game/detail.js';
 import ASTA_logo from './assets/logo_1.jpg';
 import record_logo from './assets/record.png';
 
@@ -146,12 +149,6 @@ class App extends React.Component {
 								</Link>
 							</Menu.Item>
 							{user}
-							<Menu.Item key="Contest">
-								<Link to="/contest">
-									<Icon type="trophy" />
-									<span>Contest</span>
-								</Link>
-							</Menu.Item>
 							<SubMenu
 								key="problem"
 								title={
@@ -172,6 +169,18 @@ class App extends React.Component {
 									</Link>
 								</Menu.Item>
 							</SubMenu>
+							<Menu.Item key="Contest">
+								<Link to="/contest">
+									<Icon type="trophy" />
+									<span>Contest</span>
+								</Link>
+							</Menu.Item>
+							<Menu.Item key="Game">
+								<Link to="/game">
+									<Icon type="robot" />
+									<span>Game</span>
+								</Link>
+							</Menu.Item>
 							<Menu.Item key="Blog">
 								<Link to="/blog">
 									<Icon type="read" />
@@ -300,6 +309,30 @@ class App extends React.Component {
 							/>
 							<Route path="/submission" exact render={props =>
 								<SubmissionList
+									user={this.state.user}
+									{...props}
+								/>}
+							/>
+							<Route path="/submission/:id" exact render={props =>
+								<SubmissionDetail
+									user={this.state.user}
+									{...props}
+								/>}
+							/>
+							<Route path="/game" exact render={props =>
+								<GameList
+									user={this.state.user}
+									{...props}
+								/>}
+							/>
+							<Route path="/game/:id" exact render={props =>
+								<GameDetail
+									user={this.state.user}
+									{...props}
+								/>}
+							/>
+							<Route path="/game/:id/:tab" exact render={props =>
+								<GameDetail
 									user={this.state.user}
 									{...props}
 								/>}

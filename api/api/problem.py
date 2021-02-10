@@ -1,5 +1,6 @@
+import os
 import datetime
-from django.http import HttpResponse
+from django.http import HttpResponse, FileResponse
 from django.shortcuts import render, redirect
 from database.models import User, Problem, ProblemSubmission, Contest
 from django.contrib import auth
@@ -55,13 +56,13 @@ def submit(request):
 	else:
 		return HttpResponse("ID missing.", status = 400)
 	
-	if (request.FILES.get('file')):
-		code = request.FILES['file']
+	if (request.FILES.get('code')):
+		code = request.FILES['code']
 	else:
-		return HttpResponse("File missing.", status = 400)
+		return HttpResponse("Code missing.", status = 400)
 		
 	if (code.size > 100*1024):
-		return HttpResponse("File can't be larger than 100KB.", status = 400)
+		return HttpResponse("Code can't be larger than 100KB.", status = 400)
 	
 	submission = ProblemSubmission(user=user, problem=problem, status='Waiting')
 	result = {}
@@ -109,7 +110,8 @@ def submissionList(request):
 	
 	for item in list:
 		info = tools.submissionToDict(item, False)
-		info['score'] = tools.getSubmissionScore(item)
+		if not tools.isProblemOpen(item.problem, request):
+			info['score'] = 0
 		result.append(info)
 	return HttpResponse(json.dumps(result), content_type = 'application/json')
 	
@@ -127,7 +129,36 @@ def submissionDetail(request):
 		result = tools.submissionToDict(item, True)
 	else:
 		result = tools.submissionToDict(item, False)
+
+	result['detail'] = []
+
+	if not tools.isProblemOpen(item.problem, request):
+		result['score'] = 0
+	else:
+		for point in item.detail.all():
+			result['detail'].append(tools.judgeDetailToDict(point))
 	return HttpResponse(json.dumps(result), content_type = 'application/json')
+
+def submissionCodeDownload(request):
+	if (request.GET and request.GET.get('id')):
+		try:
+			submission = ProblemSubmission.objects.get(id = int(request.GET.get('id')))
+		except:
+			return HttpResponse("Submission not found.", status = 400)
+	else:
+		return HttpResponse("ID missing.", status = 400)
+	
+	if not os.path.exists(submission.code.path):
+		return HttpResponse("File not found.", status = 400)
+	if request.user.is_authenticated and (request.user.is_staff or request.user == submission.user):
+		file = open(submission.code.path, 'rb')
+		response = FileResponse(file)
+		response['Content-Type'] = 'application/octet-stream'
+		response['Content-Disposition'] = 'attachment;filename=' + submission.code.name
+		return response
+	else:
+		return HttpResponse("Permission Denied.", status = 400)
+
 
 def submissionCount(request):
 	if (request.GET and request.GET.get('contest')):

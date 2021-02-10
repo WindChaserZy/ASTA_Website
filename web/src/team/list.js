@@ -59,7 +59,7 @@ class List extends Component{
 			)
 		}
 		return (
-			<div  id = "root"  style = {{padding: this.props.padding ? this.props.padding : 60}}>
+			<div  className = "root"  style = {{padding: this.props.padding!==undefined ? this.props.padding : 60}}>
 				<Row type="flex" gutter={16}>
 				{
 					this.state.list.map((item, index) => {

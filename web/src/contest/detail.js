@@ -9,7 +9,7 @@ import TeamList from '../team/list.js';
 import TeamAdmin from '../team/admin.js';
 import BlogList from '../blog/list.js';
 import ProblemList from '../problem/list.js';
-import SubmissionList from '../problem/list_submission.js';
+import SubmissionList from '../submission/list.js';
 import ContestLeaderboard from './leaderboard.js';
 import MarkdownView from '../markdown/view.js'
 const { confirm } = Modal;
@@ -44,8 +44,9 @@ class Detail extends Component{
 		this.getInfo()
 	}
 	componentWillReceiveProps(nextProps){
-		this.props = nextProps
-		this.getInfo()
+		if (this.props.match.params.id != nextProps.match.params.id){
+			this.getInfo(nextProps.match.params.id);
+		}
 	}
 	tabChage = (key) => {
 		this.changeTabKey(key)
@@ -62,7 +63,7 @@ class Detail extends Component{
 		let key = 'home';
 		if (tab) key = tab;
 		return (
-			<div id = "root">
+			<div className = "root">
 				<div className='title'> {contest.name} </div>
 				<Tabs activeKey={key} onTabClick={this.tabChage}>
 					<TabPane tab="Home" key="home">

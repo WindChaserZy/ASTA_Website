@@ -51,7 +51,7 @@ class ListElement extends Component{
 		}
 		const { getFieldDecorator } = this.props.form;
 		return (
-			<div id = "root" style = {{padding: this.props.padding ? this.props.padding : 60}}>
+			<div className = "root" style = {{padding: this.props.padding!==undefined ? this.props.padding : 60}}>
 				<Form layout="inline" onSubmit={this.handleSubmit}>
 					<Form.Item label='Author'>
 						{getFieldDecorator('author', {

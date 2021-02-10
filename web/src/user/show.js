@@ -37,10 +37,12 @@ class UserShow extends Component{
 		});
 	}
 	componentWillMount(){
-		this.updateUser(this.props)
+		this.updateUser(this.props);
 	}
 	componentWillReceiveProps(nextProps){
-		this.updateUser(nextProps)
+		if (this.props.username!=nextProps.username || this.props.avatar!=nextProps.avatar){
+			this.updateUser(nextProps);
+		}
 	}
 	render(){
 		if (this.state.user == null){

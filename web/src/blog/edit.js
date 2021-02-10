@@ -118,14 +118,14 @@ class TagEditor extends Component{
 class Edit extends Component{
 	state = {
 	}
-	getBlogData(){
-		if (this.props.match.params.id === undefined){
+	getBlogData(id = this.props.match.params.id){
+		if (id === undefined){
 			this.setState({title: '', content: '', tags: []})
 		}else{
 			let url = global.constants.server + 'blog/';
 			$.get({
 				url: url,
-				data: {id: this.props.match.params.id},
+				data: {id: id},
 				crossDomain: true,
 				xhrFields: {
 					withCredentials: true
@@ -140,14 +140,15 @@ class Edit extends Component{
 		}
 	}
 	componentWillMount(){
-		this.getBlogData()
+		this.getBlogData();
 	}
 	componentWillReceiveProps(nextProps){
-		this.props = nextProps
-		this.getBlogData()
+		if (this.props.match.params.id != nextProps.match.params.id){
+			this.getBlogData(nextProps.match.params.id);
+		}
 	}
 	handleChange(value) {
-		this.setState({content: value})
+		this.setState({content: value});
 	}
 	handleSubmit = (e) => {
 		e.preventDefault();
@@ -189,7 +190,7 @@ class Edit extends Component{
 		}
 		const { getFieldDecorator } = this.props.form;
 		return (
-			<div id = "root">
+			<div className = "root">
 				<Form onSubmit={this.handleSubmit}>
 					<Form.Item label='Title'>
 						{getFieldDecorator('title', {

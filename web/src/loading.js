@@ -6,7 +6,7 @@ import { Spin  } from 'antd';
 class Loading extends Component{
 	render(){
 		return (
-			<div  id = "root"  style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+			<div  className = "root"  style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
 				<Spin  tip = "Loading..."  size = "large"></Spin>
 			</div>
 		)

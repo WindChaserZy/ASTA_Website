@@ -39,7 +39,7 @@ def detail(request):
 	except:
 		return HttpResponse("Blog not found.", status = 400)
 	#调用tool里面现成的工具封装博客信息
-	return HttpResponse(json.dumps(tools.blogToDict(item)), content_type = 'application/json')
+	return HttpResponse(json.dumps(tools.blogToDict(item, detail=True)), content_type = 'application/json')
 
 def edit(request):
 	#未登录用户是不能编辑博客的
@@ -89,7 +89,7 @@ def edit(request):
 			tag.save()
 		blog.tags.add(tag)
 		
-	return HttpResponse("Publish successfully.", status = 200)
+	return HttpResponse("Published successfully.", status = 200)
 
 def delete(request):
 	#删除就只是检查一下是否存在、有没有权限
@@ -107,7 +107,7 @@ def delete(request):
 		return HttpResponse("Permission denied.", status = 400)
 	
 	blog.delete()
-	return HttpResponse("Delete successfully.", status = 200)
+	return HttpResponse("Deleted successfully.", status = 200)
 	
 
 
@@ -142,4 +142,4 @@ def addComment(request):
 		return HttpResponse("Blog not found.", status = 400)
 		
 	Comment(author = request.user, blog = blog, content = request.POST.get('content')).save()
-	return HttpResponse("Add successfully.", status = 200)
+	return HttpResponse("Added successfully.", status = 200)

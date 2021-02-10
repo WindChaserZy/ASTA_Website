@@ -96,7 +96,7 @@ class Admin extends Component{
 				for (let i = 0; i < result.candidates.length; i++){
 					result.candidates[i].key = result.candidates[i].id;
 				}
-				this.setState({team: result})
+				this.setState({team: result});
 			}.bind(this),
 			error: function (result) {
 				//message.error(result.responseText)
@@ -133,11 +133,13 @@ class Admin extends Component{
 			this.state.team = null
 		}
 	}
-	componentWillReceiveProps(){
-		if (this.props.contestId && this.props.user){
-			this.getTeamInfo(this.props.user.username, this.props.contestId)
+	componentWillReceiveProps(nextProps){
+		if (nextProps.contestId && nextProps.user){
+			if (this.props.contestId!=nextProps.contestId || this.props.user!=nextProps.user){
+				this.getTeamInfo(nextProps.user.username, nextProps.contestId);
+			}
 		}else{
-			this.state.team = null
+			this.state.team = null;
 		}
 	}
 	createHandleCancel = ()=>{
@@ -257,12 +259,12 @@ class Admin extends Component{
 				},
 			},
 		};
-		let adminFlag = false
+		let adminFlag = false;
 		if (this.props.user && this.state.team){
-			adminFlag = this.props.user.username == this.state.team.captain
+			adminFlag = this.props.user.username == this.state.team.captain;
 		}
 		return (
-			<div	id = "root">
+			<div	className = "root">
 				
 				<TeamCreateForm
 					name = {this.state.team.name}
@@ -273,13 +275,13 @@ class Admin extends Component{
 					onCancel={this.createTeamFormCancel}
 					onCreate={this.createTeamFormOK}
 				/>
-				<Card bordered={false} title = 
+				<Card bordered={false} title = {(
 					<div
 						align='center'
 						style={{fontSize: 23, fontWeight:700}}
 					>
 						{this.state.team.name}
-					</div>
+					</div>)}
 				>
 				
 					<div style={{paddingBottom: 20, fontSize: 18}}>
