@@ -18,10 +18,10 @@ class ListElement extends Component{
 		loading: false,
 	}
 	
-	getTotalCount = (params = {}) => {
+	getTotalCount = (params = {}, game = this.props.game) => {
 		let data = { ...params, }
-		if (this.props.contestId){
-			data['contest'] = this.props.contestId
+		if (game){
+			data['game'] = game;
 		}
 		let url = global.constants.server + 'game/record/count/';
 		this.totalCountRequest = $.get({
@@ -30,10 +30,13 @@ class ListElement extends Component{
 			success: function (result) {
 				this.setState({totalCount : result.number});
 				
-				this.fetch({
-					pageSize: this.state.pagination.pageSize,
-					page: 1,
-				});
+				this.fetch(
+					{
+						pageSize: this.state.pagination.pageSize,
+						page: 1,
+					},
+					game,
+				);
 			}.bind(this)
 		})
 	}
@@ -55,11 +58,11 @@ class ListElement extends Component{
 		});
 	};
 	
-	fetch = (params = {}) => {
+	fetch = (params = {}, game = this.props.game) => {
 		this.setState({ loading: true });
 		let data = { ...params, }
-		if (this.props.contestId){
-			data['contest'] = this.props.contestId
+		if (game){
+			data['game'] = game;
 		}
 		reqwest({
 			url: global.constants.server + 'game/record/list/',
@@ -80,6 +83,11 @@ class ListElement extends Component{
 			});
 		});
 	};
+	componentWillReceiveProps(nextProps){
+		if (this.props.game != nextProps.game){
+			this.getTotalCount({}, nextProps.game);
+		}
+	}
 	render(){
 		const columns = [
 			{
@@ -90,8 +98,9 @@ class ListElement extends Component{
 			{
 				title: 'Game',
 				dataIndex: 'game',
+				width: 100,
 				align: 'center',
-				render: game => <Link to={'game/'+game.id}>{game.name}</Link>,
+				render: game => <Link to={'/game/'+game.id}>{game.name}</Link>,
 			},
 			{
 				title: (
@@ -101,6 +110,7 @@ class ListElement extends Component{
 				),
 				dataIndex: 'status',
 				align: 'center',
+				width: 130,
 				render: (status, record) =>{
 					return (
 						<Tag color={getColorFromStatus(status)}>
@@ -113,6 +123,7 @@ class ListElement extends Component{
 				title: 'Score',
 				dataIndex: 'bot',
 				align: 'center',
+				width: 800,
 				render: (bot, record) => {
 					return (
 						<div style={{display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap'}}>
@@ -129,7 +140,7 @@ class ListElement extends Component{
 									<Card style={{width: 260, display: 'block-inline', margin: 5}} bodyStyle={{padding: 15}}>
 										<div style={{display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
 											<Meta
-												avatar={this.props.contest?(
+												avatar={botPlay.ai.team?(
 													<div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
 														<Avatar src={global.constants.server + botPlay.ai.captain.avatar}/>
 														<div>

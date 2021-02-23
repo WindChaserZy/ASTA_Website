@@ -275,16 +275,14 @@ class Admin extends Component{
 					onCancel={this.createTeamFormCancel}
 					onCreate={this.createTeamFormOK}
 				/>
-				<Card bordered={false} title = {(
+				<Card bordered={true} bodyStyle={{padding: 30,}}>
 					<div
 						align='center'
 						style={{fontSize: 23, fontWeight:700}}
 					>
 						{this.state.team.name}
-					</div>)}
-				>
-				
-					<div style={{paddingBottom: 20, fontSize: 18}}>
+					</div>
+					<div style={{margin: 20, fontSize: 18}}>
 						{this.state.team.introduction}
 					</div>
 					{adminFlag?(
@@ -326,60 +324,64 @@ class Admin extends Component{
 				</Card>
 				{adminFlag &&(
 					<div>
-						<div className='subtitle' style={{marginTop: 50}}>Members</div>
-						<UserList data={this.state.team.members} actions={(text, record) => (
-							<div>
-								<Popconfirm
-									placement="topRight"
-									title={(
-										<div>
-											<p>Do you want to <b>dismiss</b> the member?</p>
-											<UserShow username = {record.username} avatar = {record.avatar}/>
-										</div>
-									)}
-									onConfirm={() => this.sendManage({'dismiss': record.id}, this.state.team.id)}
-									okText="Yes"
-									cancelText="No"
-								>
-									<Button type="danger"> Dismiss </Button>
-								</Popconfirm>
-							</div>
-						)}/>
+						<Card style={{marginTop: 50}}>
+							<div className='subtitle'>Members</div>
+							<UserList data={this.state.team.members} actions={(text, record) => (
+								<div>
+									<Popconfirm
+										placement="topRight"
+										title={(
+											<div>
+												<p>Do you want to <b>dismiss</b> the member?</p>
+												<UserShow username = {record.username} avatar = {record.avatar}/>
+											</div>
+										)}
+										onConfirm={() => this.sendManage({'dismiss': record.id}, this.state.team.id)}
+										okText="Yes"
+										cancelText="No"
+									>
+										<Button type="danger"> Dismiss </Button>
+									</Popconfirm>
+								</div>
+							)}/>
+						</Card>
 						
-						<div className='subtitle' style={{marginTop: 50}}>Applications</div>
-						<UserList data={this.state.team.candidates} actions={(text, record) => (
-							<div>
-								<Popconfirm
-									placement="topRight"
-									title={(
-										<div>
-											<p>Do you want to <b>accept</b> the application?</p>
-											<UserShow username = {record.username} avatar = {record.avatar}/>
-										</div>
-									)}
-									onConfirm={() => this.sendManage({'accept': record.id}, this.state.team.id)}
-									okText="Yes"
-									cancelText="No"
-								>
-									<Button type="primary" icon="check"/>
-								</Popconfirm>
-								
-								<Popconfirm
-									placement="topRight"
-									title={(
-										<div>
-											<p>Do you want to <b>refuse</b> the application?</p>
-											<UserShow username = {record.username} avatar = {record.avatar}/>
-										</div>
-									)}
-									onConfirm={() => this.sendManage({'refuse': record.id}, this.state.team.id)}
-									okText="Yes"
-									cancelText="No"
-								>
-									<Button type="danger" icon="close"/>
-								</Popconfirm>
-							</div>
-						)}/>
+						<Card style={{marginTop: 50}}>
+							<div className='subtitle'>Applications</div>
+							<UserList data={this.state.team.candidates} actions={(text, record) => (
+								<div>
+									<Popconfirm
+										placement="topRight"
+										title={(
+											<div>
+												<p>Do you want to <b>accept</b> the application?</p>
+												<UserShow username = {record.username} avatar = {record.avatar}/>
+											</div>
+										)}
+										onConfirm={() => this.sendManage({'accept': record.id}, this.state.team.id)}
+										okText="Yes"
+										cancelText="No"
+									>
+										<Button type="primary" icon="check"/>
+									</Popconfirm>
+									
+									<Popconfirm
+										placement="topRight"
+										title={(
+											<div>
+												<p>Do you want to <b>refuse</b> the application?</p>
+												<UserShow username = {record.username} avatar = {record.avatar}/>
+											</div>
+										)}
+										onConfirm={() => this.sendManage({'refuse': record.id}, this.state.team.id)}
+										okText="Yes"
+										cancelText="No"
+									>
+										<Button type="danger" icon="close"/>
+									</Popconfirm>
+								</div>
+							)}/>
+						</Card>
 					</div>
 				)}
 				

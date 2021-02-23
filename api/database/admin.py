@@ -10,7 +10,7 @@ from django.http import HttpResponse
 from database.models import Team, User, Contest, Blog, Tag, Token, Comment, Membership, Application
 from database.models import RsrvProject, RsrvTimeAvailable, RsrvTimeUsed
 from database.models import Problem, ProblemSubmission, ProblemHighestScore, ProblemJudgeDetail
-from database.models import Game, GameAi, GameBot, GameRecord
+from database.models import Game, GameAi, GameBot, GameRecord, GameBotPlay
 
 def Download_Selected(modeladmin, request, queryset):
 	csvPath = settings.MEDIA_ROOT + 'teams.csv'
@@ -57,3 +57,4 @@ admin.site.register(Game)
 admin.site.register(GameAi)
 admin.site.register(GameBot)
 admin.site.register(GameRecord)
+admin.site.register(GameBotPlay)

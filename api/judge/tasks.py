@@ -15,20 +15,22 @@ platforms.C_FORCE_ROOT = True
 
 def compileWork(code, program, uid):
 	filetype = code.split('/')[-1].split('.')[-1]
-	volumnPath = os.path.join(BASE_DIR, 'judge/volumn')
+	volumePath = os.path.join(BASE_DIR, 'judge/volume')
 	codeName = 'code_' + uid + '.' + filetype
 	programName = 'program_' + uid
-	subprocess.run(['cp', code, os.path.join(volumnPath, codeName)])
-	compileProcess = subprocess.Popen(['docker', 'run', '-m', '1536m', '--memory-swap', '1536m', '-v', volumnPath+':/volumn',\
-								'judge_box', '-j', 'compile', '-c', '/volumn/'+codeName, '-p', '/volumn/'+programName],\
+	subprocess.run(['cp', code, os.path.join(volumePath, codeName)])
+	compileProcess = subprocess.Popen(['docker', 'run', '-m', '700m', '--memory-swap', '700m', '-v', volumePath+':/volume',\
+								'judge_box', '-j', 'compile', '-c', '/volume/'+codeName, '-p', '/volume/'+programName],\
 								encoding='utf-8', stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 	try:
 		out, err = compileProcess.communicate(timeout=60)
 		assert(compileProcess.returncode==0)
 		result = out.split()
 		assert(len(result)==2)
-		subprocess.run(['rm', os.path.join(volumnPath, codeName)])
+		subprocess.run(['rm', os.path.join(volumePath, codeName)])
 	except subprocess.TimeoutExpired:
+		compileProcess.kill()
+		out, err = compileProcess.communicate()
 		return False, 'SystemTimeout'
 	except:
 		return False, 'SystemError'
@@ -37,8 +39,8 @@ def compileWork(code, program, uid):
 	if result[0] == '0':
 		return False, result[1]
 	try:		
-		subprocess.run(['cp', os.path.join(volumnPath, programName), program])
-		subprocess.run(['rm', os.path.join(volumnPath, programName)])
+		subprocess.run(['cp', os.path.join(volumePath, programName), program])
+		subprocess.run(['rm', os.path.join(volumePath, programName)])
 	except:
 		return False, 'SystemError'
 
@@ -65,17 +67,23 @@ def problemJudge(submission):
 	
 	submission.status = "Judging"
 	submission.save()
-	volumnPath = os.path.join(BASE_DIR, 'judge/volumn')
+	volumePath = os.path.join(BASE_DIR, 'judge/volume')
 	programName = 'program_' + uid
-	subprocess.run(['cp', programPath, os.path.join(volumnPath, programName)])
-	judge = subprocess.Popen([  'docker', 'run', '-m', '1536m', '--memory-swap', '1536m', '-v', volumnPath+':/volumn',\
-								'judge_box', '-j', 'problem', '-id', str(submission.problem.id), '-p', '/volumn/'+programName],\
+	subprocess.run(['cp', programPath, os.path.join(volumePath, programName)])
+	judge = subprocess.Popen([  'docker', 'run', '-m', '700m', '--memory-swap', '700m', '-v', volumePath+':/volume',\
+								'judge_box', '-j', 'problem', '-id', str(submission.problem.id), '-p', '/volume/'+programName],\
 								encoding='utf-8', stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 	try:
+		TimeUsed = time.time()
 		judgeout, judgeerr = judge.communicate(timeout=60)
+		TimeUsed = time.time() - TimeUsed
+		submission.timeUsed = TimeUsed
+		submission.save()
 		assert(judge.returncode==0)
 	except subprocess.TimeoutExpired:
+		judge.kill()
+		judgeout, judgeerr = judge.communicate()
 		result = ' '.join(['Final', 'SystemTimeout', '0', '0'])
 	except:
 		result = ' '.join(['Final', 'SystemError', '0', '0'])
@@ -83,7 +91,7 @@ def problemJudge(submission):
 		result = judgeout
 	
 		
-	subprocess.run(['rm', os.path.join(volumnPath, programName)])
+	subprocess.run(['rm', os.path.join(volumePath, programName)])
 
 	try:
 		for s in result.split('\n'):
@@ -93,7 +101,6 @@ def problemJudge(submission):
 			if detail[0] == 'Final':
 				submission.status = detail[1]
 				submission.score = float(detail[2])
-				submission.timeUsed = float(detail[3])
 			else:
 				point = ProblemJudgeDetail(submission=submission)
 				point.status = detail[0]
@@ -146,14 +153,14 @@ def gameJudge(game, bots, uid):
 		botList.append(bot)
 		programList.append(bot.programPath)
 
-	volumnPath = os.path.join(BASE_DIR, 'judge/volumn')
+	volumePath = os.path.join(BASE_DIR, 'judge/volume')
 	for i in range(game.playerNumber):
 		programName = ('%04d_'%i) + uid
-		subprocess.run(['cp', programList[i], os.path.join(volumnPath, programName)])
-		programListVolumn.append('/volumn/'+programName)
+		subprocess.run(['cp', programList[i], os.path.join(volumePath, programName)])
+		programListVolumn.append('/volume/'+programName)
 	
 
-	gameProcess = subprocess.Popen(['docker', 'run', '-m', '1536m', '--memory-swap', '1536m', '-v', volumnPath+':/volumn',\
+	gameProcess = subprocess.Popen(['docker', 'run', '-m', '700m', '--memory-swap', '700m', '-v', volumePath+':/volume',\
 									'judge_box', '-j', 'game', '-id', str(game.id), '-p'] + programListVolumn,\
 									encoding='utf-8', stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
@@ -161,11 +168,13 @@ def gameJudge(game, bots, uid):
 		out, err = gameProcess.communicate(timeout=300)
 		for i in range(game.playerNumber):
 			programName = ('%04d_'%i) + uid
-			subprocess.run(['rm', os.path.join(volumnPath, programName)])
+			subprocess.run(['rm', os.path.join(volumePath, programName)])
 		assert(gameProcess.returncode==0)
 		result = [float(x) for x in out.split()]
 		assert(len(result) == game.playerNumber)
 	except subprocess.TimeoutExpired:
+		gameProcess.kill()
+		out, err = gameProcess.communicate()
 		return False, "SystemTimeout"
 	except:
 		return False, "SystemError"
@@ -176,7 +185,7 @@ def gameJudge(game, bots, uid):
 @task
 def gameRecordJudge(gameRecord):
 	if (type(gameRecord).__name__ == 'int'):
-		gameRecord = gameRecord.objects.get(id = gameRecord)
+		gameRecord = GameRecord.objects.get(id = gameRecord)
 
 	gameRecord.status = "Judging"
 	gameRecord.save()
@@ -190,6 +199,7 @@ def gameRecordJudge(gameRecord):
 	for bp in bpList:
 		programList.append(bp.bot.programPath)
 		bp.oldRankingScore = bp.bot.score
+		bp.save()
 		rankingScoreSum += bp.oldRankingScore
 
 	startTime = time.time()
@@ -224,7 +234,7 @@ def randomRankingGame():
 
 	gameList = Game.objects.all()
 	weight = np.array([game.judgeWeight for game in gameList])
-	if sum(weight)<1e-9:
+	if sum(weight) < 1e-9:
 		return
 	game = np.random.choice(gameList, p=weight/sum(weight))
 	botList = GameBot.objects.filter(ai__game = game, ranking = True)

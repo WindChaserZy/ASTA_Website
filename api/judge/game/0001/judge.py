@@ -77,10 +77,11 @@ if __name__ == "__main__":
 	
 	AIpro = []
 	for ai in AIs:
-		AIpro.append(subprocess.Popen(ai, stdin=subprocess.PIPE, stdout=subprocess.PIPE))
+		AIpro.append(subprocess.Popen(ai, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE))
 	for ai in AIpro:
-		ai.stdin.write(GameInfo.encode(encoding='utf-8'))
-		ai.stdin.flush()
+		if ai.returncode is None:
+			ai.stdin.write(GameInfo.encode(encoding='utf-8'))
+			ai.stdin.flush()
 
 	gameOver = False
 	roundId = 0
@@ -91,11 +92,16 @@ if __name__ == "__main__":
 		operaList = [-1 for i in range(PlayerNumber)]
 		debugOutput = []
 		def player(id):
-			output = AIpro[id].stdout.readline().decode('utf-8')
-			tmp = output.split(' ')
-			debugOutput.append(AIpro[id].stdout.readline().strip())
-			if len(tmp)>0:
-				operaList[id] = int(tmp[0])
+			if AIpro[id].poll() is not None:
+				return
+			try:
+				output = AIpro[id].stdout.readline().decode('utf-8')
+				tmp = output.split(' ')
+				debugOutput.append(AIpro[id].stdout.readline().strip())
+				if len(tmp)>0:
+					operaList[id] = int(tmp[0])
+			except:
+				pass
 		
 		for i in range(PlayerNumber):
 			th = threading.Thread(target=player, args=(i,))
@@ -109,9 +115,12 @@ if __name__ == "__main__":
 		for i in range(PlayerNumber):
 			GamePro.stdin.write((str(operaList[i])+' ').encode(encoding='utf-8'))
 			for j in range(PlayerNumber):
-				if i!=j:
-					AIpro[i].stdin.write((str(operaList[j])+' ').encode(encoding='utf-8'))
-					AIpro[i].stdin.flush()
+				if i!=j and AIpro[i].poll() is None:
+					try:
+						AIpro[i].stdin.write((str(operaList[j])+' ').encode(encoding='utf-8'))
+						AIpro[i].stdin.flush()
+					except:
+						pass
 		GamePro.stdin.flush()
 		#time.sleep(1)
 		gameOver = GamePro.stdout.readline().decode('utf-8')[0] == '1'
@@ -144,10 +153,7 @@ if __name__ == "__main__":
 		roundId += 1
 
 	score = GamePro.stdout.readline().decode('utf-8').strip().split(' ')
-	scoreStr = ""
-	for tmp in score:
-		scoreStr+=str(tmp)+' '
-	print(scoreStr.strip())
+	print(' '.join([str(x) for x in score]))
 	GamePro.terminate()
 	for ai in AIpro:
 		ai.terminate()

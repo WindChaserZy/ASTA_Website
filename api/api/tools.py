@@ -7,14 +7,14 @@ import base64
 import datetime
 from Crypto.Cipher import AES
 
-#一些简单的工具，主要是把类转成字典或者json字符串的工具
+#一些简单的工具，主要是把类�?成字典或者json字�?�串的工�?
 class myAES:
     def __init__(self, key, iv):
         self.key = key
         self.iv = iv
     
     def encrypt(self, start, end):
-        #输入两个时间，加密为字符串
+        #输入两个时间，加密为字�?�串
         text = str(start.timestamp())+' '+str(end.timestamp())
         l = len(text)&15
         if l>0:
@@ -25,7 +25,7 @@ class myAES:
         return res_b64
     
     def decrypt(self, text):
-        #输入密文解密为开始、结束时间
+        #输入密文解密为开始、结束时�?
         self.aes = AES.new(self.key, AES.MODE_CBC, self.iv)
         text = self.aes.decrypt(base64.b64decode(text))
         start, end = [datetime.fromtimestamp(float(a)) for a in text.split()]
@@ -268,15 +268,13 @@ def getSubmissionByContest(contest):
 	return records
 
 def isUserInTeam(user, team):
-	if user == team.captain:
-		return True
-	return user in team.members
+	return user in team.members.all()
 
 def userHasAiPermission(user, game):
 	if (game.user and game.user!=user):
 		return False
 		
-	if (game.team and tools.isUserInTeam(user, game.team)==False):
+	if (game.team and isUserInTeam(user, game.team)==False):
 		return False
 	
 	return True

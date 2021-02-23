@@ -109,6 +109,13 @@ class Bot extends Component{
 			return (
 				<Result
 					title="You're not in a team now."
+					extra={
+						<div>
+							<Link to={"/contest/"+this.props.contest+"/admin"}>
+								Create or join a team in contest page.
+							</Link>
+						</div>
+					}
 				/>
 			)
 		}

@@ -10,7 +10,7 @@ import json
 import datetime
 
 def list(request):
-	#比赛列表，没有任何限制
+	#比赛列表，没有任何限�?
 	list = Game.objects.all().order_by('-timestamp')
 	result = []
 	for item in list:
@@ -18,7 +18,7 @@ def list(request):
 	return HttpResponse(json.dumps(result), content_type = 'application/json')
 
 def detail(request):
-	#根据id反馈比赛信息
+	#根据id反�?�比赛信�?
 	if (request.GET == None or request.GET.get('id') == None):
 		return HttpResponse("ID missing.", status = 400)
 	try:
