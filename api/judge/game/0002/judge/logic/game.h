@@ -24,6 +24,7 @@ public:
 	bool init(string filename, string json_filename,vector<string> players_name, std::ofstream& cmdF,std::ofstream& infoF);  //@@@【FC18】从文件读入信息，初始化游戏，并写第0轮的JSON
 	DATA::Data& getData() { return data; }                            //【FC18】从game类获取当前游戏信息   #json
 	vector<TPlayerID>& getRank() { return Rank; }                     //【FC18】获取当前所有玩家的排名
+	vector<int>  getScore();                     //【FC18】获取当前所有玩家的Score --swm_sxt
 	int getTotalPlayerNum() { return totalPlayers; }             //【FC18】获取当前玩家数目
 	int getTotalPlayerAlive() { return playerAlive; }
 	TRound getCurrentRound() { return totalRounds; }                  //【FC18】获取当前回合数

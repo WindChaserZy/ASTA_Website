@@ -26,6 +26,15 @@ class List extends Component{
 				withCredentials: true
 			},
 			success: function (result) {
+				result.sort(function(a, b){
+					if (a.name < b.name){
+						return -1;
+					}else if (a.name == b.name){
+						return 0;
+					}else if (a.name > b.name){
+						return 1;
+					}
+				});
 				this.setState({list : result});
 			}.bind(this)
 		})

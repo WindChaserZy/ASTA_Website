@@ -20,7 +20,7 @@ public:
 	int getdeadRound() { return deadRound; }                                //【FC18】读取死亡回合
 	void setdeadRound(int d) { deadRound = d; }                             //【FC18】设置死亡回合
 	//@@@【FC18】获取玩家当前得分（按照规则来，建议考虑到同名次时按什么指标来比较等）
-	int getPlayerScore();
+	int getPlayerScore(DATA::Data * d);
 	void setID(TPlayerID id) { m_id = id; }
 	TPlayerID getId() { return m_id; }                                      //【FC18】获取玩家ID
 	int getCqTowerNum() { return conqueTowerNum; }                          //【FC18】获取玩家占领敌方防御塔数
@@ -54,6 +54,8 @@ public:
 	TScore getScore() { return score; }
 	//【FC18】设置玩家积分
 	void setScore(TScore Score) { score = Score; }
+	//【FC18】获得玩家积分
+	TScore getScore(TScore Score) { return score; }
 
 
 private:

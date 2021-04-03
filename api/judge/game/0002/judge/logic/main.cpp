@@ -1,4 +1,4 @@
-//#2021-1-19 <JYP> ÊìÏ¤´úÂë£¬Ìí¼Ó×¢ÊÍ
+//#2021-1-19 <JYP> ï¿½ï¿½Ï¤ï¿½ï¿½ï¿½ë£¬ï¿½ï¿½ï¿½ï¿½×¢ï¿½ï¿½
 
 
 #include "game.h"
@@ -10,21 +10,21 @@
 
 using namespace DAGAN;
 
-//¡¾FC18¡¿Êä³ö½á¹ûÅÅÃûÎÄ¼þ
+//ï¿½ï¿½FC18ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½
 void outputResult(Game& game, vector<Player_Code>& players) {
-	//ÐÞ¸ÄÎª±ê×¼Êä³ö£¬½öÊä³öÅÅÃû ¡ª¡ª swn_sxt
-	vector<TPlayerID> rank = game.getRank();
-	for (size_t i = 0; i < rank.size(); ++i){
-		printf("%d ", rank[i] - 1);
+	//ï¿½Þ¸ï¿½Îªï¿½ï¿½×¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ swn_sxt
+	vector<int> score = game.getScore();
+	for (size_t i = 0; i < score.size(); ++i){
+		printf("%d ", score[i]);
 	}
 	fflush(stdout);
 	/*
-	ofstream ofs("../log_txt/result.txt",ios::trunc);//´ò¿ªtxtÎÄ¼þ
+	ofstream ofs("../log_txt/result.txt",ios::trunc);//ï¿½ï¿½txtï¿½Ä¼ï¿½
 
-	vector<TPlayerID> rank = game.getRank();   //ÓÎÏ·½á¹ûÅÅÃû(vector)
+	vector<TPlayerID> rank = game.getRank();   //ï¿½ï¿½Ï·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(vector)
 	for (size_t i = 0; i < rank.size(); ++i) {
 		if (rank[i] > players.size() || rank[i] <= 0) continue;
-		ofs << " rank£º" << i + 1 << " --> " << players[rank[i] - 1].getName() << endl;   //°´ÅÅÃûÊä³öÃ¿¸öÃû´ÎµÄÍæ¼Òname
+		ofs << " rankï¿½ï¿½" << i + 1 << " --> " << players[rank[i] - 1].getName() << endl;   //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã¿ï¿½ï¿½ï¿½ï¿½ï¿½Îµï¿½ï¿½ï¿½ï¿½name
 	}
 	*/
 }
@@ -32,24 +32,24 @@ void outputResult(Game& game, vector<Player_Code>& players) {
 int main(int argc, char** argv)
 {
 	//char buffer[1024];
-	time_t t = time(0);//¼ÇÂ¼Ê±¼ä
+	time_t t = time(0);//ï¿½ï¿½Â¼Ê±ï¿½ï¿½
 	//strftime(buffer, sizeof(buffer), "../log_txt/log_%Y%m%d_%H%M%S.txt", localtime(&t));
 #ifdef FC15_DEBUG
-	//freopen(buffer, "w", stdout);  //DebugÄ£Ê½£¬Ð´ÈëÐÂµÄtxt¿ÕÎÄ¼þ
+	//freopen(buffer, "w", stdout);  //DebugÄ£Ê½ï¿½ï¿½Ð´ï¿½ï¿½ï¿½Âµï¿½txtï¿½ï¿½ï¿½Ä¼ï¿½
 #endif // FC15_DEBUG
 	char log_filename[1024];
-	//¾É´úÂë//strftime(json_filename, sizeof(json_filename), "../log_json/log_%Y%m%d_%H%M%S.json", localtime(&t));
-	strftime(log_filename, sizeof(log_filename), "record", localtime(&t));
+	//ï¿½É´ï¿½ï¿½ï¿½//strftime(json_filename, sizeof(json_filename), "../log_json/log_%Y%m%d_%H%M%S.json", localtime(&t));
+	//strftime(log_filename, sizeof(log_filename), "record", localtime(&t));
 	//if (0 != _access(log_filename, 0)) _mkdir(log_filename);
-	//¸Ä¸öÃû×Ö ¡ª¡ª swm_Sxt
+	//ï¿½Ä¸ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ swm_Sxt
 	string  config_filename = "config18.ini";
 	/*
 #ifdef _MSC_VER
-		//¾É´úÂë//"../config_msvc.ini";
+		//ï¿½É´ï¿½ï¿½ï¿½//"../config_msvc.ini";
 		"../config18_msvc.ini";
 #endif
 #ifdef __GNUC__
-		//¾É´úÂë//"../config_gnu.ini";
+		//ï¿½É´ï¿½ï¿½ï¿½//"../config_gnu.ini";
 		"../config18_gnu.ini";
 #endif
 	if (argc == 2) {
@@ -63,9 +63,9 @@ int main(int argc, char** argv)
 	}
 	*/
 
-	//´ò¿ªtxt´æµµÎÄ¼þ¡ª¡ª¸ÄÃû×Ö
-	string cmd_txt_name = "record_cmd.txt";
-	string info_txt_name = "record_info.txt";
+	//ï¿½ï¿½txtï¿½æµµï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	string cmd_txt_name = "log_info.txt";
+	string info_txt_name = "everyround_info.txt";
 	ofstream cmdWriter(cmd_txt_name, ios::app);
 	ofstream infoWriter(info_txt_name, ios::app);
 	char bufferTXT[64];
@@ -74,11 +74,11 @@ int main(int argc, char** argv)
 	infoWriter << bufferTXT;
 
 
-	vector<Player_Code>  players;                       //¡¾FC18¡¿Íæ¼ÒAI´úÂëÀà
-	string          map_filename;                       //¡¾FC18¡¿ÓÎÏ·µØÍ¼ÎÄ¼þÃû
-	vector<string>  players_filename;                   //¡¾FC18¡¿Íæ¼ÒAIÎÄ¼þÃû
-	vector<string>  players_name;                       //¡¾FC18¡¿Íæ¼ÒÐÕÃû£¬ÓÃÓÚ³õÊ¼»¯
-	int player_size;                                    //¡¾FC18¡¿GameÖÐµÄÍæ¼ÒÊýÁ¿
+	vector<Player_Code>  players;                       //ï¿½ï¿½FC18ï¿½ï¿½ï¿½ï¿½ï¿½AIï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	string          map_filename;                       //ï¿½ï¿½FC18ï¿½ï¿½ï¿½ï¿½Ï·ï¿½ï¿½Í¼ï¿½Ä¼ï¿½ï¿½ï¿½
+	vector<string>  players_filename;                   //ï¿½ï¿½FC18ï¿½ï¿½ï¿½ï¿½ï¿½AIï¿½Ä¼ï¿½ï¿½ï¿½
+	vector<string>  players_name;                       //ï¿½ï¿½FC18ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú³ï¿½Ê¼ï¿½ï¿½
+	int player_size;                                    //ï¿½ï¿½FC18ï¿½ï¿½Gameï¿½Ðµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 	// load config file
 	ifstream ifs(config_filename.c_str());
@@ -90,10 +90,10 @@ int main(int argc, char** argv)
 	}
 
 	// read config file
-	//ÅäÖÃÎÄ¼þ
-	//µÚÒ»ÐÐ£ºµØÍ¼ÎÄ¼þÂ·¾¶
-	//µÚ¶þÐÐ£ºÍæ¼ÒÊýÁ¿
-	//µÚÈýÐÐ£ºÃ¿¸öÍæ¼ÒµÄaiÂ·¾¶
+	//ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½
+	//ï¿½ï¿½Ò»ï¿½Ð£ï¿½ï¿½ï¿½Í¼ï¿½Ä¼ï¿½Â·ï¿½ï¿½
+	//ï¿½Ú¶ï¿½ï¿½Ð£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	//ï¿½ï¿½ï¿½ï¿½ï¿½Ð£ï¿½Ã¿ï¿½ï¿½ï¿½ï¿½Òµï¿½aiÂ·ï¿½ï¿½
 	ifs >> map_filename >> player_size;
 	int cnt = 0;
 	while (!ifs.eof() && cnt < player_size) {
@@ -117,22 +117,22 @@ int main(int argc, char** argv)
 	}
 
 
-	//¶ÁÈëÍæ¼ÒAI´úÂë
-	int valid_cnt = 0; //ÓÐÐ§aiµÄÊýÁ¿
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½AIï¿½ï¿½ï¿½ï¿½
+	int valid_cnt = 0; //ï¿½ï¿½Ð§aiï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	for (size_t i = 0; i < players_filename.size(); ++i) {
-		//¾É´úÂë//Player_Code player(players_filename[i], i);
-		Player_Code player(players_filename[i], i + 1);                     //Íæ¼ÒÐòºÅ´Ó1 ¿ªÊ¼
+		//ï¿½É´ï¿½ï¿½ï¿½//Player_Code player(players_filename[i], i);
+		Player_Code player(players_filename[i], i + 1);                     //ï¿½ï¿½ï¿½ï¿½ï¿½Å´ï¿½1 ï¿½ï¿½Ê¼
 		string player_name;
 		if (ifs >> player_name && !player_name.empty())
 			player.setName(player_name);
-		if (player.isValid())                //Íæ¼ÒaiµÄall¼ÓÔØ³É¹¦»á·µ»Øtrue
+		if (player.isValid())                //ï¿½ï¿½ï¿½aiï¿½ï¿½allï¿½ï¿½ï¿½Ø³É¹ï¿½ï¿½á·µï¿½ï¿½true
 		{
 			players.push_back(player);
 			players_name.push_back(player_name);
 			valid_cnt++;
 		}
 		else {
-			players.push_back(player); //Ñ¹½øÈ¥³äÊý£¬´ËÊ±Íæ¼Òai´úÂëÀàµÄValidÎªfalse
+			players.push_back(player); //Ñ¹ï¿½ï¿½È¥ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½aiï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ValidÎªfalse
 			cout << "[Warning] failed to load player_ai " << players_filename[i] << endl;
 			player.setName(player.getName() + "//NOT_VALID");
 			players_name.push_back(player_name+"[N/A]");
@@ -141,10 +141,10 @@ int main(int argc, char** argv)
 #endif
 		}
 	}
-	//¾É´úÂë//if (players.size() <= 1) {
-		//¾É´úÂë//cout << "[Error] Not enough player_ais to start the game." << endl;
-		//¾É´úÂë//return 5;
-	//¾É´úÂë//}
+	//ï¿½É´ï¿½ï¿½ï¿½//if (players.size() <= 1) {
+		//ï¿½É´ï¿½ï¿½ï¿½//cout << "[Error] Not enough player_ais to start the game." << endl;
+		//ï¿½É´ï¿½ï¿½ï¿½//return 5;
+	//ï¿½É´ï¿½ï¿½ï¿½//}
 	if (players.size() != 4) 
 	{
 #ifdef OUTPUT_DETAIL
@@ -159,7 +159,7 @@ int main(int argc, char** argv)
 
 
 	// load map
-	//³õÊ¼»¯µØÍ¼¡¢Íæ¼ÒµÄÊÆÁ¦ÇøÓò¡¢·ÀÓùËþ¡¢±øÍÅµÄ×÷Õ½¹ØÏµ±íµÈµÈ
+	//ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ï¿½ï¿½ï¿½Òµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ò¡¢·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Åµï¿½ï¿½ï¿½Õ½ï¿½ï¿½Ïµï¿½ï¿½ï¿½Èµï¿½
 	Game G;
 	if (!G.init(map_filename, log_filename, players_name,cmdWriter,infoWriter)) {
 #ifdef OUTPUT_DETAIL
@@ -173,24 +173,24 @@ int main(int argc, char** argv)
 
 	Controller controller(G, players);
 
-	//¾É´úÂë//for (int i = 0; i < players.size(); i++)
-	//¾É´úÂë//{
-		//¾É´úÂë//controller.getData()->root["head"]["playerInfo"][i]["name"] = players[i].getName();
-		//¾É´úÂë//controller.getData()->commandJsonRoot["head"]["playerInfo"][i]["name"] = players[i].getName();
-	//¾É´úÂë//}
+	//ï¿½É´ï¿½ï¿½ï¿½//for (int i = 0; i < players.size(); i++)
+	//ï¿½É´ï¿½ï¿½ï¿½//{
+		//ï¿½É´ï¿½ï¿½ï¿½//controller.getData()->root["head"]["playerInfo"][i]["name"] = players[i].getName();
+		//ï¿½É´ï¿½ï¿½ï¿½//controller.getData()->commandJsonRoot["head"]["playerInfo"][i]["name"] = players[i].getName();
+	//ï¿½É´ï¿½ï¿½ï¿½//}
 	// main
-	//Ò»¸ö»ØºÏÒ»¸ö»ØºÏµÄÅÜ
+	//Ò»ï¿½ï¿½ï¿½Øºï¿½Ò»ï¿½ï¿½ï¿½ØºÏµï¿½ï¿½ï¿½
 	//system("pause");
 	while (controller.isValid())
 	{
 		for (int i = 1; i <= 4; i++)
 		{
-			controller.run(i,cmdWriter,infoWriter);   //Ã¿¸öÍæ¼ÒÒÀ´ÎÔËÐÐ£¬´«ÈëÍæ¼ÒID£¬ÔËÐÐ¸ÃÍæ¼ÒÖ¸Áî
+			controller.run(i,cmdWriter,infoWriter);   //Ã¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½IDï¿½ï¿½ï¿½ï¿½ï¿½Ð¸ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½
 			if (G.goNext() == false ) {
 				break;
 			}
 		}
-		//¾É´úÂë//controller.run(json_filename);
+		//ï¿½É´ï¿½ï¿½ï¿½//controller.run(json_filename);
 	}
 
 

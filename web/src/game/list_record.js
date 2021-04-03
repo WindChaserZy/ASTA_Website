@@ -5,10 +5,10 @@ import $ from 'jquery';
 import React, { Component } from 'react';
 import Loading from '../loading.js';
 import reqwest from 'reqwest';
-import { Tag, Table, Icon, Card, Tooltip, Avatar } from 'antd';
+import { Tag, Table, Icon, Card, message, Avatar, Radio, Button } from 'antd';
 import UserShow from '../user/show.js';
 const { Meta } = Card;
-
+const ButtonGroup = Button.Group;
 
 
 class ListElement extends Component{
@@ -38,6 +38,24 @@ class ListElement extends Component{
 					game,
 				);
 			}.bind(this)
+		})
+	}
+	downloadRecord = (id) => {
+		let url = global.constants.server + 'game/record/download/';
+		$.get({
+			url: url,
+			crossDomain: true,
+			data: {'id': id},
+			xhrFields: {
+				withCredentials: true
+			},
+			async: true,
+			success: function (result) {
+				window.location.href = url+'?id='+id;
+			}.bind(this),
+			error: function (result) {
+				message.error(result.responseText);
+			}.bind(this),
 		})
 	}
 	componentWillMount(){
@@ -137,14 +155,16 @@ class ListElement extends Component{
 									icon = 'caret-down';
 								}
 								return  (
-									<Card style={{width: 260, display: 'block-inline', margin: 5}} bodyStyle={{padding: 15}}>
+									<Card style={{width: 260, height: 90, display: 'block-inline', margin: 5}} bodyStyle={{padding: 15}}>
 										<div style={{display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
 											<Meta
 												avatar={botPlay.ai.team?(
 													<div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
-														<Avatar src={global.constants.server + botPlay.ai.captain.avatar}/>
+														<Avatar src={global.constants.server + botPlay.ai.captain.avatar} size={30} />
 														<div>
-															{botPlay.ai.team.name}
+															<div style={{width: 70, fontSize: 13}}>
+																{botPlay.ai.team.name}
+															</div>
 														</div>
 													</div>
 												):(
@@ -175,6 +195,20 @@ class ListElement extends Component{
 					)
 						
 				}
+			},
+			{
+				title: 'Action',
+				key: 'action',
+				align: 'center',
+				width: 150,
+				render:(action, record)=>(
+					<div>
+						<Link to={"/gameShow/"+record.id}>
+							<Button icon="play-square" style={{marginRight: 5}} size="large"/>
+						</Link>
+						<Button onClick={()=>this.downloadRecord(record.id)} icon="download" style={{margin: 0}} size="large"/>
+					</div>
+				)
 			},
 			{
 				title: 'Date',

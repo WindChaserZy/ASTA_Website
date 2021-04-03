@@ -77,6 +77,7 @@ def problemJudge(submission):
 	try:
 		TimeUsed = time.time()
 		judgeout, judgeerr = judge.communicate(timeout=60)
+		subprocess.run("docker rm $(docker ps -a| grep Exited |awk '{ print $1} ')", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 		TimeUsed = time.time() - TimeUsed
 		submission.timeUsed = TimeUsed
 		submission.save()
@@ -140,7 +141,7 @@ def setGameJudgeWeight(game, weight):
 	game.judgeWeight = weight
 	game.save()
 
-def gameJudge(game, bots, uid):
+def gameJudge(game, bots, uid, record_path = None):
 	if (type(game).__name__ == 'int'):
 		game = Game.objects.get(id = game)
 	
@@ -159,16 +160,22 @@ def gameJudge(game, bots, uid):
 		subprocess.run(['cp', programList[i], os.path.join(volumePath, programName)])
 		programListVolumn.append('/volume/'+programName)
 	
-
-	gameProcess = subprocess.Popen(['docker', 'run', '-m', '700m', '--memory-swap', '700m', '-v', volumePath+':/volume',\
-									'judge_box', '-j', 'game', '-id', str(game.id), '-p'] + programListVolumn,\
-									encoding='utf-8', stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+	cmd = ['docker', 'run', '-m', '500m', '--memory-swap', '500m', '-v', volumePath+':/volume', 'judge_box']
+	if record_path:
+		recordName = 'record_%s.zip'%uid
+		cmd += ['-r', '/volume/'+recordName]
+	cmd += ['-j', 'game', '-id', str(game.id), '-p'] + programListVolumn
+	gameProcess = subprocess.Popen(cmd, encoding='utf-8', stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 	try:
-		out, err = gameProcess.communicate(timeout=300)
+		out, err = gameProcess.communicate(timeout=600)
+		subprocess.run("docker rm $(docker ps -a| grep Exited |awk '{ print $1} ')", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 		for i in range(game.playerNumber):
 			programName = ('%04d_'%i) + uid
 			subprocess.run(['rm', os.path.join(volumePath, programName)])
+		if record_path:
+			subprocess.run(['cp', os.path.join(volumePath, recordName), record_path])
+			subprocess.run(['rm', os.path.join(volumePath, recordName)])
 		assert(gameProcess.returncode==0)
 		result = [float(x) for x in out.split()]
 		assert(len(result) == game.playerNumber)
@@ -203,7 +210,7 @@ def gameRecordJudge(gameRecord):
 		rankingScoreSum += bp.oldRankingScore
 
 	startTime = time.time()
-	successful, result = gameJudge(gameRecord.game, [bp.bot for bp in bpList], uid)
+	successful, result = gameJudge(gameRecord.game, [bp.bot for bp in bpList], uid, os.path.join(BASE_DIR, 'judge/record/%08d.zip'%gameRecord.id))
 	gameRecord.timeUsed = time.time() - startTime
 	if not successful:
 		gameRecord.status = result
@@ -219,8 +226,9 @@ def gameRecordJudge(gameRecord):
 		bp.deltaRankingScore = (targetScore - bp.oldRankingScore) * ScoreUpdateSpeed
 		bp.save()
 		if gameRecord.ranking:
-			bp.bot.score += bp.deltaRankingScore
-			bp.bot.save()
+			bot = GameBot.objects.get(id = bp.bot.id)
+			bot.score += bp.deltaRankingScore
+			bot.save()
 
 	gameRecord.status = "Finish"
 	gameRecord.save()

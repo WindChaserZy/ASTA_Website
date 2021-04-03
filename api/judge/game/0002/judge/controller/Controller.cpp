@@ -694,7 +694,7 @@ namespace DAGAN
 			rankCmp playerRanker;
 			Player newPlayer = data->players[i];
 			playerRanker.ID = newPlayer.getId();
-			playerRanker.score = newPlayer.getPlayerScore();
+			playerRanker.score = newPlayer.getPlayerScore(data);
 			playerRanker.CQTowerNum = newPlayer.getCqTowerNum();
 			playerRanker.ELCorpsNum = newPlayer.getElCorpsNum();
 			playerRanker.CPCorpsNum = newPlayer.getCqCorpsNum();

@@ -13,20 +13,14 @@ if __name__ == "__main__":
 	JudgeProcess = subprocess.Popen(args.judge, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding="utf-8")
 
 	input2judge = ''
+	errorLog = open("error.log", "w")
 	while(JudgeProcess.returncode is None):
 		JudgeProcess.stdin.write(input2judge + '\n')
 		JudgeProcess.stdin.flush()
 		playerInfo = JudgeProcess.stdout.readline()
 		if playerInfo.count(' ') == playerNumber:
-			#print(playerInfo)
-			playerScore = [0] * playerNumber
-			rank = playerInfo.split(' ')
-			for i in range(len(rank)):
-				try:
-					playerScore[int(rank[i])] = playerNumber - i
-				except:
-					pass
-			print(' '.join(str(x) for x in playerScore))
+			score = [int(x) for x in playerInfo.split()]
+			print(' '.join([str(x) if x>0 else '0' for x in score]))
 			break
 		playerID = int(playerInfo)
 		#print(playerID)
@@ -34,17 +28,30 @@ if __name__ == "__main__":
 		info = json.loads(infoData)
 		#print("Round", info["totalRounds"])
 
-		AIProcess = subprocess.Popen(args.ai[playerID], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding="utf-8")
-
-
 		input2judge = "[]"
 		try:
-			aiOut, aiErr = AIProcess.communicate(infoData, timeout=0.5)
-		except subprocess.TimeoutExpired:
-			print('Player %d Timeout'%playerID)
+			AIProcess = subprocess.Popen(args.ai[playerID], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding="utf-8")
 		except Exception:
-			print(Exception)
+			print('Player %d Error at Round %d'%(playerID, info["totalRounds"]), file=errorLog)
+			AIProcess.kill()
+			continue
+
+
+		try:
+			aiOut, aiErr = AIProcess.communicate(infoData, timeout=0.5)
+			if aiErr:
+				print('Player %d Error at Round %d'%(playerID, info["totalRounds"]), file=errorLog)
+				print('aiError\n', aiErr, file=errorLog)
+		except subprocess.TimeoutExpired:
+			print('Player %d Timeout'%playerID, file=errorLog)
+		except Exception:
+			print(Exception, file=errorLog)
 		else:
 			if (AIProcess.returncode == 0):
 				input2judge = aiOut.split()[0]
+		AIProcess.kill()
 		#print(input2judge)
+	
+	JudgeProcess.kill()
+	errorLog.close()
+	subprocess.run(['zip', '-q', 'record.zip', 'log_info.txt', 'everyround_info.txt', 'error.log'])

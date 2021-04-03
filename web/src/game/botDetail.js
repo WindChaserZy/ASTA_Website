@@ -384,7 +384,7 @@ class Bot extends Component{
 											<Tooltip title={
 												record.compileStatus==3?(
 													<span>
-														Add your bot into leaderboard and compete width other bots.
+														Add your bot into leaderboard and compete with other bots.
 														<br/>
 														<b>It will reset your score.</b>
 													</span>

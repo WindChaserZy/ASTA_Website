@@ -24,85 +24,63 @@ from api import user, contest, blog, team, reservation, problem, game
 from . import scheduler_job
 
 urlpatterns = [
-	#mdeditor编辑器用的，目前只发现上传图片有用到
+	#for mdeditor
 	url(r'mdeditor/', include('mdeditor.urls')),
 	
-	#媒体文件，多为用户上传的
 	url(r'^media/editor/(?P<path>.*)$', serve, {"document_root": os.path.join(settings.MEDIA_ROOT, 'editor')}),
 	url(r'^media/avatars/(?P<path>.*)$', serve, {"document_root": os.path.join(settings.MEDIA_ROOT, 'avatars')}),
 	
-	#静态文件，多为开发者自己整的
 	url(r'^static/(?P<path>.*)$', serve, {"document_root": settings.STATIC_ROOT}),
 	
-	#管理页面
 	path('admin/', admin.site.urls),
 	
 	
-	#注册
 	path('register/', user.register),
-	#登录
 	path('login/', user.login),
-	#登出
 	path('logout/', user.logout),
-	#获取用户信息
+	#get user info
 	path('user/', user.getInfo),
-	#发送token到邮箱
+	#send token to mail
 	path('sendToken/', user.sendToken),
-	#用户修改个人信息
+	#modify personal information
 	path('modify/', user.modify),
-	#重置密码
 	path('resetPassword/', user.resetPassword),
 	
 	
-	#获取单个比赛详细信息
+	#get single contest detail
 	path('contest/', contest.detail),
-	#获取比赛列表
+	#get info list
 	path('contest/list/', contest.list),
-	#获取比赛排行榜
 	path('contest/leaderboard/', contest.leaderboard),
 	path('contest/leaderboard/count/', contest.leaderboardCount),
 	
 	
-	#获取单个博客详细信息
+	#get single contest detail
 	path('blog/', blog.detail),
-	#获取博客列表
+	#get info list
 	path('blog/list/', blog.list),
-	#发布或修改博客
 	path('blog/edit/', blog.edit),
-	#删除博客
 	path('blog/delete/', blog.delete),
 	
 	
-	#发布评论
 	path('comment/add/', blog.addComment),
-	#获取评论列表
 	path('comment/list/', blog.commentList),
 	
 	
-	#获取单个队伍详细信息
 	path('team/', team.detail),
-	#获取队伍列表
 	path('team/list/', team.list),
-	#管理队伍
 	path('team/admin/', team.admin),
-	#申请加入队伍
+	#apply to join a team
 	path('team/apply/', team.apply),
 	
 	
-	#获取预约项目信息
 	path('reservation/', reservation.detail),
-	#获取预约项目预约数据
 	path('reservation/data/', reservation.getData),
-	#获取预约项目列表
 	path('reservation/list/', reservation.list),
-	#提出预约申请
 	path('reservation/apply/', reservation.apply),
-	#取消已申请预约
 	path('reservation/cancel/', reservation.cancel),
-	#获取预约密钥
 	path('reservation/token/', reservation.getToken),
 
-	#题库系统
 	path('problem/', problem.detail),
 	path('problem/list/', problem.list),
 	path('problem/submit/', problem.submit),
@@ -111,7 +89,6 @@ urlpatterns = [
 	path('submission/list/', problem.submissionList),
 	path('submission/count/', problem.submissionCount),
 
-	#游戏系统
 	path('game/', game.detail),
 	path('game/list/', game.list),
 	path('game/leaderboard/', game.leaderboard),
@@ -124,4 +101,6 @@ urlpatterns = [
 	path('game/bot/ranking/', game.botRanking),
 	path('game/record/list/', game.recordList),
 	path('game/record/count/', game.recordListCount),
+	path('game/record/download/', game.recordDownload),
+	path('game/record/get/', game.recordGet),
 ]

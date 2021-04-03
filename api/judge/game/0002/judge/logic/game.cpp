@@ -148,6 +148,13 @@ bool Game::init(string file, string json_file, vector<string> players_name, std:
 	return true;
 }
 
+vector<int>  Game::getScore(){
+	vector<int> score;
+	for (int i = 0; i < data.totalPlayers; ++i){
+		score.push_back(data.players[i].getScore());
+	}
+	return score;
+}
 void Game::DebugPhase()
 {
 	cout << "*************** DEBUG 信息 ***************" << endl;

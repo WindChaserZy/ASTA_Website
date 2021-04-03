@@ -8,9 +8,10 @@ from api import tools
 import os
 import json
 import datetime
+import subprocess
 
 def list(request):
-	#比赛列表，没有任何限�?
+	#比赛列表，没有任何限�?
 	list = Game.objects.all().order_by('-timestamp')
 	result = []
 	for item in list:
@@ -18,7 +19,7 @@ def list(request):
 	return HttpResponse(json.dumps(result), content_type = 'application/json')
 
 def detail(request):
-	#根据id反�?�比赛信�?
+	#根据id反�?�比赛信�?
 	if (request.GET == None or request.GET.get('id') == None):
 		return HttpResponse("ID missing.", status = 400)
 	try:
@@ -236,6 +237,9 @@ def botRanking(request):
 	else:
 		return HttpResponse("ID missing.", status = 400)
 
+	if bot.ai.game.contest and bot.ai.game.contest.timeUp < datetime.datetime.now():
+		return HttpResponse("Time's Up", status = 400)
+
 	if not tools.userHasAiPermission(request.user, bot.ai):
 		return HttpResponse("Permission Denied.", status = 400)
 	if bot.compileStatus<3:
@@ -307,6 +311,49 @@ def recordList(request):
 		result.append(tools.gameRecordToDict(item))
 	return HttpResponse(json.dumps(result), content_type = 'application/json')
 
-			
+def recordDownload(request):
+	
+	if (request.GET and request.GET.get('id')):
+		try:
+			id = int(request.GET.get('id'))
+			path = os.path.join(settings.BASE_DIR, 'judge/record/%08d.zip'%id)
+		except:
+			return HttpResponse("ID error.", status = 400)
+	else:
+		return HttpResponse("ID missing.", status = 400)
+	
+	if not os.path.exists(path):
+		return HttpResponse("File not found.", status = 400)
+	
+	file = open(path, 'rb')
+	response = FileResponse(file)
+	response['Content-Type'] = 'application/octet-stream'
+	response['Content-Disposition'] = 'attachment;filename=reacord_%08d.zip'%id
+	return response
 
+def recordGet(request):
+	
+	if (request.GET and request.GET.get('id')):
+		try:
+			id = int(request.GET.get('id'))
+			path = os.path.join(settings.BASE_DIR, 'judge/record/%08d.zip'%id)
+			record = GameRecord.objects.get(id = id)
+		except:
+			return HttpResponse("ID error.", status = 400)
+	else:
+		return HttpResponse("ID missing.", status = 400)
+	
+	if not os.path.exists(path):
+		return HttpResponse("File not found.", status = 400)
+	result = {'game': record.game.id}
+	
+	subprocess.run(['unzip', path, '-d', '%08d'%id])
+	try:
+		for filename in os.listdir('%08d'%id):
+			result[filename.split('.')[0]] = open('%08d/'%id+filename, 'rb').read().decode()
+	except:
+		subprocess.run(['rm', '-r', '%08d'%id])
+		return HttpResponse("File Error.", status = 400)
 
+	subprocess.run(['rm', '-r', '%08d'%id])
+	return HttpResponse(json.dumps(result), content_type = 'application/json')

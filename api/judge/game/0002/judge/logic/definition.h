@@ -247,20 +247,20 @@ const string ConstructName[2] =
 //【FC18】作战兵团行动力（与作战兵团的枚举类在序号上对应，且考虑了等级）
 const TMovePoint battleMovePoint[BATTLE_CORPS_TYPE_NUM][MAX_CORPS_LEVEL] =
 {
-	{2,   2,   2},    //战士
-	{2,   2,   2},    //弓箭手
-	{4,   4,   4}     //骑兵
+	{4,   4,   4},    //战士
+	{4,   4,   4},    //弓箭手
+	{8,   8,   8}     //法师
 };
 
 //【FC18】工程兵行动力，规则中没有，先假设这两个数
-const TMovePoint constructMovePoint[CONSTRUCT_CORPS_TYPE_NUM] = { 2,2 };
+const TMovePoint constructMovePoint[CONSTRUCT_CORPS_TYPE_NUM] = { 4,4 };
 
 //【FC18】作战兵团初始战斗力（与作战兵团的枚举类在序号上对应，且考虑了等级）
 const TBattlePoint corpsBattlePoint[BATTLE_CORPS_TYPE_NUM][MAX_CORPS_LEVEL] =
 {
 	{36,   44,   52},    //战士
 	{30,   38,   46},    //弓箭手
-	{44,   52,   60}     //骑兵
+	{44,   52,   60}     //法师
 };
 
 
@@ -371,13 +371,13 @@ const TOccupyPoint TowerOccupyPoint[OCCUPY_POINT_DIST_SCALE + 1] =
 const struct TowerConfig TowerInitConfig[MAX_TOWER_LEVEL] =
 {
 	{10,25,100,20, 2},
-	{15,27,120,20, 2},
-	{20,29,140,25, 2},
-	{25,32,160,30, 2},
-	{30,35,180,40, 2},
-	{35,38,200,40, 2},
-	{40,41,220,50, 2},
-	{45,45,240,INF,2}
+	{15,27,110,20, 2},
+	{20,29,120,25, 2},
+	{25,32,130,30, 2},
+	{30,35,140,40, 2},
+	{35,38,150,40, 2},
+	{40,41,160,50, 2},
+	{45,45,170,INF,2}
 };
 
 

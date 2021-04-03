@@ -165,7 +165,7 @@ DEFAULT_FROM_EMAIL = config.get('global', 'DEFAULT_FROM_EMAIL')
 
 
 BASE_SCORE = 1000
-ScoreUpdateSpeed = 0.1
+ScoreUpdateSpeed = 0.03
 GameEps = 1e-5
 
 

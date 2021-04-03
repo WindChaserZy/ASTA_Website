@@ -27,6 +27,7 @@ import SubmissionList from './submission/list.js';
 import SubmissionDetail from './submission/detail.js';
 import GameList from './game/list.js';
 import GameDetail from './game/detail.js';
+import GameShow from './game/show.js';
 import ASTA_logo from './assets/logo_1.jpg';
 import record_logo from './assets/record.png';
 
@@ -137,7 +138,7 @@ class App extends React.Component {
 		return (
 			<Router>
 				<Layout style={{ minHeight: '100vh' }}>
-					<Sider collapsible collapsed={this.state.collapsed} onCollapse={this.onCollapse} theme="dark">
+					<Sider collapsible className = 'noSelect' collapsed={this.state.collapsed} onCollapse={this.onCollapse} theme="dark">
 						<div className="logo">
 							<img className="logo_img" src={ASTA_logo} alt="logo" />
 						</div>
@@ -198,7 +199,7 @@ class App extends React.Component {
 					<Layout>
 						<Header style={{ background: 'white', padding: 0, display: 'flex', flexDirection: 'row'}} >
 							<div style={{ flex: 1 }}>
-								<div style={{ flex: 2, fontSize: 25, fontWeight: 'bolder'}}>{Title_word}</div>
+								<div className = 'noSelect' style={{ flex: 2, fontSize: 25, fontWeight: 'bolder'}}>{Title_word}</div>
 								<div>{Tips_word}</div>
 							</div>
 						</Header>
@@ -337,14 +338,19 @@ class App extends React.Component {
 									{...props}
 								/>}
 							/>
+							<Route path="/gameShow/:id" exact render={props =>
+								<GameShow
+									user={this.state.user}
+									{...props}
+								/>}
+							/>
 						</Content>
-						<Footer style={{ textAlign: 'center' }}>
+						<Footer className = 'noSelect' style={{ textAlign: 'center' }}>
 							&copy; ASTA, 2020 京ICP备2020038246号
 							<div>
 								<img src={record_logo} style={{display:'inline'}}/>
 								<span>京公网安备 11010802033147号</span>
 							</div>
-		 
 						</Footer>
 					</Layout>
 				</Layout>

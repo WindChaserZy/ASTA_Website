@@ -111,6 +111,10 @@ def admin(request):
 		else:
 			if (request.user.is_authenticated and team.captain.username == request.user.username):
 				team.name = request.POST.get('name')
+				if (request.POST and request.POST.get('introduction')):
+					team.introduction = request.POST.get('introduction')
+				else:
+					team.introduction = ''
 				team.save()
 	
 	if (team == None):
@@ -124,12 +128,6 @@ def admin(request):
 		else:
 			return HttpResponse("You are not the captain.", status = 400)
 	
-	
-	
-	#修改简介
-	if (request.POST and request.POST.get('introduction')):
-		team.introduction = request.POST.get('introduction')
-		team.save()
 	
 	#通过入队申请
 	if (request.POST and request.POST.get('accept')):

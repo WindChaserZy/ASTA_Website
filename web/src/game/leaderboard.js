@@ -4,14 +4,14 @@ import $ from 'jquery';
 import React, { Component } from 'react';
 import Loading from '../loading.js';
 import reqwest from 'reqwest';
-import { Icon, Table } from 'antd';
+import { Icon, Table, Tooltip } from 'antd';
 import UserShow from '../user/show.js';
 
 
 class ListElement extends Component{
 	state = {
 		data: [],
-		pagination: {pageSize: 6, current: 1},
+		pagination: {pageSize: 10, current: 1},
 		loading: false,
 	}
 	getTotalCount = (params = {}) => {
@@ -90,6 +90,14 @@ class ListElement extends Component{
 			{
 				title: 'AI',
 				dataIndex: 'name',
+				render: (name, record) =>(<Tooltip title={(
+					<span>
+						bot ID : 
+						<b> {record.id} </b>
+					</span>
+				)}>
+					{name}
+				</Tooltip>)
 			},
 			{
 				title: 'Introduction',

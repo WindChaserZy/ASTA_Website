@@ -54,27 +54,34 @@ void Player::Kill()
 *函数返回值 : <int>分值
 *作者 : 姜永鹏
 ***********************************************************************************************/
-int Player::getPlayerScore() {
+int Player::getPlayerScore(DATA::Data * d) {
 
 	if (isAlive() == false)   //玩家已经出局，根据出局的回合数记录进行分值
 		return deadRound - MAX_ROUND;
-	TScore corpsScore, towerScore, killScore;
-	corpsScore = towerScore = killScore = 0;
-	/*for (TCorpsID i : m_crops)
-	{
-		if (data->myCorps[i].getType() == Battle)  //兵团星级从0开始[!!!反复确认]
-			corpsScore += BATTLE_CORP_SCORE * (data->myCorps[i].getLevel() + 1);
-		else if (data->myCorps[i].getType() == Construct)
-			corpsScore += CONSTRUCT_CORP_SCORE * 1;
-	}*/
-	corpsScore += CORP_SCORE * m_crops.size();
-	for (TTowerID i : m_tower)
-	{
-		towerScore += TOWER_SCORE * (data->myTowers[i].getLevel());             //防御塔等级从1开始[!!!反复确认]
+	TScore totalScore = 0;
+	for (int map_i = 0; map_i < data->gameMap.getHeigth(); map_i++) {
+		for (int map_j = 0; map_j < data->gameMap.getWidth(); map_j++) {
+			if (data->gameMap.map[map_i][map_j].owner == m_id)
+				totalScore++;
+		}
 	}
-	killScore += (conqueTowerNum + eliminateCorpsNum + captureCorpsNum) * KILL_SCORE;
-	TScore totalScore = corpsScore + towerScore + killScore;
-	//setScore(totalScore);
+	//TScore corpsScore, towerScore, killScore;
+	//corpsScore = towerScore = killScore = 0;
+	///*for (TCorpsID i : m_crops)
+	//{
+	//	if (data->myCorps[i].getType() == Battle)  //兵团星级从0开始[!!!反复确认]
+	//		corpsScore += BATTLE_CORP_SCORE * (data->myCorps[i].getLevel() + 1);
+	//	else if (data->myCorps[i].getType() == Construct)
+	//		corpsScore += CONSTRUCT_CORP_SCORE * 1;
+	//}*/
+	//corpsScore += CORP_SCORE * m_crops.size();
+	//for (TTowerID i : m_tower)
+	//{
+	//	towerScore += TOWER_SCORE * (data->myTowers[i].getLevel());             //防御塔等级从1开始[!!!反复确认]
+	//}
+	//killScore += (conqueTowerNum + eliminateCorpsNum + captureCorpsNum) * KILL_SCORE;
+	//TScore totalScore = corpsScore + towerScore + killScore;
+	////setScore(totalScore);
 	return totalScore;
 }
 

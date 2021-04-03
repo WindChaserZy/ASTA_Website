@@ -32,8 +32,28 @@ def Download_Selected(modeladmin, request, queryset):
 
 Download_Selected.short_description = "Download information selected"
 
+def Download_Ranking_Code(modeladmin, request, queryset):
+	zipPath = settings.MEDIA_ROOT + 'files.zip'
+	zip = zipfile.ZipFile(zipPath, "w", zipfile.ZIP_DEFLATED)
+	for game in queryset:
+		botList = GameBot.objects.filter(ai__game = game, ranking = True)
+		for bot in botList:
+			path = os.path.join(settings.MEDIA_ROOT, bot.code.path)
+			zip.write(path, bot.code.name)
+	zip.close()
+
+	zipFile = open(zipPath, 'rb')
+	respone = HttpResponse(zipFile, content_type='application/octet-stream')
+	respone['Content-Disposition'] = 'attachment; filename=bots.zip'
+	return respone
+
+Download_Ranking_Code.short_description = "Download ranking code"
+
 class teamAdmin(admin.ModelAdmin):
 	actions = [Download_Selected]
+	search_fields = ('selected',)
+class gameAdmin(admin.ModelAdmin):
+	actions = [Download_Ranking_Code]
 	search_fields = ('selected',)
 	
 # Register your models here.
@@ -53,7 +73,7 @@ admin.site.register(Problem)
 admin.site.register(ProblemSubmission)
 admin.site.register(ProblemJudgeDetail)
 admin.site.register(ProblemHighestScore)
-admin.site.register(Game)
+admin.site.register(Game, gameAdmin)
 admin.site.register(GameAi)
 admin.site.register(GameBot)
 admin.site.register(GameRecord)

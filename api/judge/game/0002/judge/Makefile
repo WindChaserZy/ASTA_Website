@@ -1,5 +1,5 @@
 TARGET = judge.exe
-COMPILER = g++ -std=c++11
+COMPILER = g++ -std=c++11 -O2
 
 target : $(TARGET)
 

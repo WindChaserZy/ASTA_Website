@@ -32,7 +32,7 @@ const TeamCreateForm = Form.create({ name: 'form_in_modal' })(
 					]}
 				>
 					<Form layout="vertical">
-						<Form.Item label="Tean name">
+						<Form.Item label="Team name">
 							{getFieldDecorator('name', {
 								rules: [{ required: true, message: 'Please input the name of your team!' }],
 								initialValue: this.props.name,
