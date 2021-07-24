@@ -95,9 +95,10 @@ def gameBotToDict(gameBot, detail = False):
 	result = {}
 	result['id'] = gameBot.id
 	result['date'] = gameBot.timestamp.strftime('%Y-%m-%d %H:%M:%S')
-	result['addition'] = gameBot.addition
-	result['compileStatus'] = gameBot.compileStatus
-	result['ranking'] = gameBot.ranking
+	if detail:
+		result['addition'] = gameBot.addition
+		result['compileStatus'] = gameBot.compileStatus
+		result['ranking'] = gameBot.ranking
 	return result
 
 def gameRecordToDict(gameRecord, detail = False):

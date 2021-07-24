@@ -69,6 +69,7 @@ urlpatterns = [
 	
 	path('team/', team.detail),
 	path('team/list/', team.list),
+	path('team/list/count/', team.listCount),
 	path('team/admin/', team.admin),
 	#apply to join a team
 	path('team/apply/', team.apply),
@@ -93,6 +94,8 @@ urlpatterns = [
 	path('game/list/', game.list),
 	path('game/leaderboard/', game.leaderboard),
 	path('game/leaderboard/count/', game.leaderboardCount),
+	path('game/botList/', game.botList),
+	path('game/botList/count/', game.botListCount),
 	path('game/ai/', game.aiDetail),
 	path('game/ai/modify/', game.aiModify),
 	path('game/ai/addbot/', game.aiAddBot),

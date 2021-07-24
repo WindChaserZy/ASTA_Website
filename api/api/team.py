@@ -7,7 +7,7 @@ from django.db.models import Q
 from api import tools
 import json
 
-def list(request):
+def getTeamList(request):
 	#队伍列表，给了比赛、用户的情况下只给出属于这个比赛、这个用户加入了的队伍
 	if (request.GET and request.GET.get('contest') and request.GET.get('username')):
 		try:
@@ -28,7 +28,10 @@ def list(request):
 			return HttpResponse("Contest error.", status = 400)
 	else:
 		list = Team.objects.all()
-		
+	return list
+
+def list(request):
+	list = getTeamList(request)
 		
 	result = []
 	
@@ -44,6 +47,12 @@ def list(request):
 				info['application'] = True
 		result.append(info)
 	return HttpResponse(json.dumps(result), content_type = 'application/json')
+
+def listCount(request):
+	list = getTeamList(request)
+		
+	number = list.count()
+	return HttpResponse(json.dumps({'number': number}), content_type = 'application/json')
 
 
 def detail(request):

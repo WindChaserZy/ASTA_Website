@@ -1,30 +1,52 @@
-# ASTA官网
+## 链接汇总
++ [代码仓库](https://github.com/THU-ASTA-Technology/ASTA_website)
 
-首要目的是用于举办比赛
+## 前端(/web)
++ 使用react + ant design [入门文档](#/blog/4)
++ ant design版本为3.26.7 [文档](https://3x.ant.design/docs/react/introduce-cn)
++ 程序入口为src中的index.js，其中包含了路由，调用各个不同的模块。
++ `yarn install` 安装依赖
++ `yarn start` 即可运行
++ `yarn build` 打包用于部署
 
-文档：https://www.thuasta.cn/#/blog/5
+## 后端(/api)
++ 使用django(python) [入门文档](#/blog/3)
++ 需要在api目录下加入asta.ini，主要用于配置邮箱信息
++ 安装完依赖后，`python3 manage.py runserver` 即可在本地运行后端
++ 程序入口为urls.py，包含路由
++ 评测模块
+  + 启动评测模块需要先启动redis同时使用docker构建镜像，构建方式为在/api/judge目录下：
+    ```
+    docker build -t judge_box .
+    ```
+  + 再启动celery进行评测
+    ```
+    python3 manage.py celery worker -c 1
+    ```
+
+## Todo List
++ 新生C对战平台
+
+## 依赖列表
++ 后端
+
+  | 依赖项               | 参考版本 |
+| -------------------- | -------- |
+| python               | 3.7.4    |
+| Django               | 3.0.2    |
+| django-cors-headers  | 3.5.0    |
+| django-crispy-forms  | 1.9.2    |
+| django-formtools     | 2.2      |
+| django-import-export | 2.3.0    |
+| django-mdeditor      | 0.1.18   |
+| django-reversion     | 3.0.8    |
+| django-six           | 1.0.4    |
+| django-stdimage      | 5.1.1    |
++ 前端依赖列表已在/web/package.json中
++ 参考版本为开发者所用版本
 
 
 
-目前设想：
+评测模块：
 
-用户模块负责注册、登录、个人信息维护等，之后可能还会有消息提醒（诸如队伍信息的变动）
-
-博客模块：暂时用于官方发布信息，以后可以开放给用户。Blog带有Tag，通过Tag支持搜索且与比赛联动。
-
-组队系统：
-
-1. 每个队伍只能对应一场比赛，一个用户一场比赛只能加入一个队伍。
-2. 功能上不依赖与比赛模块，应用中基本在比赛模块中交互。
-
-比赛模块：
-
-	1. 本身只负责发布比赛，仅包含比赛的介绍
-	2. 通过该比赛的Tag获取Blog实现发布通知的效果
-
-题库与比赛的交互：
-
-	提交可选择关联一个队伍也可以不关联，若不关联队伍视为针对题库的提交，与比赛无关，若关联了队伍则视为针对队伍所在比赛的提交
-
-评测机：
-	实现了docker中运行
+![guide](D:\environment\codes\projects\ASTA_website\guide.png)

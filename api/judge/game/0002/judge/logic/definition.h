@@ -10,6 +10,10 @@
 #define NOTOWER -1    //当前方格没有防御塔
 //#define NOTASK  -1    //当前防御塔无生产任务
 #define OUTOFRANGE -2  //当前方格在地图之外
+//#define FC15_SAVEMODE
+#define SAVETXT
+//#define PAUSE
+//#define NOTICE
 
 
 #include <vector>
@@ -199,7 +203,24 @@ enum terrainType
 	TRForest = 3,       //森林
 	TRSwamp = 4,       //沼泽
 	TRRoad = 5,       //道路
+	TRGate = 6,       //二校门
+	TRHall = 7,       //大礼堂
+	TRClassRoom1 = 8,  //清华学堂x+z+
+	TRClassRoom2 = 9,  //清华学堂x-z+
+	TRClassRoom3 = 10, //清华学堂x-z-
+	TRClassRoom4 = 11, //清华学堂x+z-
+	TRTHUEmpty = 12    //清华元素占据的空地
 };
+
+
+//【FC18】游戏运行的状态
+enum gameState
+{
+	Normal = 0,          //正常运行，不存档
+	RecoverMap = 1,      //只按地图存档复现模式
+	RecoverRound = 2,    //按回合（包括地图）存档恢复模式
+};
+
 
 //【FC18】兵团操作名
 const string CorpsCmd[CORPS_ACTION_TYPE_NUM] =
@@ -226,9 +247,9 @@ const string Direction[4] =
 };
 
 //【FC18】改变的地形名
-const string Terrain[TERRAIN_TYPE_NUM] =
+const string Terrain[TERRAIN_TYPE_NUM + 8] =
 {
-	"plain","mountain","forest","swamp","road"
+	"tower","plain","mountain","forest","swamp","road","erxiaomen","dalitang","qinghuaxuetang","qinghuaxuetang","qinghuaxuetang","qinghuaxuetang","THU"
 };
 
 //【FC18】作战兵团名字
@@ -242,7 +263,6 @@ const string ConstructName[2] =
 {
 	"Builder","Explorer"
 };
-
 
 //【FC18】作战兵团行动力（与作战兵团的枚举类在序号上对应，且考虑了等级）
 const TMovePoint battleMovePoint[BATTLE_CORPS_TYPE_NUM][MAX_CORPS_LEVEL] =
@@ -382,7 +402,7 @@ const struct TowerConfig TowerInitConfig[MAX_TOWER_LEVEL] =
 
 
 //【FC18】行动力消耗（与地形的枚举类在序号上对应）
-const TMovePoint CorpsMoveCost[TERRAIN_TYPE_NUM + 1] =
+const TMovePoint CorpsMoveCost[TERRAIN_TYPE_NUM + 8] =
 {
 	0,    //塔
 	2,    //平原
@@ -390,11 +410,18 @@ const TMovePoint CorpsMoveCost[TERRAIN_TYPE_NUM + 1] =
 	3,    //森林
 	4,    //沼泽
 	1,    //道路
+	INF,  //二校门
+	INF,  //大礼堂
+	INF,  //清华学堂1
+	INF,  //清华学堂2
+	INF,  //清华学堂3
+	INF,  //清华学堂4
+	INF   //清华元素空地
 };
 
 
 //【FC18】战斗力增益（与地形的枚举类在序号上对应）
-const TBattlePoint CorpsBattleGain[TERRAIN_TYPE_NUM + 1] =
+const TBattlePoint CorpsBattleGain[TERRAIN_TYPE_NUM + 8] =
 {
 	0,    //塔
 	0,    //平原
@@ -402,17 +429,54 @@ const TBattlePoint CorpsBattleGain[TERRAIN_TYPE_NUM + 1] =
 	3,    //森林
 	-3,   //沼泽
 	0,    //道路
+	0,    //二校门
+	0,    //大礼堂
+	0,    //清华学堂1
+	0,    //清华学堂2
+	0,    //清华学堂3
+	0,    //清华学堂4
+	0     //清华元素空地
 };
 
+/*
+//4组清华元素固定地形，对应不同的生成模式
+const terrainType attachTerrain0[3][4] =
+{
+	{TRClassCenter, TRClassSide, TRHall, TRPlain},
+	{TRClassSide, TRPlain, TRPlain, TRPlain},
+	{TRPlain, TRPlain, TRGate, TRForest}
+};
 
+const terrainType attachTerrain1[3][4] =
+{
+	{TRForest, TRGate, TRPlain, TRPlain},
+	{TRPlain, TRPlain, TRClassCenter, TRClassSide},
+	{TRPlain, TRHall, TRClassSide, TRPlain}
+};
 
+const terrainType attachTerrain2[4][3] =
+{
+	{TRPlain, TRClassCenter, TRClassSide},
+	{TRPlain, TRClassSide, TRPlain},
+	{TRGate, TRPlain, TRHall},
+	{TRForest, TRPlain,TRPlain }
+};
+
+const terrainType attachTerrain3[4][3] =
+{
+	{TRPlain, TRPlain, TRForest},
+	{TRHall, TRPlain, TRGate},
+	{TRPlain, TRClassCenter, TRClassSide},
+	{TRPlain, TRClassSide, TRPlain}
+};
+*/
 //@@@【FC18】防御塔结构体，有需要的信息再加
 
 class TowerInfo {
 public:
 	TowerInfo(){};				// 空构造函数 —— swm_sxt
 	TowerInfo(Json::Value);			// 从Json对象构造 —— swm_sxt
-
+	Json::Value asJson() const;		//转为Json对象 —— swm_sxt
 	bool    exist;      //防御塔是否存在
 	TTowerID      ID;   //防御塔ID
 	TPlayerID     ownerID;  //所属玩家ID
@@ -423,9 +487,6 @@ public:
 	TBattlePoint  battlePoint;   //战斗力
 	THealthPoint  healthPoint;   //生命值
 	TLevel        level;       //等级
-	
-	//转为Json对象 —— swm_sxt
-	Json::Value asJson() const;
 };
 
 
@@ -435,6 +496,7 @@ class CorpsInfo
 public:
 	CorpsInfo(){};				// 空构造函数 —— swm_sxt
 	CorpsInfo(Json::Value);			// 从Json对象构造 —— swm_sxt
+	Json::Value asJson() const;		//转为Json对象 —— swm_sxt
 	bool	exist;		//是否存在
 	TPoint	pos;		//兵团坐标
 	TCorpsID		ID;	//兵团ID
@@ -445,9 +507,6 @@ public:
 	TMovePoint      movePoint;      //行动力
 	battleCorpsType		m_BattleType;	//战斗兵用
 	constructCorpsType	m_BuildType;	//建造兵用
-
-	//转为Json对象 —— swm_sxt
-	Json::Value asJson() const;
 };
 
 
@@ -457,6 +516,7 @@ class PlayerInfo
 public:
 	PlayerInfo(){};				// 空构造函数 —— swm_sxt
 	PlayerInfo(Json::Value);		// 从Json对象构造 —— swm_sxt
+	Json::Value asJson() const;		//转为Json对象 —— swm_sxt
 	TPlayerID id;                        //【FC18】玩家的序号，请注意玩家序号从1开始，访问玩家数组请用[ID-1]
 	int rank;                            //【FC18】该选手排名（出局者直接由出局回合数给位次）|（存活者按防御塔得分和兵团得分来排名）|（同名次按防御塔攻占数、消灭敌方军团数、俘虏敌方军团数依次检索排名）|（仍有同名次者随机分配排名）
 	bool alive;                          //【FC18】玩家是否还活着
@@ -467,9 +527,6 @@ public:
 
 	//【FC18】玩家所有兵团的序号，建议也用set这种数据结构，内部按兵团序号升序来排序
 	set<TCorpsID> corps; //所有兵团
-
-	//转为Json对象 —— swm_sxt
-	Json::Value asJson() const;
 };
 
 
@@ -479,20 +536,17 @@ class mapBlock                                 //【FC18】地图方格类
 public:
 	mapBlock(){};				// 空构造函数 —— swm_sxt
 	mapBlock(Json::Value);			// 从Json对象构造 —— swm_sxt
+	Json::Value asJson() const;		//转为Json对象 —— swm_sxt
 	terrainType type;                           //【FC18】地块类型，对应terrainType枚举类
 	vector<int> occupyPoint;                    //【FC18】各玩家的占有属性值，秩为玩家序号-1
 	int owner;                                  //【FC18】所属玩家序号，-1为过渡TRANSITION，-2为公共PUBLIC
 	int TowerIndex;								//@@@【FC18】位于该单元格的塔的下标，对应data里的myTowers，没有塔的时候为-1
 	vector<TCorpsID> corps;						//该位置兵团
-	
-	//转为Json对象 —— swm_sxt
-	Json::Value asJson() const;
 };
 
 //【FC18】地图单元格信息结构体
-class mapBlockInfo
+struct mapBlockInfo
 {
-public:
 	terrainType type;                           //【FC18】地块类型，对应terrainType枚举类
 	int owner;                                  //【FC18】所属玩家序号，-1为过渡TRANSITION，-2为公共PUBLIC
 	vector<int> occupyPoint;                    //【FC18】各玩家的占有属性值，秩为玩家序号-1
@@ -513,6 +567,7 @@ TDist getDist(const int p1_x, const int p1_y, const int p2_x, const int p2_y);
 //生成指定闭区间的随机整数
 int generateRanInt(int start, int end);
 //输出玩家下达的指令集
+std::ostream& operator << (std::ostream& os, const CommandList& cl);
 
 struct TBarrier
 {
@@ -537,7 +592,7 @@ public:
 	vector<TPoint>     m_studentPos;               //只设定细胞的坐标，之后的势力分配交给game
 
 	//【FC18】存储地图上的所有兵团信息的向量（元素为兵团信息结构体），可以参照vector<TPoint> m_studentPos
-	vector<CorpsInfoUnit>     m_corpsinfo;
+	//vector<CorpsInfoUnit>     m_corpsinfo;
 
 	//@@@【FC18】获取地图上的所有防御塔信息函数，可以参照const  vector<TPoint>& getStudentPos() const
 	//@@@【FC18】返回一个防御塔信息结构体的vector引用，方便外部访问修改
@@ -545,7 +600,7 @@ public:
 
 	//【FC18】获取地图上的所有兵团信息函数，可以参照const  vector<TPoint>& getStudentPos() const
 	//【FC18】返回一个兵团信息结构体的vector引用，方便外部访问修改
-	const  vector<CorpsInfoUnit>& getCropsInfo() const { return m_corpsinfo; }
+	//const  vector<CorpsInfoUnit>& getCropsInfo() const { return m_corpsinfo; }
 
 	bool   isPosValid(TPoint p) { return isPosValid(p.m_x, p.m_y); }             //判断点是否越界
 	bool   isPosValid(int x, int y) { return x >= 0 && x < m_width && y >= 0 && y < m_height; }
@@ -556,12 +611,21 @@ private:
 	int max(int a, int b) { return a < b ? b : a; }
 };
 
+//命令种类
+enum CommandType
+{
+	upgrade          //升级属性
+	, changeStrategy //改变细胞策略
+	, addTentacle    //添加触手
+	, cutTentacle    //切断触手
+};
 
 //【FC18】保存命令相关信息
 class Command
 {
 public:
 	Command(Json::Value);			// 从Json对象构造 —— swm_sxt
+	Json::Value asJson() const;		//转为Json对象 —— swm_sxt
 	Command(commandType _FC18type, initializer_list<int> _FC18parameters) :  //【FC18】由初始化列表构造的构造函数
 		cmdType(_FC18type), parameters(_FC18parameters) {}
 	Command(commandType _FC18type, vector<int> _FC18parameters) :            //【FC18】由默认向量数组构造的构造函数
@@ -569,9 +633,6 @@ public:
 	Command() {}                                                             //【FC18】指令的析构函数
 	commandType cmdType;                                                     //【FC18】命令种类
 	vector<int> parameters;                                                  //【FC18】参数：注意所有参数是整型！
-	
-	//转为Json对象 —— swm_sxt
-	Json::Value asJson() const;
 };
 
 //【FC18】命令列表
@@ -580,6 +641,7 @@ class CommandList
 public:
 	CommandList(){};				// 空构造函数 —— swm_sxt
 	CommandList(Json::Value);			// 从Json对象构造 —— swm_sxt
+	Json::Value asJson() const;			//转为Json对象 —— swm_sxt
 	void addCommand(commandType _FC18type, initializer_list<int> _FC18parameters)  //【FC18】由初始化列表直接添加命令
 	{
 		if (size() >= MAX_CMD_NUM) return;
@@ -612,8 +674,6 @@ public:
 	vector<Command>::const_iterator  begin() const { return m_commands.cbegin(); } //【FC18】返回第一条命令的常量迭代器
 	vector<Command>::const_iterator end() const { return m_commands.cend(); }      //【FC18】返回最后一条命令的常量迭代器
 
-	//转为Json对象 —— swm_sxt
-	Json::Value asJson() const;
 private:
 	vector<Command> m_commands;                                                    //【FC18】指令集vector存储
 };
@@ -625,6 +685,7 @@ class Info
 public:
 	Info(){};				// 空构造函数 —— swm_sxt
 	Info(Json::Value);			// 从Json对象构造 —— swm_sxt
+	Json::Value asJson() const;			//转为Json对象 —— swm_sxt
 	TPlayer totalPlayers;                                   //【FC18】总玩家数（4人）                               
 	TPlayer playerAlive;                                    //【FC18】剩余玩家数（还活着的）
 	TRound totalRounds;                                     //【FC18】当前回合数（4个玩家依次执行一次操作为1回合，UI中是1个玩家执行操作记1回合）
@@ -649,8 +710,10 @@ public:
 	//索引地图时 ，第一维为y坐标，第二维为x坐标，即gameMapInfo[y][x]表示（x,y）点的地图信息
 	const vector<vector<mapBlock>>* gameMapInfo;
 
-	//转为Json对象 —— swm_sxt
-	Json::Value asJson() const;
 };
 
 #endif // DEFINITION_H
+
+
+
+

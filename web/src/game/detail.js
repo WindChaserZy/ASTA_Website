@@ -5,9 +5,10 @@ import React, { Component } from 'react';
 //import './detail.css';
 import { message, Button, Card, Modal, Tag, Tabs, List} from 'antd';
 import Loading from '../loading.js'
-import GameAI from './botList.js';
+import GameAI from './aiList.js';
 import GameRecordList from './list_record.js'
 import GameLeaderboard from './leaderboard.js';
+import GameBotList from './botList.js'
 import MarkdownView from '../markdown/view.js'
 const { confirm } = Modal;
 const { TabPane } = Tabs;
@@ -80,6 +81,14 @@ class Detail extends Component{
 					</TabPane>
 					<TabPane tab="Record" key="record">
 						<GameRecordList
+							user={this.props.user}
+							contest={data.contest}
+							game={id}
+							padding={0}
+						/>
+					</TabPane>
+					<TabPane tab="All Bot" key="allBot">
+						<GameBotList
 							user={this.props.user}
 							contest={data.contest}
 							game={id}

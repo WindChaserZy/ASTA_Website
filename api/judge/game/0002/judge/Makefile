@@ -21,7 +21,7 @@ player.o : logic/player.cpp
 tower.o : logic/tower.cpp
 	$(COMPILER) -c logic/tower.cpp -o tower.o
 
-map.o : logic/map.o
+map.o : logic/map.cpp
 	$(COMPILER) -c logic/map.cpp -o map.o
 
 Crops.o : logic/Crops.cpp

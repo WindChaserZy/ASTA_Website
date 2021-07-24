@@ -67,13 +67,13 @@ int Player::getPlayerScore(DATA::Data * d) {
 	}
 	//TScore corpsScore, towerScore, killScore;
 	//corpsScore = towerScore = killScore = 0;
-	///*for (TCorpsID i : m_crops)
-	//{
-	//	if (data->myCorps[i].getType() == Battle)  //兵团星级从0开始[!!!反复确认]
-	//		corpsScore += BATTLE_CORP_SCORE * (data->myCorps[i].getLevel() + 1);
-	//	else if (data->myCorps[i].getType() == Construct)
-	//		corpsScore += CONSTRUCT_CORP_SCORE * 1;
-	//}*/
+	/*for (TCorpsID i : m_crops)
+	{
+		if (data->myCorps[i].getType() == Battle)  //兵团星级从0开始[!!!反复确认]
+			corpsScore += BATTLE_CORP_SCORE * (data->myCorps[i].getLevel() + 1);
+		else if (data->myCorps[i].getType() == Construct)
+			corpsScore += CONSTRUCT_CORP_SCORE * 1;
+	}*/
 	//corpsScore += CORP_SCORE * m_crops.size();
 	//for (TTowerID i : m_tower)
 	//{
@@ -81,7 +81,7 @@ int Player::getPlayerScore(DATA::Data * d) {
 	//}
 	//killScore += (conqueTowerNum + eliminateCorpsNum + captureCorpsNum) * KILL_SCORE;
 	//TScore totalScore = corpsScore + towerScore + killScore;
-	////setScore(totalScore);
+	//setScore(totalScore);
 	return totalScore;
 }
 

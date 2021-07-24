@@ -5,7 +5,6 @@
 */
 #include <time.h>
 #include "player_code.h"
-#include <cstring>
 #include <iostream>
 
 #ifdef __GNUC__
@@ -29,7 +28,7 @@ namespace DAGAN {
 		: id(id), file_name(file_name)
 	{
 		name = file_name;
-		if (name.rfind('/') != string::npos) {          //rfind???????????????????λ??????????ai????·????????
+		if (name.rfind('/') != string::npos) {          //rfind是返回待查字符的最后一次位置索引，即ai代码路径的最底层
 			name = name.substr(name.rfind('/') + 1);
 		}
 		if (name.rfind('\\') != string::npos) {
@@ -48,23 +47,24 @@ namespace DAGAN {
 
 	bool Player_Code::load()
 	{
-		//不需要loaddll了 —— swm_sxt
+		// we don't need to load dll online -- swm_sxt
 		Valid = true;
 		return true;
-		/*if (NULL != hDLL)                                          //?????????????????????????????
+		/*
+		if (NULL != hDLL)                                          //重新加载，删除原来已经加载的动态链接库
 		{
 			_CLOSEDLL(hDLL);
 			player_ai = NULL;
 		}
-		hDLL = _LOADDLL(file_name.c_str());                        //????AI??????????DLL??
+		hDLL = _LOADDLL(file_name.c_str());                        //加载AI代码动态链接库（DLL）
 		//cout << file_name << "being loading" << endl;
 		if (NULL != hDLL)
 		{
-			player_ai = (TPlayerAi)_GETFUNC(hDLL, "player_ai");    //????DLL????????????ai???????????
+			player_ai = (TPlayerAi)_GETFUNC(hDLL, "player_ai");    //加载DLL成功，更新玩家ai代码的函数指针
 		}
 
 		Valid = true;
-		Valid = Valid && (NULL != player_ai);                      //??????ai?????????????????
+		Valid = Valid && (NULL != player_ai);                      //检查玩家ai代码的函数指针是否可用
 
 		if (NULL == hDLL)
 			cout << "[ERROR] failed to load \"" << file_name << "\"" << endl;
@@ -79,14 +79,13 @@ namespace DAGAN {
 		*/
 	}
 
-	//run修改为输出info并等待决策输入
 	bool Player_Code::run(Info &info)
 	{
 		/*
-		//??FC18??????????ж?
-		int time_a = GetTickCount();              //?????λ???ai??????????????????
+		//【FC18】补充超时的判定
+		int time_a = GetTickCount();              //运行某位玩家ai代码开始、结束时有时间戳
 		int time_b;
-		//?????λ???ai????????????????gameover?????????????????????
+		//运行某位玩家ai代码，如果接到异常，则gameover，并报出异常代码玩家的序号
 #if (!defined _MSC_VER) //|| (defined _DEBUG)
 		try {
 			player_ai(info);
@@ -98,7 +97,7 @@ namespace DAGAN {
 		}
 #else 
 		__try {
-			player_ai(info);//????????????????????ai????
+			player_ai(info);//通过函数指针直接运行玩家ai代码
 		}
 		__except (EXCEPTION_EXECUTE_HANDLER) {
 			cout << "[ERROR] Player " << (int)id << " raised an exception in run()." << endl;
@@ -109,8 +108,7 @@ namespace DAGAN {
 		time_b = GetTickCount();
 		//if (time_b - time_a > 2000) kill();
 		*/
-
-		//输出info —— swm_sxt
+		//output info --swm_sxt
 		Json::FastWriter write;
 		printf("%d\n", info.myID - 1);
 		fflush(stdout);
@@ -127,6 +125,7 @@ namespace DAGAN {
 		if (reader.parse(commandListString.data(), commandListJson));
 		info.myCommandList = CommandList(commandListJson);
 		return true;
+
 	}
 
 }

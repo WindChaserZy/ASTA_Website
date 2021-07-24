@@ -16,55 +16,57 @@ using std::cout;
 using std::cin;
 using std::endl;
 
-class Game                                                            //¡¾FC18¡¿µ±Ç°ÓÎÏ·½ø³ÌÀà
+class Game                                                            //ã€FC18ã€‘å½“å‰æ¸¸æˆè¿›ç¨‹ç±»
 {
 public:
-	Game() {}														  //¡¾FC18¡¿µ±Ç°ÓÎÏ·½ø³ÌÀà¹¹Ôìº¯Êı
-	vector<time_t> roundTime;                                         //¡¾FC18¡¿ÓÎÏ·Ã¿»ØºÏÊ±¼ä   #json
-	bool init(string filename, string json_filename,vector<string> players_name, std::ofstream& cmdF,std::ofstream& infoF);  //@@@¡¾FC18¡¿´ÓÎÄ¼ş¶ÁÈëĞÅÏ¢£¬³õÊ¼»¯ÓÎÏ·£¬²¢Ğ´µÚ0ÂÖµÄJSON
-	DATA::Data& getData() { return data; }                            //¡¾FC18¡¿´ÓgameÀà»ñÈ¡µ±Ç°ÓÎÏ·ĞÅÏ¢   #json
-	vector<TPlayerID>& getRank() { return Rank; }                     //¡¾FC18¡¿»ñÈ¡µ±Ç°ËùÓĞÍæ¼ÒµÄÅÅÃû
-	vector<int>  getScore();                     //¡¾FC18¡¿»ñÈ¡µ±Ç°ËùÓĞÍæ¼ÒµÄScore --swm_sxt
-	int getTotalPlayerNum() { return totalPlayers; }             //¡¾FC18¡¿»ñÈ¡µ±Ç°Íæ¼ÒÊıÄ¿
+	Game() {}														  //ã€FC18ã€‘å½“å‰æ¸¸æˆè¿›ç¨‹ç±»æ„é€ å‡½æ•°
+	vector<time_t> roundTime;                                         //ã€FC18ã€‘æ¸¸æˆæ¯å›åˆæ—¶é—´   #json
+	bool init(string filename, string json_filename,vector<string> players_name, std::ofstream& cmdF,std::ofstream& infoF);  //@@@ã€FC18ã€‘ä»æ–‡ä»¶è¯»å…¥ä¿¡æ¯ï¼Œåˆå§‹åŒ–æ¸¸æˆï¼Œå¹¶å†™ç¬¬0è½®çš„JSON
+	DATA::Data& getData() { return data; }                            //ã€FC18ã€‘ä»gameç±»è·å–å½“å‰æ¸¸æˆä¿¡æ¯   #json
+	vector<TPlayerID>& getRank() { return Rank; }                     //ã€FC18ã€‘è·å–å½“å‰æ‰€æœ‰ç©å®¶çš„æ’å
+	int getTotalPlayerNum() { return totalPlayers; }             //ã€FC18ã€‘è·å–å½“å‰ç©å®¶æ•°ç›®
 	int getTotalPlayerAlive() { return playerAlive; }
-	TRound getCurrentRound() { return totalRounds; }                  //¡¾FC18¡¿»ñÈ¡µ±Ç°»ØºÏÊı
-	void DebugPhase();                                                //@@@¡¾FC18¡¿Êä³öµ÷ÊÔĞÅÏ¢
-	Info generatePlayerInfo(TPlayerID id);                            //@@@¡¾FC18¡¿µÃµ½·ÖÅä¸øÃ¿¸öai´úÂëdllµÄ²ÎÊıinfoÏòÁ¿
-	bool isValid();                                                   //¡¾FC18¡¿ÅĞ¶¨ÊÇ·ñ½áÊø
-	//@@@¡¾FC18¡¿¸ù¾İ¹æÔòÃ¿»ØºÏ·Ö¹ı³ÌµÄÖ´ĞĞÓë½áËãº¯Êı
-	void commandPhase(vector<CommandList>& command_list);             //@@@¡¾FC18¡¿´¦ÀíÍæ¼ÒÖ¸Áî
-	bool isAlive(TPlayerID id) { return data.players[id].isAlive(); } //¡¾FC18¡¿ÅĞ¶ÏÍæ¼ÒÊÇ·ñ»î×Å
-	void saveJson(ofstream& infoFile);                                                  //¡¾FC18¡¿Ğ´ÈëÕâÒ»ÂÖµÄJsonÊı¾İ
-	void printJson();                                                 //¡¾FC18¡¿½«JSONĞ´ÈëÎÄ¼ş
-	void addRound() { totalRounds++; }               //@@@¡¾FC18¡¿»ØºÏÊıµİÔö
-	bool goNext();                                                   //¡¾FC18¡¿ÅĞ¶Ï»¹ÄÜ·ñ¼ÌĞø½øĞĞ
+	TRound getCurrentRound() { return totalRounds; }                  //ã€FC18ã€‘è·å–å½“å‰å›åˆæ•°
+	void DebugPhase();                                                //@@@ã€FC18ã€‘è¾“å‡ºè°ƒè¯•ä¿¡æ¯
+	Info generatePlayerInfo(TPlayerID id);                            //@@@ã€FC18ã€‘å¾—åˆ°åˆ†é…ç»™æ¯ä¸ªaiä»£ç dllçš„å‚æ•°infoå‘é‡
+	bool isValid();                                                   //ã€FC18ã€‘åˆ¤å®šæ˜¯å¦ç»“æŸ
+	//@@@ã€FC18ã€‘æ ¹æ®è§„åˆ™æ¯å›åˆåˆ†è¿‡ç¨‹çš„æ‰§è¡Œä¸ç»“ç®—å‡½æ•°
+	void commandPhase(vector<CommandList>& command_list);             //@@@ã€FC18ã€‘å¤„ç†ç©å®¶æŒ‡ä»¤
+	bool isAlive(TPlayerID id) { return data.players[id].isAlive(); } //ã€FC18ã€‘åˆ¤æ–­ç©å®¶æ˜¯å¦æ´»ç€
+	void saveJson(ofstream& infoFile);                                                  //ã€FC18ã€‘å†™å…¥è¿™ä¸€è½®çš„Jsonæ•°æ®
+	void printJson();                                                 //ã€FC18ã€‘å°†JSONå†™å…¥æ–‡ä»¶
+	void addRound() { totalRounds++; }               //@@@ã€FC18ã€‘å›åˆæ•°é€’å¢
+	bool goNext();                                                   //ã€FC18ã€‘åˆ¤æ–­è¿˜èƒ½å¦ç»§ç»­è¿›è¡Œ
 	void setGameOver() {}
 
-	void setPlayerID(TPlayerID id){ curPlayer = id; }				//¡¾FC18¡¿ÉèÖÃµ±Ç°»ØºÏÍæ¼ÒID
-	void printGameMap();                                             //¡¾FC18¡¿Êä³öµ±Ç°ÓÎÏ·µØÍ¼
-	void regeneratePhase();                                          //¡¾FC18¡¿ÖØÉú½×¶Î£¬±øÍÅÉúÃüÁ¦»Ö¸´
-	void beginPhase();                                               //¡¾FC18¡¿¿ªÊ¼½×¶Î£¬ËşµÄÉú²úÈÎÎñ½áËã
-	void endPhase(vector<vector<Command>>& cmd2operate, TPlayerID id);             //¡¾FC18¡¿Ã¿Î»Íæ¼ÒÖ¸Áî½áËãºóµÄ²Ù×÷
-	//std::ofstream& cmdFile;                                           //¡¾FC18¡¿´æ·ÅÖ¸ÁîÊı¾İµÄÎÄ¼ş
-	//std::ofstream& infoFile;                                          //¡¾FC18¡¿´æ·ÅĞÅÏ¢Êı¾İµÄÎÄ¼ş
+	void setPlayerID(TPlayerID id){ curPlayer = id; }				//ã€FC18ã€‘è®¾ç½®å½“å‰å›åˆç©å®¶ID
+	void printGameMap();                                             //ã€FC18ã€‘è¾“å‡ºå½“å‰æ¸¸æˆåœ°å›¾
+	void regeneratePhase();                                          //ã€FC18ã€‘é‡ç”Ÿé˜¶æ®µï¼Œå…µå›¢ç”Ÿå‘½åŠ›æ¢å¤
+	void beginPhase();                                               //ã€FC18ã€‘å¼€å§‹é˜¶æ®µï¼Œå¡”çš„ç”Ÿäº§ä»»åŠ¡ç»“ç®—
+	void endPhase(vector<vector<Command>>& cmd2operate, TPlayerID id);             //ã€FC18ã€‘æ¯ä½ç©å®¶æŒ‡ä»¤ç»“ç®—åçš„æ“ä½œ
+	bool recordOldCommand(string command_path);                     //ã€FC18ã€‘ä»æ—§çš„æŒ‡ä»¤æ–‡æ¡£ä¸­æ¢å¤
+	//std::ofstream& cmdFile;                                           //ã€FC18ã€‘å­˜æ”¾æŒ‡ä»¤æ•°æ®çš„æ–‡ä»¶
+	//std::ofstream& infoFile;                                          //ã€FC18ã€‘å­˜æ”¾ä¿¡æ¯æ•°æ®çš„æ–‡ä»¶
+	int gameState = Normal;                                          //ã€FC18ã€‘æ¸¸æˆè¿è¡Œçš„çŠ¶æ€
+	vector<int>  getScore();
 
 
 
 
 protected:
 
-	DATA::Data data;                                                  //¡¾FC18¡¿ËùÓĞµÄÊı¾İ´æ·Å´¦
-	TRound totalRounds;                                               //¡¾FC18¡¿µ±Ç°»ØºÏÊı
-	size_t totalPlayers;                                              //¡¾FC18¡¿Íæ¼Ò×ÜÊı
-	size_t playerAlive;                                               //¡¾FC18¡¿´æ»îÈËÊı
-	vector<TPlayerID> Rank;                                           //¡¾FC18¡¿¸ù¾İ¹æÔò½øĞĞÅÅÃû
+	DATA::Data data;                                                  //ã€FC18ã€‘æ‰€æœ‰çš„æ•°æ®å­˜æ”¾å¤„
+	TRound totalRounds;                                               //ã€FC18ã€‘å½“å‰å›åˆæ•°
+	size_t totalPlayers;                                              //ã€FC18ã€‘ç©å®¶æ€»æ•°
+	size_t playerAlive;                                               //ã€FC18ã€‘å­˜æ´»äººæ•°
+	vector<TPlayerID> Rank;                                           //ã€FC18ã€‘æ ¹æ®è§„åˆ™è¿›è¡Œæ’å
 
 
-	string cmd_txt_filename;                                         //¡¾FC18¡¿Ö¸ÁîTXTÎÄ¼şÃû
-	string info_txt_filename;                                        //¡¾FC18¡¿ĞÅÏ¢TXTÎÄ¼şÃû
-	string mapinfo_txt_filename;                                     //¡¾FC18¡¿µØÍ¼ĞÅÏ¢TXTÎÄ¼şÃû
+	string cmd_txt_filename;                                         //ã€FC18ã€‘æŒ‡ä»¤TXTæ–‡ä»¶å
+	string info_txt_filename;                                        //ã€FC18ã€‘ä¿¡æ¯TXTæ–‡ä»¶å
+	string mapinfo_txt_filename;                                     //ã€FC18ã€‘åœ°å›¾ä¿¡æ¯TXTæ–‡ä»¶å
 
-	TPlayerID curPlayer;	//¡¾FC18¡¿±¾»ØºÏÕıÔÚÖ´ĞĞµÄÍæ¼Ò ÂÀÃÎĞÀ
+	TPlayerID curPlayer;	//ã€FC18ã€‘æœ¬å›åˆæ­£åœ¨æ‰§è¡Œçš„ç©å®¶ å•æ¢¦æ¬£
 };
 
 #endif // !GAME_H

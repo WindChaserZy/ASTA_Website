@@ -11,12 +11,8 @@
 
 #include"definition.h"
 
-#include"../json/json.h"
-
 #include "ai.h"
-
-//不需要dll —— swm_sxt
-/*
+/* do not need dll --swm_sxt
 #ifdef _MSC_VER
 // Du 2017.2.6
 // EXCLUDE windows sockets
@@ -62,7 +58,7 @@ namespace DAGAN {
 		string           name;                              //【FC18】玩家ai代码单独文件名
 		TPlayerID        id;                                //【FC18】玩家的序号
 		bool             Valid;                             //【FC18】玩家的dll是否运行正常
-		//_DLLHANDLE       hDLL;                              //【FC18】玩家dll读取时返回的句柄 //不需要dll —— swm_sxt
+		//_DLLHANDLE       hDLL;                              //【FC18】玩家dll读取时返回的句柄 do not need dll --swm_sxt
 	};
 
 }

@@ -1,6 +1,6 @@
 from django.http import HttpResponse, FileResponse
 from django.shortcuts import render, redirect
-from database.models import Game, Team, GameAi, GameBot, GameBotPlay, GameRecord
+from database.models import Game, Team, GameAi, GameBot, GameBotPlay, GameRecord, User
 from django.contrib import auth
 from judge.tasks import compileBot
 from api import settings
@@ -124,7 +124,7 @@ def aiDetail(request):
 	result = tools.gameAiToDict(ai)
 	result['bot'] = []
 	for bot in ai.bot.all():
-		result['bot'].append(tools.gameBotToDict(bot))
+		result['bot'].append(tools.gameBotToDict(bot, True))
 	return HttpResponse(json.dumps(result), content_type = 'application/json')
 
 def aiModify(request):
@@ -202,6 +202,58 @@ def aiAddBot(request):
 	bot.save()
 	compileBot.delay(bot)
 	return HttpResponse("Update successfully.", status = 200)
+
+def getBotList(request):
+	botList = GameBot.objects
+	if (request.GET and request.GET.get('ai')):
+		try:
+			ai = GameAi.objects.get(id = int(request.GET.get('ai')))
+			botList = botList.filter(ai = ai)
+		except:
+			return HttpResponse("AI not found.", status = 400)
+	
+	if (request.GET and request.GET.get('game')):
+		try:
+			game = Game.objects.get(id = int(request.GET.get('game')))
+			botList = botList.filter(ai__game = game)
+		except:
+			return HttpResponse("Game not found.", status = 400)
+	
+	if (request.GET and request.GET.get('user')):
+		try:
+			user = User.objects.get(id = int(request.GET.get('user')))
+			botList = botList.filter(ai__user = user)
+		except:
+			return HttpResponse("User not found.", status = 400)
+	
+	if (request.GET and request.GET.get('team')):
+		try:
+			team = Team.objects.get(id = int(request.GET.get('team')))
+			botList = botList.filter(ai__team = user)
+		except:
+			return HttpResponse("Team not found.", status = 400)
+	return botList.all().order_by('-id')
+
+def botList(request):
+	botList = getBotList(request)
+	if (request.GET and request.GET.get('pageSize') and request.GET.get('page')):
+		pageSize = int(request.GET.get('pageSize'))
+		page = int(request.GET.get('page'))
+		botList = botList[(page-1)*pageSize: page*pageSize]
+	result = []
+	for bot in botList:
+		item = tools.gameBotToDict(bot)
+		item['aiName'] = bot.ai.name
+		if bot.ai.team:
+			item['teamName'] = bot.ai.team.name
+		if bot.ai.user:
+			item['username'] = bot.ai.user.username
+		result.append(item)
+	return HttpResponse(json.dumps(result), content_type = 'application/json')
+
+def botListCount(request):
+	botList = getBotList(request)
+	return HttpResponse(json.dumps({'number': botList.count()}), content_type = 'application/json')
 
 def botCodeDownload(request):
 	if (not request.user.is_authenticated):

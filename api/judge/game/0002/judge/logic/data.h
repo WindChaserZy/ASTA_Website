@@ -2,22 +2,22 @@
 #ifndef _DATA_H
 #define _DATA_H
 /*
-**  Dataï¿½á¹¹ï¿½ï¿½
-**  ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÝµÄ´æ´¢ï¿½Í¹ï¿½ï¿½ï¿½
-**  ï¿½ï¿½ï¿½â²¿ï¿½æ´¢ï¿½ï¿½ï¿½ï¿½ï¿½Ö»ï¿½ï¿½æ´¢ ID ï¿½ï¿½ Data ï¿½Ðµï¿½ï¿½ï¿½
+**  Data½á¹¹Ìå
+**  ÓÃÓÚÊý¾ÝµÄ´æ´¢ºÍ¹²Ïí
+**  ÔÚÍâ²¿´æ´¢Ïà¹ØÀàÖ»Ðè´æ´¢ ID ÔÚ Data ÖÐµ÷ÓÃ
 */
-//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½FC15ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½Ã²ï¿½ï¿½ï¿½ï¿½ï¿½
+//ÒÔÏÂÀ´×ÔFC15£¬ÎÒÃÇÓ¦¸ÃÓÃ²»µ½ÁË
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-class Cell;//Ô­ï¿½ï¿½ï¿½ï¿½Ï¸ï¿½ï¿½ï¿½ï¿½
-class Tentacle;//Ô­ï¿½ï¿½ï¿½Ä´ï¿½ï¿½ï¿½ï¿½ï¿½
+class Cell;//Ô­À´µÄÏ¸°ûÀà
+class Tentacle;//Ô­À´µÄ´¥ÊÖÀà
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//@@@ï¿½ï¿½FC18ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½à£¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í·ï¿½Ä¼ï¿½ï¿½ï£¬ï¿½Î¿ï¿½Ô­ï¿½ï¿½ï¿½ï¿½class Cell
+//@@@¡¾FC18¡¿·ÀÓùËþÀà£¬ÕâÀïÊÇÉùÃ÷£¬¶¨ÒåÔÚÀàµÄÍ·ÎÄ¼þÀï£¬²Î¿¼Ô­À´µÄclass Cell
 
-//ï¿½ï¿½FC18ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½à£¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í·ï¿½Ä¼ï¿½ï¿½ï£¬ï¿½Î¿ï¿½Ô­ï¿½ï¿½ï¿½ï¿½class Tentacle
-class Crops;//ï¿½ï¿½FC18ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-class Tower;//ï¿½ï¿½FC18ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-class Player;//ï¿½ï¿½FC18ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//¡¾FC18¡¿±øÍÅÀà£¬ÕâÀïÊÇÉùÃ÷£¬¶¨ÒåÔÚÀàµÄÍ·ÎÄ¼þÀï£¬²Î¿¼Ô­À´µÄclass Tentacle
+class Crops;//¡¾FC18¡¿±øÍÅÀà
+class Tower;//¡¾FC18¡¿·ÀÓùËþÀà
+class Player;//¡¾FC18¡¿Íæ¼ÒÀà
 
 
 #include "map.h"
@@ -29,64 +29,66 @@ struct CutTentacleInfoJson
 	double frontResource = -1;
 };
 
-namespace DATA                                         //@@@ï¿½ï¿½FC18ï¿½ï¿½ï¿½ï¿½ï¿½Õ¼ï¿½
+namespace DATA                                         //@@@¡¾FC18¡¿Ãû¿Õ¼ä
 {
-	struct Data                                        //@@@ï¿½ï¿½FC18ï¿½ï¿½Dataï¿½á¹¹ï¿½å£¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú´ï¿½ï¿½Ð½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½æ´¢
+	struct Data                                        //@@@¡¾FC18¡¿Data½á¹¹Ìå£¬ÓÃÓÚÔÚÄÚ´æÖÐ½øÐÐÀàÓëÀàµÄÊý¾Ý¹²Ïí¡¢´æ´¢
 	{
-		TTower totalTowers;                            //ï¿½ï¿½FC18ï¿½ï¿½ï¿½ÜµÄ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-		//ï¿½ï¿½FC18ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½Ð·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½/vectorï¿½ï¿½ï¿½É£ï¿½ï¿½ï¿½Ö¸ï¿½ë£¬ï¿½ï¿½ï¿½Ô²Î¿ï¿½Ô­ï¿½ï¿½ï¿½ï¿½Cell* cells
-		vector<Tower> myTowers;                  //ï¿½ï¿½FC18ï¿½ï¿½ï¿½ï¿½ï¿½Ð·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		TTower totalTowers;                            //¡¾FC18¡¿×ÜµÄ·ÀÓùËþÊý
+		//¡¾FC18¡¿Ö¸ÏòËùÓÐ·ÀÓùËþ£¨Êý×é/vector¾ù¿É£©µÄÖ¸Õë£¬¿ÉÒÔ²Î¿¼Ô­À´µÄCell* cells
+		vector<Tower> myTowers;                  //¡¾FC18¡¿ËùÓÐ·ÀÓùËþµÄÏòÁ¿
 		
 		
-		TCorps totalCorps;                             //ï¿½ï¿½FC18ï¿½ï¿½ï¿½ÜµÄ±ï¿½ï¿½ï¿½ï¿½ï¿½
-		vector<Crops> myCorps;                         //ï¿½ï¿½FC18ï¿½ï¿½ï¿½ï¿½ï¿½Ð±ï¿½ï¿½Å°ï¿½ï¿½ï¿½ï¿½ï¿½Å²ï¿½
+		TCorps totalCorps;                             //¡¾FC18¡¿×ÜµÄ±øÍÅÊý
+		vector<Crops> myCorps;                         //¡¾FC18¡¿ËùÓÐ±øÍÅ°´ÐòºÅÅÅ²¼
 		
 		
-		TPlayer totalPlayers;                          //ï¿½ï¿½FC18ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-		//@@@ï¿½ï¿½FC18ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò£ï¿½ï¿½ï¿½ï¿½ï¿½/vectorï¿½ï¿½ï¿½É£ï¿½ï¿½ï¿½Ö¸ï¿½ë£¬ï¿½ï¿½ï¿½Ô²Î¿ï¿½Ô­ï¿½ï¿½ï¿½ï¿½Player* players
-		Player* players;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òµï¿½Ö¸ï¿½ï¿½
+		TPlayer totalPlayers;                          //¡¾FC18¡¿Íæ¼ÒÊý
+		//@@@¡¾FC18¡¿Ö¸ÏòËùÓÐÍæ¼Ò£¨Êý×é/vector¾ù¿É£©µÄÖ¸Õë£¬¿ÉÒÔ²Î¿¼Ô­À´µÄPlayer* players
+		Player* players;//ËùÓÐÍæ¼ÒµÄÖ¸Õë
 
-		Map gameMap;                                   //@@@ï¿½ï¿½FC18ï¿½ï¿½ï¿½ï¿½Ç°ï¿½Äµï¿½Í¼
-		TRound totalRounds;                            //ï¿½ï¿½FC18ï¿½ï¿½ï¿½ï¿½Ç°ï¿½Ä»Øºï¿½ï¿½ï¿½
-
-
-		set<TTowerID> newTower;                //ï¿½ï¿½FC18ï¿½ï¿½Ã¿ï¿½ØºÏµï¿½ï¿½ï¿½ï¿½ï¿½
-		set<TTowerID> dieTower;                //ï¿½ï¿½FC18ï¿½ï¿½Ã¿ï¿½ØºÏ±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-		set<TCorpsID> newCorps;                //ï¿½ï¿½FC18ï¿½ï¿½Ã¿ï¿½ØºÏµï¿½ï¿½Â±ï¿½ï¿½ï¿½
-		set<TCorpsID> dieCorps;                //ï¿½ï¿½FC18ï¿½ï¿½Ã¿ï¿½ØºÏ±ï¿½ï¿½ï¿½ï¿½ï¿½Ä±ï¿½ï¿½ï¿½
-		set<TTowerID> changeTowers;            //ï¿½ï¿½FC18ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½Ä±ï¿½ï¿½ï¿½Òªï¿½ï¿½Â¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-		set<TCorpsID> changeCorps;             //ï¿½ï¿½FC18ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½Ä±ï¿½ï¿½ï¿½Òªï¿½ï¿½Â¼ï¿½Ä±ï¿½ï¿½Å±ï¿½ï¿½
+		Map gameMap;                                   //@@@¡¾FC18¡¿µ±Ç°µÄµØÍ¼
+		TRound totalRounds;                            //¡¾FC18¡¿µ±Ç°µÄ»ØºÏÊý
 
 
-		//ï¿½ï¿½ï¿½ï¿½Ð´JSONï¿½Äµï¿½
-		//Json::Value commandJsonRoot;                   //ï¿½ï¿½FC18ï¿½ï¿½ï¿½ï¿½ï¿½Ð»Øºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Jsonï¿½ï¿½ï¿½Úµï¿½
-		//Json::Value infoJsonRoot;                      //ï¿½ï¿½FC18ï¿½ï¿½ï¿½ï¿½ï¿½Ð»Øºï¿½ï¿½ï¿½Ò¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í±ï¿½ï¿½ï¿½Jsonï¿½Ä¸ï¿½ï¿½Úµï¿½
-		//Json::Value mapInfoJsonRoot;                   //ï¿½ï¿½FC18ï¿½ï¿½ï¿½ï¿½ï¿½Ð»ØºÏµï¿½Í¼ï¿½ï¿½Ï¢ï¿½ï¿½Jsonï¿½ï¿½ï¿½Úµï¿½
-		//Json::Value currentRoundCommandJson;           //ï¿½ï¿½FC18ï¿½ï¿½ï¿½ï¿½Ç°ï¿½Øºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Jsonï¿½ï¿½ï¿½Úµï¿½
-		//Json::Value currentRoundPlayerJson;            //ï¿½ï¿½FC18ï¿½ï¿½ï¿½ï¿½Ç°ï¿½Øºï¿½ï¿½ï¿½Òµï¿½Jsonï¿½ï¿½ï¿½Úµï¿½
-		//Json::Value currentRoundTowerJson;             //ï¿½ï¿½FC18ï¿½ï¿½ï¿½ï¿½Ç°ï¿½ØºÏ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Jsonï¿½ï¿½ï¿½Úµï¿½
-		//Json::Value currentRoundCorpsJson;             //ï¿½ï¿½FC18ï¿½ï¿½ï¿½ï¿½Ç°ï¿½ØºÏ±ï¿½ï¿½Åµï¿½Jsonï¿½ï¿½ï¿½Úµï¿½
-		Json::Value currentRoundMapJson;               //ï¿½ï¿½FC18ï¿½ï¿½ï¿½ï¿½Ç°ï¿½ØºÏµï¿½Í¼ï¿½ï¿½Jsonï¿½ï¿½ï¿½Úµï¿½
-		Json::Value lastRoundMapJson;                  //ï¿½ï¿½FC18ï¿½ï¿½ï¿½ï¿½Â¼ï¿½ï¿½Ò»ï¿½ØºÏµï¿½Í¼ï¿½ï¿½Jsonï¿½ï¿½ï¿½Úµï¿½
-
-		void resetAllCnt() { players = nullptr, totalRounds = 0; totalTowers = 0; totalCorps = 0; totalPlayers = 0; }//[ï¿½ï¿½FC18ï¿½ï¿½dataï¿½Ð¼ï¿½ï¿½ï¿½ï¿½Ø¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-		TRound getRound() { return totalRounds; }      //ï¿½ï¿½FC18ï¿½ï¿½ï¿½ï¿½È¡ï¿½ï¿½Ç°dataï¿½ï¿½ï¿½Ú¼ï¿½Â¼ï¿½Ú¼ï¿½ï¿½ØºÏµï¿½ï¿½ï¿½ï¿½Ý£ï¿½Ð¡ï¿½ØºÏ£ï¿½
-		TRound addRound() { totalRounds++; return totalRounds; }             //ï¿½ï¿½FC18ï¿½ï¿½dataï¿½Øºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó£ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½Øºï¿½Jsonï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õ£ï¿½Ã¿ï¿½ï¿½ï¿½ï¿½ï¿½aiï¿½ï¿½ï¿½ë¿ªÊ¼ï¿½ï¿½Ö®Ç°ï¿½ï¿½Ð¡ï¿½ØºÏ£ï¿½
-		TTower getTotalTower() { return totalTowers; } //ï¿½ï¿½FC18ï¿½ï¿½ï¿½ï¿½È¡ï¿½ï¿½Ç°dataï¿½ï¿½Â¼ï¿½ï¿½ï¿½Ü·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-		TCorps getTotalCorp() { return totalCorps; }   //ï¿½ï¿½FC18ï¿½ï¿½ï¿½ï¿½È¡ï¿½ï¿½Ç°dataï¿½ï¿½Â¼ï¿½ï¿½ï¿½Ü±ï¿½ï¿½ï¿½ï¿½ï¿½
+		set<TTowerID> newTower;                //¡¾FC18¡¿Ã¿»ØºÏµÄÐÂËþ
+		set<TTowerID> dieTower;                //¡¾FC18¡¿Ã¿»ØºÏ±»ÏûÃðµÄËþ
+		set<TCorpsID> newCorps;                //¡¾FC18¡¿Ã¿»ØºÏµÄÐÂ±øÍÅ
+		set<TCorpsID> dieCorps;                //¡¾FC18¡¿Ã¿»ØºÏ±»ÏûÃðµÄ±øÍÅ
+		set<TTowerID> changeTowers;            //¡¾FC18¡¿ÊôÐÔÖµ¸Ä±äÐèÒª¼ÇÂ¼µÄËþ±àºÅ
+		set<TCorpsID> changeCorps;             //¡¾FC18¡¿ÊôÐÔÖµ¸Ä±äÐèÒª¼ÇÂ¼µÄ±øÍÅ±àºÅ
 
 
-		//FC15ï¿½ï¿½
-		int CellNum;//ï¿½ï¿½ï¿½ï¿½
-		int TentacleNum;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-		TPlayer PlayerNum;//ï¿½ï¿½ï¿½ï¿½ï¿½
-		Cell* cells;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½
-		vector<vector<CutTentacleInfoJson>>  cutTentacleInfoJson;//ï¿½ï¿½Î¬ï¿½ï¿½ï¿½ï¿½æ´¢Ã¿ï¿½ï¿½ï¿½ï¿½ï¿½ßµï¿½ï¿½Ð¶ï¿½ï¿½ï¿½Ï¢
-		vector<vector<bool>> cutTentacleJson;  //ï¿½ï¿½Î¬ï¿½ï¿½ï¿½ï¿½Ã¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶Ï±ï¿½Ö¾
-		vector<vector<bool>> cutTentacleBornJson;  // ï¿½ï¿½Î¬ï¿½ï¿½ï¿½ï¿½Ã¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É±ï¿½Ö¾
-		Tentacle*** tentacles;//ï¿½ï¿½FC15ï¿½ï¿½ï¿½ï¿½ï¿½Ð±ï¿½ï¿½ßµï¿½Ö¸ï¿½ë£¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Î¬ï¿½ï¿½ï¿½ï¿½ï¿½Ä£ï¿½Ã¿ï¿½ï¿½ï¿½ï¿½ï¿½ß¾ï¿½ï¿½ï¿½i->jï¿½ï¿½
-		Json::Value root;                              //JSONï¿½ï¿½ï¿½Úµï¿½
-		Json::Value currentRoundJson;                  //ï¿½ï¿½Ç°ï¿½Øºï¿½JSONï¿½Ä¸ï¿½ï¿½Úµã£¬saveJson()ï¿½ï¿½Ê±ï¿½ï¿½åµ½ï¿½ï¿½Jsonï¿½Ä¸ï¿½ï¿½Úµï¿½ï¿½ï¿½
+		//¹ØÓÚÐ´JSONÎÄµµ
+		//Json::Value commandJsonRoot;                   //¡¾FC18¡¿ËùÓÐ»ØºÏÃüÁîµÄJson¸ù½Úµã
+		//Json::Value infoJsonRoot;                      //¡¾FC18¡¿ËùÓÐ»ØºÏÍæ¼Ò¡¢·ÀÓùËþºÍ±øÍÅJsonµÄ¸ù½Úµã
+		//Json::Value mapInfoJsonRoot;                   //¡¾FC18¡¿ËùÓÐ»ØºÏµØÍ¼ÐÅÏ¢µÄJson¸ù½Úµã
+		//Json::Value currentRoundCommandJson;           //¡¾FC18¡¿µ±Ç°»ØºÏÃüÁîµÄJson¸ù½Úµã
+		//Json::Value currentRoundPlayerJson;            //¡¾FC18¡¿µ±Ç°»ØºÏÍæ¼ÒµÄJson¸ù½Úµã
+		//Json::Value currentRoundTowerJson;             //¡¾FC18¡¿µ±Ç°»ØºÏ·ÀÓùËþµÄJson¸ù½Úµã
+		//Json::Value currentRoundCorpsJson;             //¡¾FC18¡¿µ±Ç°»ØºÏ±øÍÅµÄJson¸ù½Úµã
+		Json::Value currentRoundMapJson;               //¡¾FC18¡¿µ±Ç°»ØºÏµØÍ¼µÄJson¸ù½Úµã
+		Json::Value lastRoundMapJson;                  //¡¾FC18¡¿¼ÇÂ¼ÉÏÒ»»ØºÏµØÍ¼µÄJson¸ù½Úµã
+
+		void resetAllCnt() { players = nullptr, totalRounds = 0; totalTowers = 0; totalCorps = 0; totalPlayers = 0; }//[¡¾FC18¡¿dataÖÐ¼¸¸ö¹Ø¼üµÄÊý¾ÝÈ«²¿ÇåÁã
+		TRound getRound() { return totalRounds; }      //¡¾FC18¡¿»ñÈ¡µ±Ç°dataÕýÔÚ¼ÇÂ¼µÚ¼¸»ØºÏµÄÊý¾Ý£¨Ð¡»ØºÏ£©
+		TRound addRound() { totalRounds++; return totalRounds; }             //¡¾FC18¡¿data»ØºÏÊýÔö¼Ó£¬ÔÚÉÏÒ»»ØºÏJsonÊý¾ÝÇå¿Õ£¬Ã¿¸öÍæ¼Òai´úÂë¿ªÊ¼ÅÜÖ®Ç°£¨Ð¡»ØºÏ£©
+		TTower getTotalTower() { return totalTowers; } //¡¾FC18¡¿»ñÈ¡µ±Ç°data¼ÇÂ¼µÄ×Ü·ÀÓùËþÊý
+		TCorps getTotalCorp() { return totalCorps; }   //¡¾FC18¡¿»ñÈ¡µ±Ç°data¼ÇÂ¼µÄ×Ü±øÍÅÊý
+		vector<CommandList> memoCommand;               //¡¾FC18]´ÓÖ¸Áî´æµµ»Ö¸´Êý¾ÝÊ±µÄÖ¸Áî¼ÇÂ¼           
+		int gameState;                                 //¡¾FC18¡¿µ±Ç°ÓÎÏ·Ä£Ê½
+
+
+		//FC15µÄ
+		int CellNum;//ËþÊý
+		int TentacleNum;//±øÏßÊý
+		TPlayer PlayerNum;//Íæ¼ÒÊý
+		Cell* cells;//ËùÓÐËþµÄÖ¸Õë
+		vector<vector<CutTentacleInfoJson>>  cutTentacleInfoJson;//¶þÎ¬Êý×é´æ´¢Ã¿Ìõ±øÏßµÄÇÐ¶ÏÐÅÏ¢
+		vector<vector<bool>> cutTentacleJson;  //¶þÎ¬Êý×éÃ¿Ìõ±øÏßÇÐ¶Ï±êÖ¾
+		vector<vector<bool>> cutTentacleBornJson;  // ¶þÎ¬Êý×éÃ¿Ìõ±øÏßÉú³É±êÖ¾
+		Tentacle*** tentacles;//¡¾FC15¡¿ËùÓÐ±øÏßµÄÖ¸Õë£¨±øÏßÊÇÓÉÒ»¸ö¶þÎ¬Êý×é´æµÄ£¬Ã¿¸ö±øÏß¾ÍÊÇi->j£©
+		Json::Value root;                              //JSON¸ù½Úµã
+		Json::Value currentRoundJson;                  //µ±Ç°»ØºÏJSONµÄ¸ù½Úµã£¬saveJson()µÄÊ±ºò²åµ½×ÜJsonµÄ¸ù½ÚµãÏÂ
 	};
 }
 

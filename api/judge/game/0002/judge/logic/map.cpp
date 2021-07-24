@@ -1,5 +1,5 @@
-//#2021-1-19 <JYP> ÊìÏ¤´úÂë£¬Ìí¼Ó×¢ÊÍ
-//#2021-1-28 <JYP> checked£¬¼ì²é´úÂë£¬¸ü¸Ä´íÎó
+//#2021-1-19 <JYP> ç†Ÿæ‚‰ä»£ç ï¼Œæ·»åŠ æ³¨é‡Š
+//#2021-1-28 <JYP> checkedï¼Œæ£€æŸ¥ä»£ç ï¼Œæ›´æ”¹é”™è¯¯
 #include"map.h"
 #include<fstream>
 #include<iostream>
@@ -7,32 +7,44 @@
 #include "Crops.h"
 #include "tower.h"
 #include "player.h"
+#include <cstdio>
 #include <utility>
 #include <vector>
+#include <set>
 #include <map>
 #include <algorithm>
 using std::pair;
 using std::vector;
+using std::set;
+using std::sprintf;
+using std::sscanf;
 
-
+TPoint TRClassRoomFill[4][11] =
+{
+{{1,0},{2,0},{3,0},{0,1},{1,1},{2,1},{3,1},{0,2},{1,2},{0,3},{1,3}},
+{{-1,0},{-2,0},{-3,0},{0,1},{-1,1},{-2,1},{-3,1},{0,2},{-1,2},{0,3},{-1,3}},
+{{-1,0},{-2,0},{-3,0},{0,-1},{-1,-1},{-2,-1},{-3,-1},{0,-2},{-1,-2},{0,-3},{-1,-3}},
+{{1,0},{2,0},{3,0},{0,-1},{1,-1},{2,-1},{3,-1},{0,-2},{1,-2},{0,-3},{1,-3}}
+};
 
 
 /***********************************************************************************************
-*º¯ÊıÃû :¡¾FC18¡¿readMap¶ÁÈëµØÍ¼º¯Êı
-*º¯Êı¹¦ÄÜÃèÊö : Í¨¹ıÎÄ¼ş¶ÁÈëµ±Ç°ÓÎÏ·µÄµØÍ¼Êı¾İ¡¢Íæ¼ÒÊıÁ¿Êı¾İ£¬²¢³õÊ¼»¯Íæ¼ÒÊı×é£¬Ğ´ÈëÁã»ØºÏÃüÁî
+*å‡½æ•°å :ã€FC18ã€‘readMapè¯»å…¥åœ°å›¾å‡½æ•°
+*å‡½æ•°åŠŸèƒ½æè¿° : é€šè¿‡æ–‡ä»¶è¯»å…¥å½“å‰æ¸¸æˆçš„åœ°å›¾æ•°æ®ã€ç©å®¶æ•°é‡æ•°æ®ï¼Œå¹¶åˆå§‹åŒ–ç©å®¶æ•°ç»„ï¼Œå†™å…¥é›¶å›åˆå‘½ä»¤
                 Json
-*º¯Êı²ÎÊı : inMap<ifstream&> ÊäÈëÎÄ¼şÁ÷¶ÔÏó£¬enableOutput<bool> ÊÇ·ñÊä³öµ÷ÊÔĞÅÏ¢£¨true--ÔÊĞí£¬
-            false--²»ÔÊĞí£©
-*º¯Êı·µ»ØÖµ : false--¶ÁÈëµØÍ¼Ê§°Ü£¬true--¶ÁÈëµØÍ¼³É¹¦
-*×÷Õß : ½ªÓÀÅô
+*å‡½æ•°å‚æ•° : inMap<ifstream&> è¾“å…¥æ–‡ä»¶æµå¯¹è±¡ï¼ŒenableOutput<bool> æ˜¯å¦è¾“å‡ºè°ƒè¯•ä¿¡æ¯ï¼ˆtrue--å…è®¸ï¼Œ
+            false--ä¸å…è®¸ï¼‰
+*å‡½æ•°è¿”å›å€¼ : false--è¯»å…¥åœ°å›¾å¤±è´¥ï¼Œtrue--è¯»å…¥åœ°å›¾æˆåŠŸ
+*ä½œè€… : å§œæ°¸é¹
 ***********************************************************************************************/
-bool Map::readMap(ifstream& inMap, ofstream& cmdF,ofstream& infoF, bool enableOutput, std::vector<std::string> players_name) {
-	data->resetAllCnt();             //³õÊ¼»¯¹ı³ÌÎªµÚ0»ØºÏ
-	//³õÊ¼»¯µØÍ¼¸ß¶È¡¢¿í¶È
-#ifdef OUTPUT_DETAIL
+bool Map::readMap(ifstream& inMap, ofstream& cmdF,ofstream& infoF, bool enableOutput, std::vector<std::string> players_name, string log_path) {
+	this->log_path = log_path;
+	data->resetAllCnt();             //åˆå§‹åŒ–è¿‡ç¨‹ä¸ºç¬¬0å›åˆ
+	//åˆå§‹åŒ–åœ°å›¾é«˜åº¦ã€å®½åº¦
 	if (enableOutput)
+#ifdef NOTICE
 		cout << "init map......" << endl;
-#endif
+#endif // NOTICE
 	inMap >> m_height;
 	inMap >> m_width;
 	//data->mapInfoJsonRoot["head"]["height"] = Json::Value(std::to_string(m_height));
@@ -40,7 +52,7 @@ bool Map::readMap(ifstream& inMap, ofstream& cmdF,ofstream& infoF, bool enableOu
 
 
 	//rankInfo
-	//¸üĞÂµ±Ç°»ØºÏµÄÅÅÃûĞÅÏ¢JSON£¬²»ÖªµÀµÚ5ÃûÎŞÃûÊÏÍæ¼ÒÎªÊ²Ã´Ò²ÔÚJsonÀï£¬µ«ÊÇÔİÊ±ÕÕ×ÅFC15Ô­ÂëĞŞ¸ÄÁË
+	//æ›´æ–°å½“å‰å›åˆçš„æ’åä¿¡æ¯JSONï¼Œä¸çŸ¥é“ç¬¬5åæ— åæ°ç©å®¶ä¸ºä»€ä¹ˆä¹Ÿåœ¨Jsoné‡Œï¼Œä½†æ˜¯æš‚æ—¶ç…§ç€FC15åŸç ä¿®æ”¹äº†
 	/*Json::Value rankInfoJson;
 	Json::Value rankUnit;
 	for (int i = 1; i < 5; i++) {
@@ -54,11 +66,12 @@ bool Map::readMap(ifstream& inMap, ofstream& cmdF,ofstream& infoF, bool enableOu
 	data->currentRoundPlayerJson["rankInfo"] = rankInfoJson;*/
 
 
-	//³õÊ¼»¯ÕóÓª
-#ifdef OUTPUT_DETAIL
+	//åˆå§‹åŒ–é˜µè¥
 	if (enableOutput)
+#ifdef NOTICE
 		cout << "init team......" << endl;
-#endif
+#endif // NOTICE
+
 	inMap >> data->totalPlayers;
 	//data->commandJsonRoot["head"]["totalPlayers"] = Json::Value(std::to_string(data->totalPlayers)); //#json
 	data->players = new Player[data->totalPlayers];
@@ -76,8 +89,8 @@ bool Map::readMap(ifstream& inMap, ofstream& cmdF,ofstream& infoF, bool enableOu
 
 
 	//#json add
-	//³õÊ¼»¯Íæ¼ÒĞÅÏ¢JSON
-	//³õÊ¼»¯Íæ¼Ò²Ù×÷JSON
+	//åˆå§‹åŒ–ç©å®¶ä¿¡æ¯JSON
+	//åˆå§‹åŒ–ç©å®¶æ“ä½œJSON
 	//Json::Value playerActionJson; 
 	for (int i = 0; i < data->totalPlayers; ++i)
 	{
@@ -107,194 +120,316 @@ bool Map::readMap(ifstream& inMap, ofstream& cmdF,ofstream& infoF, bool enableOu
 	}
 
 
-	//³õÊ¼»¯±øÍÅµÄ±í
+	//åˆå§‹åŒ–å…µå›¢çš„è¡¨
 	/*data->corps = new CorpsUnit*[m_height];
 	for (int i = 0; i < m_height; i++) {
 		data->corps[i] = new CorpsUnit[m_width];
 	}*/
+#ifdef SAVETXT
 	char bufferCorps[64];
 	sprintf(bufferCorps, "#corps\n");
 	infoF << bufferCorps;
-
+#endif // !SAVETXT
 	return true;
 }
 
 /***********************************************************************************************
-*º¯ÊıÃû :¡¾FC18¡¿randomInitMapËæ»úµØÍ¼²úÉúÆ÷
-*º¯Êı¹¦ÄÜÃèÊö : ³õÊ¼»¯È·¶¨µØÍ¼³¤¡¢¿íÖ®ºó£¬ÎªÃ¿¸öµØÍ¼·½¸ñ·ÖÅäµØĞÎ£¬»®·Ö¸÷ÊÆÁ¦µÄ³õÊ¼ÁìÍÁ£¬·ÖÅäËş
-                µÄ³õÊ¼Î»ÖÃ
-*º¯Êı²ÎÊı : ÎŞ
-*º¯Êı·µ»ØÖµ : false--Ëæ»úµØÍ¼³õÊ¼»¯Ê§°Ü£¬true--Ëæ»úµØÍ¼³õÊ¼»¯³É¹¦
-*×÷Õß : ½ªÓÀÅô
+*å‡½æ•°å :ã€FC18ã€‘randomInitMapéšæœºåœ°å›¾äº§ç”Ÿå™¨
+*å‡½æ•°åŠŸèƒ½æè¿° : åˆå§‹åŒ–ç¡®å®šåœ°å›¾é•¿ã€å®½ä¹‹åï¼Œä¸ºæ¯ä¸ªåœ°å›¾æ–¹æ ¼åˆ†é…åœ°å½¢ï¼Œåˆ’åˆ†å„åŠ¿åŠ›çš„åˆå§‹é¢†åœŸï¼Œåˆ†é…å¡”
+                çš„åˆå§‹ä½ç½®
+*å‡½æ•°å‚æ•° : æ— 
+*å‡½æ•°è¿”å›å€¼ : false--éšæœºåœ°å›¾åˆå§‹åŒ–å¤±è´¥ï¼Œtrue--éšæœºåœ°å›¾åˆå§‹åŒ–æˆåŠŸ
+*ä½œè€… : å§œæ°¸é¹
 ***********************************************************************************************/
 bool Map::randomInitMap(ofstream& cmdFile,ofstream& infoFile) {
-	//¡¾FC18¡¿ÀûÓÃ°ØÁÖÔëÉù·½·¨²úÉúËæ»úµØÍ¼
-	Perlin perlinNoiseGen;
-	int terrainArea[TERRAIN_TYPE_NUM] = { 0 };      //¡¾FC18¡¿Í³¼ÆÃ¿ÖÖµØĞÎÉú³ÉÁË¶àÉÙ¸ñ
-	double** perlinNoise = new double* [m_height];  //¡¾FC18¡¿°ØÁÖÔëÉù±í
-	for (int i = 0; i < m_height; i++) {
-		perlinNoise[i] = new double[m_width];
-	}
-	int** typeOfTerrain = new int* [m_height];      //¡¾FC18¡¿µØĞÎÔ¤·ÖÅä±í
-	for (int i = 0; i < m_height; i++) {
-		typeOfTerrain[i] = new int[m_width];
-	}
-
-	double minNoise = INF, maxNoise = -INF;
-	for (int i = 0; i < m_height; i++) {             //Éú³É°ØÁÖÔëÉù±í£¬²¢¼ÇÂ¼ÆäÖĞµÄ×î´ó¡¢×îĞ¡ÔëÉùÖµ
-		for (int j = 0; j < m_width; j++) {
-			typeOfTerrain[i][j] = UNALLOCATED;       //³õÊ¼»¯ËùÓĞ¸ñµØĞÎ¾ùÎªÎ´·ÖÅä
-			perlinNoise[i][j] = perlinNoiseGen.PerlinNoise(i, j);            //Éú³É³õÊ¼µÄ°ØÁÖÔëÉù
-			if (perlinNoise[i][j] > maxNoise) maxNoise = perlinNoise[i][j];
-			if (perlinNoise[i][j] < minNoise) minNoise = perlinNoise[i][j];
-		}
-	}
-	double interval = (maxNoise - minNoise) / TERRAIN_TYPE_NUM;
-	for (int i = 0; i < m_height; i++) {
-		for (int j = 0; j < m_width; j++) {
-			for (int k = 0; k < TERRAIN_TYPE_NUM; k++) {
-				if (((perlinNoise[i][j] - minNoise) >= k * interval) && ((perlinNoise[i][j] - minNoise) < (k + 1) * interval)) {
-					typeOfTerrain[i][j] = k;
-					break;
-				}
-			}
-			if (typeOfTerrain[i][j] == UNALLOCATED) typeOfTerrain[i][j] = TERRAIN_TYPE_NUM - 1;
-		}
-	}
-	for (int itercnt = 0; itercnt < perlinNoiseGen.iterRound; itercnt++) {
-		for (int i = 1; i < m_height - 1; i++) {
-			for (int j = 1; j < m_width - 1; j++) {
-				int nums[TERRAIN_TYPE_NUM] = { 0 };
-				for (int k = 0; k < 8; k++) {
-					int newPosX = j + paraOffset[k].m_x;
-					int newPosY = i + paraOffset[k].m_y;
-					int scaleValue = typeOfTerrain[newPosY][newPosX];
-					nums[scaleValue]++;
-				}
-				for (int cnt = 0; cnt < TERRAIN_TYPE_NUM; cnt++) {
-					if (nums[cnt] >= perlinNoiseGen.connectStandard) typeOfTerrain[i][j] = cnt;
-				}
-				if (itercnt == perlinNoiseGen.iterRound - 1) {
-					int currentType = typeOfTerrain[i][j];
-					terrainArea[currentType]++;
-				}
-			}
-		}
-	}
-	vector<pair<int, int>> areaRankPair;
-	for (int i = 0; i < TERRAIN_TYPE_NUM; i++) {
-		areaRankPair.push_back({i,terrainArea[i]});
-	}
-	std::sort(areaRankPair.begin(),areaRankPair.end(),
-		[](const pair<int, int>& a, pair<int, int>& b) {return a.second > b.second; });
-	std::map<int, int> areaRankMap;
-	for (int i = 0; i < TERRAIN_TYPE_NUM; i++) {
-		areaRankMap.insert(pair<int, int>(areaRankPair[i].first, i));
-	}
+	int Xinterval, Yinterval;         //Xæ–¹å‘å’ŒYæ–¹å‘åœ°å›¾çš„å…¬å…±åŒºåŸŸæ¡å¸¦å®½åº¦
+	Xinterval = (m_width % 2 == 0) ? 2 : 3;
+	Yinterval = (m_height % 2 == 0) ? 2 : 3;
 	for (int i = 0; i < m_height; i++) {
 		vector<mapBlock> newVectorMapBlock;
 		map.push_back(newVectorMapBlock);
 		for (int j = 0; j < m_width; j++) {
-			mapBlock newBlock;               //µØ¿é³õÊ¼»¯£¬ÎŞËş£¬Æ½Ô­£¬Ã»ÓĞÖ÷ÈË£¬Õ¼ÓĞÊôĞÔÖµÎª0
+			mapBlock newBlock;               //åœ°å—åˆå§‹åŒ–ï¼Œæ— å¡”ï¼Œå¹³åŸï¼Œæ²¡æœ‰ä¸»äººï¼Œå æœ‰å±æ€§å€¼ä¸º0
 			newBlock.TowerIndex = NOTOWER;
 			newBlock.owner = PUBLIC;
 			newBlock.type = TRPlain;
 			for (int k = 0; k < 4; k++) {
-				newBlock.occupyPoint.push_back(0);    //¸÷·½¸ñ³õÊ¼Õ¼ÓĞÊôĞÔÖµ¾ùÎª0
+				newBlock.occupyPoint.push_back(0);    //å„æ–¹æ ¼åˆå§‹å æœ‰å±æ€§å€¼å‡ä¸º0
 			}
 			map[i].push_back(newBlock);
 		}
 	}
-	for (int i = 0; i < m_height; i++) {      //Éú³ÉµØĞÎ
-		for (int j = 0; j < m_width; j++) {
-			int type = typeOfTerrain[i][j];
-			int rank;
-			if (areaRankMap.count(type) > 0)
-				rank = areaRankMap[type];
-			else
-				rank = 0;
-			map[i][j].type = terrain[rank];
+	vector<pair<TPoint, TPoint>> towerRegion;         //å„ç©å®¶ç”Ÿæˆéšæœºé˜²å¾¡å¡”çš„ä½ç½®èŒƒå›´
+	towerRegion.resize(4);
+
+
+	if (data->gameState == Normal) {
+		//ã€FC18ã€‘åˆ©ç”¨æŸæ—å™ªå£°æ–¹æ³•äº§ç”Ÿéšæœºåœ°å›¾
+		Perlin perlinNoiseGen;
+		int terrainArea[TERRAIN_TYPE_NUM] = { 0 };      //ã€FC18ã€‘ç»Ÿè®¡æ¯ç§åœ°å½¢ç”Ÿæˆäº†å¤šå°‘æ ¼
+		double** perlinNoise = new double* [m_height];  //ã€FC18ã€‘æŸæ—å™ªå£°è¡¨
+		for (int i = 0; i < m_height; i++) {
+			perlinNoise[i] = new double[m_width];
 		}
+		int** typeOfTerrain = new int* [m_height];      //ã€FC18ã€‘åœ°å½¢é¢„åˆ†é…è¡¨
+		for (int i = 0; i < m_height; i++) {
+			typeOfTerrain[i] = new int[m_width];
+		}
+
+		double minNoise = INF, maxNoise = -INF;
+		for (int i = 0; i < m_height; i++) {             //ç”ŸæˆæŸæ—å™ªå£°è¡¨ï¼Œå¹¶è®°å½•å…¶ä¸­çš„æœ€å¤§ã€æœ€å°å™ªå£°å€¼
+			for (int j = 0; j < m_width; j++) {
+				typeOfTerrain[i][j] = UNALLOCATED;       //åˆå§‹åŒ–æ‰€æœ‰æ ¼åœ°å½¢å‡ä¸ºæœªåˆ†é…
+				perlinNoise[i][j] = perlinNoiseGen.PerlinNoise(i, j);            //ç”Ÿæˆåˆå§‹çš„æŸæ—å™ªå£°
+				if (perlinNoise[i][j] > maxNoise) maxNoise = perlinNoise[i][j];
+				if (perlinNoise[i][j] < minNoise) minNoise = perlinNoise[i][j];
+			}
+		}
+		double interval = (maxNoise - minNoise) / TERRAIN_TYPE_NUM;
+		for (int i = 0; i < m_height; i++) {
+			for (int j = 0; j < m_width; j++) {
+				for (int k = 0; k < TERRAIN_TYPE_NUM; k++) {
+					if (((perlinNoise[i][j] - minNoise) >= k * interval) && ((perlinNoise[i][j] - minNoise) < (k + 1) * interval)) {
+						typeOfTerrain[i][j] = k;
+						break;
+					}
+				}
+				if (typeOfTerrain[i][j] == UNALLOCATED) typeOfTerrain[i][j] = TERRAIN_TYPE_NUM - 1;
+			}
+		}
+		for (int itercnt = 0; itercnt < perlinNoiseGen.iterRound; itercnt++) {
+			for (int i = 1; i < m_height - 1; i++) {
+				for (int j = 1; j < m_width - 1; j++) {
+					int nums[TERRAIN_TYPE_NUM] = { 0 };
+					for (int k = 0; k < 8; k++) {
+						int newPosX = j + paraOffset[k].m_x;
+						int newPosY = i + paraOffset[k].m_y;
+						int scaleValue = typeOfTerrain[newPosY][newPosX];
+						nums[scaleValue]++;
+					}
+					for (int cnt = 0; cnt < TERRAIN_TYPE_NUM; cnt++) {
+						if (nums[cnt] >= perlinNoiseGen.connectStandard) typeOfTerrain[i][j] = cnt;
+					}
+					if (itercnt == perlinNoiseGen.iterRound - 1) {
+						int currentType = typeOfTerrain[i][j];
+						terrainArea[currentType]++;
+					}
+				}
+			}
+		}
+		vector<pair<int, int>> areaRankPair;
+		for (int i = 0; i < TERRAIN_TYPE_NUM; i++) {
+			areaRankPair.push_back({ i,terrainArea[i] });
+		}
+		std::sort(areaRankPair.begin(), areaRankPair.end(),
+			[](const pair<int, int>& a, pair<int, int>& b) {return a.second > b.second; });
+		std::map<int, int> areaRankMap;
+		for (int i = 0; i < TERRAIN_TYPE_NUM; i++) {
+			areaRankMap.insert(pair<int, int>(areaRankPair[i].first, i));
+		}
+		for (int i = 0; i < m_height; i++) {      //ç”Ÿæˆåœ°å½¢
+			for (int j = 0; j < m_width; j++) {
+				int type = typeOfTerrain[i][j];
+				int rank;
+				if (areaRankMap.count(type) > 0)
+					rank = areaRankMap[type];
+				else
+					rank = 0;
+				map[i][j].type = terrain[rank];
+			}
+		}
+		for (int i = 0; i < m_height; i++) {
+			delete[] perlinNoise[i];
+			delete[] typeOfTerrain[i];
+		}
+		delete[] perlinNoise;
+		delete[] typeOfTerrain;
+
+		////////////////////////////////////////////////////////
+		//ã€FC18ã€‘åˆ†é…å„åŠ¿åŠ›çš„åˆå§‹é¢†åœŸï¼Œå æ®æ–¹å½¢åœ°å›¾çš„å››ä¸ªè§’è½//
+		//åœ°å›¾çš„æ ·å­                                          //
+		//      X(i=0)--------m_width---------                //
+		//Y(j=0)         0     PUB      1                     //
+		//  |           PUB    PUB     PUB                    //
+		//  |            3     PUB      2                     //
+		////////////////////////////////////////////////////////
+		for (int j = 0; j < m_height; j++) {
+			for (int i = 0; i < m_width; i++) {
+				if ((i < ((m_width - Xinterval) / 2)) && (j < ((m_height - Yinterval) / 2))) map[j][i].owner = 1;
+				else if ((i > ((m_width + Xinterval) / 2) - 1) && (j < ((m_height - Yinterval) / 2))) map[j][i].owner = 2;
+				else if ((i > ((m_width + Xinterval) / 2) - 1) && (j > ((m_height + Yinterval) / 2) - 1)) map[j][i].owner = 3;
+				else if ((i < ((m_width - Xinterval) / 2)) && (j > ((m_height + Yinterval) / 2 - 1))) map[j][i].owner = 4;
+				else map[j][i].owner = PUBLIC;
+			}
+		}
+		////////////////////////////////////////////////////////
+		//ã€FC18ã€‘ç»™æ¸…åå…ƒç´ åœ°å½¢å®‰æ’ä½ç½®                      //
+		////////////////////////////////////////////////////////
+		//ä¸ºæ¸…åå­¦å ‚éšæœºç”Ÿæˆä½ç½®
+		int direction = generateRanInt(7 + 1, 7 + 4);
+		int ori_posx = ceil((m_width - 1) / 2.0);
+		int ori_posy = ceil((m_height - 1) / 2.0);
+		map[ori_posy][ori_posx].type = (enum terrainType)(direction);
+		for (int i = 0; i < 11; i++) {
+			int posx = ori_posx + TRClassRoomFill[direction - 8][i].m_x;
+			int posy = ori_posy + TRClassRoomFill[direction - 8][i].m_y;
+			map[posy][posx].type = TRTHUEmpty;
+		}
+		//ç»™å¤§ç¤¼å ‚å’ŒäºŒæ ¡é—¨éšæœºå®‰æ’ä½ç½®
+		enum terrainType THUelems[2] = { TRGate, TRHall };
+		for (int i = 0; i < 2; i++) {
+			enum direction{XRand = 0, ZRand = 1};
+			int direction = generateRanInt(0, 1);  //0ï¼šåœ¨xæ–¹å‘éšæœºï¼Œ1ï¼šåœ¨zæ–¹å‘éšæœº
+			set<enum terrainType> THUelemList = {TRGate, TRHall, TRClassRoom1, TRClassRoom2, TRClassRoom3, TRClassRoom4, TRTHUEmpty};
+			if (direction == XRand) {
+				bool invalidPos = true;
+				int posx = 0, posz = 0;
+				while (invalidPos) {
+					invalidPos = false;
+					posx = generateRanInt(0, m_width - 2);
+					posz = generateRanInt(ceil((m_height - 1) / 2.0) - ceil(Yinterval / 2.0) + 1, ceil((m_height - 1) / 2.0));
+					for (int dx = 0; dx < 2; dx++) {
+						for (int dz = 0; dz < 2; dz++) {
+							if (THUelemList.find(map[posz + dz][posx + dx].type) != THUelemList.end())
+								invalidPos = true;
+						}
+					}
+				}
+				for (int dx = 0; dx < 2; dx++) {
+					for (int dz = 0; dz < 2; dz++) {
+						if (dx == 0 && dz == 0)
+							map[posz + dz][posx + dx].type = THUelems[i];
+						else
+							map[posz + dz][posx + dx].type = TRTHUEmpty;
+					}
+				}
+			}
+			else if (direction == ZRand) {
+				bool invalidPos = true;
+				int posx = 0, posz = 0;
+				while (invalidPos) {
+					invalidPos = false;
+					posx = generateRanInt(ceil((m_width - 1) / 2.0) - ceil(Xinterval / 2.0) + 1, ceil((m_width - 1) / 2.0));
+					posz = generateRanInt(0, m_height - 2);
+					for (int dx = 0; dx < 2; dx++) {
+						for (int dz = 0; dz < 2; dz++) {
+							if (THUelemList.find(map[posz + dz][posx + dx].type) != THUelemList.end())
+								invalidPos = true;
+						}
+					}
+				}
+				for (int dx = 0; dx < 2; dx++) {
+					for (int dz = 0; dz < 2; dz++) {
+						if (dx == 0 && dz == 0)
+							map[posz + dz][posx + dx].type = THUelems[i];
+						else
+							map[posz + dz][posx + dx].type = TRTHUEmpty;
+					}
+				}
+			}
+		}
+		/*int mode = generateRanInt(0, 3);
+		TPoint startPoint;
+		if (mode == 0 || mode == 1) {
+			startPoint.m_x = generateRanInt(0, m_width - 4);
+			startPoint.m_y = (m_height - 1) / 2 - 1;
+			for (int i = 0; i < 3; i++) {
+				for (int j = 0; j < 4; j++) {
+					switch (mode) {
+					case(0):
+						map[startPoint.m_y + i][startPoint.m_x + j].type = attachTerrain0[i][j];
+						break;
+					case(1):
+						map[startPoint.m_y + i][startPoint.m_x + j].type = attachTerrain1[i][j];
+						break;
+					default:;
+					}
+				}
+			}
+		}
+		else if (mode == 2 || mode == 3) {
+			startPoint.m_x = (m_width - 1) / 2 - 1;
+			startPoint.m_y = generateRanInt(0, m_height - 4);
+			for (int i = 0; i < 4; i++) {
+				for (int j = 0; j < 3; j++) {
+					switch (mode) {
+					case(2):
+						map[startPoint.m_y + i][startPoint.m_x + j].type = attachTerrain2[i][j];
+						break;
+					case(3):
+						map[startPoint.m_y + i][startPoint.m_x + j].type = attachTerrain3[i][j];
+						break;
+					default:;
+					}
+				}
+			}
+		}*/
 	}
-	for (int i = 0; i < m_height; i++) {
-		delete[] perlinNoise[i];
-		delete[] typeOfTerrain[i];
+
+	else if (data->gameState == RecoverMap || data->gameState == RecoverRound) {
+		if (!recoverFromMap(towerRegion)) return false;
 	}
-	delete[] perlinNoise;
-	delete[] typeOfTerrain;
 
 	////////////////////////////////////////////////////////
-	//¡¾FC18¡¿·ÖÅä¸÷ÊÆÁ¦µÄ³õÊ¼ÁìÍÁ£¬Õ¼¾İ·½ĞÎµØÍ¼µÄËÄ¸ö½ÇÂä//
-	//µØÍ¼µÄÑù×Ó                                          //
-	//      X(i=0)--------m_width---------                //
-	//Y(j=0)         0     PUB      1                     //
-	//  |           PUB    PUB     PUB                    //
-	//  |            3     PUB      2                     //
-	////////////////////////////////////////////////////////
-	int Xinterval, Yinterval;         //X·½ÏòºÍY·½ÏòµØÍ¼µÄ¹«¹²ÇøÓòÌõ´ø¿í¶È
-	Xinterval = (m_width % 2 == 0) ? 2 : 3;
-	Yinterval = (m_height % 2 == 0) ? 2 : 3;
-	for (int j = 0; j < m_height; j++) {
-		for (int i = 0; i < m_width; i++) {
-			if ((i < ((m_width - Xinterval) / 2)) && (j < ((m_height - Yinterval) / 2))) map[j][i].owner = 1;
-			else if ((i > ((m_width + Xinterval) / 2) - 1) && (j < ((m_height - Yinterval) / 2))) map[j][i].owner = 2;
-			else if ((i > ((m_width + Xinterval) / 2) - 1) && (j > ((m_height + Yinterval) / 2) - 1)) map[j][i].owner = 3;
-			else if ((i < ((m_width - Xinterval) / 2)) && (j > ((m_height + Yinterval) / 2 - 1))) map[j][i].owner = 4;
-			else map[j][i].owner = PUBLIC;
-		}
-	}
-
-	////////////////////////////////////////////////////////
-	//¡¾FC18¡¿ÎªÃ¿¸öÊÆÁ¦Éú³É·ÀÓùËş                        //
-	//Ëæ»ú·ÀÓùËş£ºÃ¿¸öÊÆÁ¦µÄ³õÊ¼ÁìµØÖĞËæ»úÉú³ÉÒ»¸ö·ÀÓùËş  //
-	//Ã¿¸ö·ÀÓùËşÖÜÎ§µÄ8¸ñÉèÖÃÎªµÀÂ·Road                   //
-	//±£Ö¤³õÊ¼¸÷ÊÆÁ¦µÄËæ»ú·ÀÓùËş¹¥»÷·¶Î§²»»á¸²¸Çµ½¶Ô·½    //
+	//ã€FC18ã€‘ä¸ºæ¯ä¸ªåŠ¿åŠ›ç”Ÿæˆé˜²å¾¡å¡”                        //
+	//éšæœºé˜²å¾¡å¡”ï¼šæ¯ä¸ªåŠ¿åŠ›çš„åˆå§‹é¢†åœ°ä¸­éšæœºç”Ÿæˆä¸€ä¸ªé˜²å¾¡å¡”  //
+	//æ¯ä¸ªé˜²å¾¡å¡”å‘¨å›´çš„8æ ¼è®¾ç½®ä¸ºé“è·¯Road                   //
+	//ä¿è¯åˆå§‹å„åŠ¿åŠ›çš„éšæœºé˜²å¾¡å¡”æ”»å‡»èŒƒå›´ä¸ä¼šè¦†ç›–åˆ°å¯¹æ–¹    //
 	////////////////////////////////////////////////////////
 	data->totalTowers = 0;
-	if (((m_width - Xinterval) < 3 * 2) || ((m_height - Yinterval) < 3 * 2)) {      //ÅĞ¶ÏÊÇ·ñÓĞ¿Õ¼äÉú³É·ÀÓùËş£¬Èç¹ûÓĞ¿Õ¼ä£¬ÔòÃ¿¸öÊÆÁ¦µÄ×î³õÁìµØÖÁÉÙÊÇ3 * 3µÄ·½¸ñ
-#ifdef OUTPUT_DETAIL
+	if (((m_width - Xinterval) < 3 * 2) || ((m_height - Yinterval) < 3 * 2)) {      //åˆ¤æ–­æ˜¯å¦æœ‰ç©ºé—´ç”Ÿæˆé˜²å¾¡å¡”ï¼Œå¦‚æœæœ‰ç©ºé—´ï¼Œåˆ™æ¯ä¸ªåŠ¿åŠ›çš„æœ€åˆé¢†åœ°è‡³å°‘æ˜¯3 * 3çš„æ–¹æ ¼
+#ifdef NOTICE
 		cout << "map size: (" << m_width << "*" << m_height << ") too small!\n";
 #endif
 		return false;
 	}
 
 
-	//³õÊ¼»¯Ëş¼°Ö¸ÁîĞÅÏ¢´æµµ
+	//åˆå§‹åŒ–å¡”åŠæŒ‡ä»¤ä¿¡æ¯å­˜æ¡£
+#ifdef SAVETXT
 	char bufferCmd[64];
 	sprintf(bufferCmd, "#command\n");
 	cmdFile << bufferCmd;
-	vector<pair<TPoint, TPoint>> towerRegion;         //¸÷Íæ¼ÒÉú³ÉËæ»ú·ÀÓùËşµÄÎ»ÖÃ·¶Î§
-	towerRegion.push_back({ {1,1},{(m_width - Xinterval) / 2 - 2,(m_height - Yinterval) / 2 - 2} });
-	towerRegion.push_back({ {(m_width + Xinterval) / 2 + 1,1},{m_width - 2,(m_height - Yinterval) / 2 - 2} });
-	towerRegion.push_back({ {(m_width + Xinterval) / 2 + 1,(m_height + Yinterval) / 2 + 1},{m_width - 2,m_height - 2} });
-	towerRegion.push_back({ {1,(m_height + Yinterval) / 2 + 1},{(m_width - Xinterval) / 2 - 2,m_height - 2} });
+#endif // SAVETXT
+
+
+	if (data->gameState == Normal) {
+		towerRegion[0] = { {1,1},{(m_width - Xinterval) / 2 - 2,(m_height - Yinterval) / 2 - 2} };
+		towerRegion[1] = { {(m_width + Xinterval) / 2 + 1,1},{m_width - 2,(m_height - Yinterval) / 2 - 2} };
+		towerRegion[2] = { {(m_width + Xinterval) / 2 + 1,(m_height + Yinterval) / 2 + 1},{m_width - 2,m_height - 2} };
+		towerRegion[3] = { {1,(m_height + Yinterval) / 2 + 1},{(m_width - Xinterval) / 2 - 2,m_height - 2} };
+	}
+
 	for (int i = 0; i < 4; i++) {
 		TPoint towerPoint;
 		towerPoint.m_x = generateRanInt(towerRegion[i].first.m_x, towerRegion[i].second.m_x);
 		towerPoint.m_y = generateRanInt(towerRegion[i].first.m_y, towerRegion[i].second.m_y);
-		map[towerPoint.m_y][towerPoint.m_x].type = TRTower;  //ÖØ¸´ tower¹¹Ôì   //¸üĞÂdataµÄµØÍ¼Àà£ºµ±Ç°·½¸ñµÄµØĞÎĞŞ¸ÄÎª·ÀÓùËş
-		map[towerPoint.m_y][towerPoint.m_x].owner = i + 1;//ÖØ¸´ tower¹¹Ôì
-		//map[towerPoint.m_y][towerPoint.m_x].TowerIndex = i;  //·½¸ñÉÏµÄËşĞòºÅ
-		//ÖØ¸´ tower¹¹Ôì data->totalTowers++;                      //¸üĞÂdataÀà£º¸üĞÂ·ÀÓùËş×ÜÊı
-		//@@@¡¾FC18¡¿[£¡£¡£¡Õâ¸öËşµÄ¹¹Ôìº¯Êı¿ÉÄÜ»á¸Ä]¸üĞÂdataÀà£ºÏò·ÀÓùËşÏòÁ¿ÖĞÌí¼ÓĞÂÔöµÄ·ÀÓùËş
+		//map[towerPoint.m_y][towerPoint.m_x].type = TRTower;  //é‡å¤ toweræ„é€    //æ›´æ–°dataçš„åœ°å›¾ç±»ï¼šå½“å‰æ–¹æ ¼çš„åœ°å½¢ä¿®æ”¹ä¸ºé˜²å¾¡å¡”
+		map[towerPoint.m_y][towerPoint.m_x].owner = i + 1;//é‡å¤ toweræ„é€ 
+		//map[towerPoint.m_y][towerPoint.m_x].TowerIndex = i;  //æ–¹æ ¼ä¸Šçš„å¡”åºå·
+		//é‡å¤ toweræ„é€  data->totalTowers++;                      //æ›´æ–°dataç±»ï¼šæ›´æ–°é˜²å¾¡å¡”æ€»æ•°
+		//@@@ã€FC18ã€‘[ï¼ï¼ï¼è¿™ä¸ªå¡”çš„æ„é€ å‡½æ•°å¯èƒ½ä¼šæ”¹]æ›´æ–°dataç±»ï¼šå‘é˜²å¾¡å¡”å‘é‡ä¸­æ·»åŠ æ–°å¢çš„é˜²å¾¡å¡”
 		Tower* newTower = new Tower(data, i + 1, towerPoint);
 		data->myTowers.push_back(*newTower);
-		//¡¾FC18¡¿¸üĞÂplayerÀà£ºÏòplayerµÄ·ÀÓùËşĞòºÅÏòÁ¿ÖĞÌí¼ÓĞÂµÄ·ÀÓùËşĞòºÅ
-		//ÖØ¸´ tower¹¹Ôì data->players[i].getTower().insert(i);
-		for (int j = 0; j < 8; j++) {  //¹æÔò£º³õÊ¼·ÀÓùËşËÄÖÜ8¸ñÎªµÀÂ·
+		//ã€FC18ã€‘æ›´æ–°playerç±»ï¼šå‘playerçš„é˜²å¾¡å¡”åºå·å‘é‡ä¸­æ·»åŠ æ–°çš„é˜²å¾¡å¡”åºå·
+		//é‡å¤ toweræ„é€  data->players[i].getTower().insert(i);
+		for (int j = 0; j < 8; j++) {  //è§„åˆ™ï¼šåˆå§‹é˜²å¾¡å¡”å››å‘¨8æ ¼ä¸ºé“è·¯
 			TPoint p;
 			p.m_x = towerPoint.m_x + paraOffset[j].m_x;
 			p.m_y = towerPoint.m_y + paraOffset[j].m_y;
-			//ÖØ¸´ tower¹¹Ôì map[p.m_y][p.m_x].occupyPoint[i] = TowerOccupyPoint[0];
+			//é‡å¤ toweræ„é€  map[p.m_y][p.m_x].occupyPoint[i] = TowerOccupyPoint[0];
 			map[p.m_y][p.m_x].type = TRRoad;
 		}
-		//Ğ´Èëtxt´æµµ
+		//å†™å…¥txtå­˜æ¡£
+#ifdef SAVETXT
 		char bufferCmd[128];
 		sprintf(bufferCmd, "%d %d %d %d %d %d %d %d %d\n", i + 1, JBuild, -1, towerPoint.m_x, towerPoint.m_y, -1, -1, -1, -1);
 		cmdFile << bufferCmd;
+#endif // !SAVETXT
 	}
 
-	//ËşĞÅÏ¢´æµµ
+	//å¡”ä¿¡æ¯å­˜æ¡£
+#ifdef SAVETXT
 	char bufferTowerHead[64];
 	sprintf(bufferTowerHead, "#tower\n");
 	infoFile << bufferTowerHead;
@@ -315,11 +450,11 @@ bool Map::randomInitMap(ofstream& cmdFile,ofstream& infoFile) {
 			                                                     , 1);
 		infoFile << bufferTower;
 	}
-
+#endif
 	////////////////////////////////////////////////////////
-	//¡¾FC18¡¿Ã¿¸öÊÆÁ¦·ÀÓùËşÏòÖÜ±ß·½¸ñÊ©¼Ó³õÊ¼Õ¼ÓĞÊôĞÔÖµ  //
+	//ã€FC18ã€‘æ¯ä¸ªåŠ¿åŠ›é˜²å¾¡å¡”å‘å‘¨è¾¹æ–¹æ ¼æ–½åŠ åˆå§‹å æœ‰å±æ€§å€¼  //
 	////////////////////////////////////////////////////////
-	/*ÖØ¸´£¬tower¹¹Ôì******
+	/*é‡å¤ï¼Œtoweræ„é€ ******
 	for (int i = 0; i < data->myTowers.size(); i++) {
 		TPoint towerPoint = data->myTowers[i].getPosition();
 		modifyOccupyPoint(NOTOWER, data->myTowers[i].getOwnerID(), towerPoint);
@@ -336,13 +471,14 @@ bool Map::randomInitMap(ofstream& cmdFile,ofstream& infoFile) {
 				TDist distance = getDist(currentPoint, towerPoint);
 				if (distance >= 1 && distance <= 5)
 					map[i][j].occupyPoint[ownerID - 1] += TowerOccupyPoint[distance - 1];
-				else                     //ÔÚËşµ±Ç°¸ñÄÚ»ágetDist³¬¹ı6£¬¾Í²»¸üĞÂÕ¼ÓĞÊôĞÔÖµÁË
+				else                     //åœ¨å¡”å½“å‰æ ¼å†…ä¼šgetDistè¶…è¿‡6ï¼Œå°±ä¸æ›´æ–°å æœ‰å±æ€§å€¼äº†
 					continue;
 			}
 		}
 	}*/
 	
 	//int countRound = 0, countPlayer = 0;
+#ifdef SAVETXT
 	char bufferMap[64];
 	sprintf(bufferMap, "#map\n");
 	infoFile << bufferMap;
@@ -362,7 +498,7 @@ bool Map::randomInitMap(ofstream& cmdFile,ofstream& infoFile) {
 				blockJson["tp"] = Json::Value(map[i][j].type);
 			blockJson["oId"] = Json::Value(map[i][j].owner);
 			data->currentRoundMapJson.append(blockJson);
-			/*//Json::Value occupyPoint;  //Ôİ²»Ìá¹©¸øJson
+			/*//Json::Value occupyPoint;  //æš‚ä¸æä¾›ç»™Json
 			//for (int k = 0; k < 4; k++) {
 			//	Json::Value occupyPointUnit;
 			//	occupyPointUnit["id"] = Json::Value(k + 1);
@@ -398,8 +534,10 @@ bool Map::randomInitMap(ofstream& cmdFile,ofstream& infoFile) {
 			}*/
 		}
 	}
+#endif // SAVETXT
 
-	//Íæ¼ÒĞÅÏ¢TXT´æµµ
+	//ç©å®¶ä¿¡æ¯TXTå­˜æ¡£
+#ifdef SAVETXT
 	char bufferInfo[64];
 	sprintf(bufferInfo, "#players\n");
 	infoFile << bufferInfo;
@@ -409,20 +547,20 @@ bool Map::randomInitMap(ofstream& cmdFile,ofstream& infoFile) {
 		sprintf(bufferPlayer, "%d %s %d %d %d %d\n", i + 1, data->players[i].getName().c_str(), 0, 1, 1 * TOWER_SCORE, i + 1);
 		infoFile << bufferPlayer;
 	}
-
+#endif // SAVETXT
 
 	return true;
 }
 
 /***********************************************************************************************
-*º¯ÊıÃû :¡¾FC18¡¿saveMapJson±£´æµØÍ¼Jsonº¯Êı
-*º¯Êı¹¦ÄÜÃèÊö : ½«µ±Ç°»ØºÏµÄµØÍ¼JsonÊı¾İ±£´æµ½ÓÎÏ·ËùÓĞ»ØºÏµÄJsonÊı¾İÖĞ£¬Í¬Ê±¼ÇÂ¼»ØºÏÊı
-*º¯Êı²ÎÊı : ÎŞ
-*º¯Êı·µ»ØÖµ : ÎŞ
-*×÷Õß : ½ªÓÀÅô
+*å‡½æ•°å :ã€FC18ã€‘saveMapJsonä¿å­˜åœ°å›¾Jsonå‡½æ•°
+*å‡½æ•°åŠŸèƒ½æè¿° : å°†å½“å‰å›åˆçš„åœ°å›¾Jsonæ•°æ®ä¿å­˜åˆ°æ¸¸æˆæ‰€æœ‰å›åˆçš„Jsonæ•°æ®ä¸­ï¼ŒåŒæ—¶è®°å½•å›åˆæ•°
+*å‡½æ•°å‚æ•° : æ— 
+*å‡½æ•°è¿”å›å€¼ : æ— 
+*ä½œè€… : å§œæ°¸é¹
 ***********************************************************************************************/
 void Map::saveMapJson() {
-	//TRound round = data->getRound();      //¸üĞÂµØÍ¼JsonÇ°¼ÇÂ¼µ±Ç°»ØºÏÊı
+	//TRound round = data->getRound();      //æ›´æ–°åœ°å›¾Jsonå‰è®°å½•å½“å‰å›åˆæ•°
 	//data->currentRoundMapJson["round"] = Json::Value(std::to_string(round));
 	//data->mapInfoJsonRoot["map_logList"].append(data->currentRoundMapJson);
 	data->lastRoundMapJson.clear();
@@ -432,11 +570,11 @@ void Map::saveMapJson() {
 
 
 /***********************************************************************************************
-*º¯ÊıÃû :¡¾FC18¡¿ShowInfo±£´æµØÍ¼Jsonº¯Êı
-*º¯Êı¹¦ÄÜÃèÊö : ½«µ±Ç°»ØºÏµÄµØÍ¼JsonÊı¾İ±£´æµ½ÓÎÏ·ËùÓĞ»ØºÏµÄJsonÊı¾İÖĞ£¬Í¬Ê±¼ÇÂ¼»ØºÏÊı
-*º¯Êı²ÎÊı : x<int>--ºá×ø±ê£¬y<int>--×İ×ø±ê
-*º¯Êı·µ»ØÖµ : <mapBlockInfo>--µØÍ¼·½¸ñĞÅÏ¢
-*×÷Õß : ½ªÓÀÅô
+*å‡½æ•°å :ã€FC18ã€‘ShowInfoä¿å­˜åœ°å›¾Jsonå‡½æ•°
+*å‡½æ•°åŠŸèƒ½æè¿° : å°†å½“å‰å›åˆçš„åœ°å›¾Jsonæ•°æ®ä¿å­˜åˆ°æ¸¸æˆæ‰€æœ‰å›åˆçš„Jsonæ•°æ®ä¸­ï¼ŒåŒæ—¶è®°å½•å›åˆæ•°
+*å‡½æ•°å‚æ•° : x<int>--æ¨ªåæ ‡ï¼Œy<int>--çºµåæ ‡
+*å‡½æ•°è¿”å›å€¼ : <mapBlockInfo>--åœ°å›¾æ–¹æ ¼ä¿¡æ¯
+*ä½œè€… : å§œæ°¸é¹
 ***********************************************************************************************/
 mapBlockInfo Map::ShowInfo(int x, int y) {
 	mapBlockInfo info;
@@ -447,28 +585,29 @@ mapBlockInfo Map::ShowInfo(int x, int y) {
 	return info;
 }
 
+
 /***********************************************************************************************
-*º¯ÊıÃû :¡¾FC18¡¿withinMapÅĞ¶ÏÄ³µãÊÇ·ñÔÚµØÍ¼·¶Î§ÄÚ
-*º¯Êı¹¦ÄÜÃèÊö : ÅĞ¶ÏµãpÊÇ·ñÔÚµ±Ç°µØÍ¼µÄ·¶Î§ÄÚ
-*º¯Êı²ÎÊı : p<TPoint*>---Ö¸ÏòËùÔÚµãµÄÖ¸Õë
-*º¯Êı·µ»ØÖµ : <mapBlockInfo>--µØÍ¼·½¸ñĞÅÏ¢
-*×÷Õß : ½ªÓÀÅô
+*å‡½æ•°å :ã€FC18ã€‘withinMapåˆ¤æ–­æŸç‚¹æ˜¯å¦åœ¨åœ°å›¾èŒƒå›´å†…
+*å‡½æ•°åŠŸèƒ½æè¿° : åˆ¤æ–­ç‚¹pæ˜¯å¦åœ¨å½“å‰åœ°å›¾çš„èŒƒå›´å†…
+*å‡½æ•°å‚æ•° : p<TPoint*>---æŒ‡å‘æ‰€åœ¨ç‚¹çš„æŒ‡é’ˆ
+*å‡½æ•°è¿”å›å€¼ : <mapBlockInfo>--åœ°å›¾æ–¹æ ¼ä¿¡æ¯
+*ä½œè€… : å§œæ°¸é¹
 ***********************************************************************************************/
 bool Map::withinMap(TPoint p) {
 	return (p.m_x >= 0) && (p.m_x < m_width) && (p.m_y >= 0) && (p.m_y < m_height);
 }
 
 /***********************************************************************************************
-*º¯ÊıÃû :¡¾FC18¡¿modifyOccupyPoint°´ËşËùÓĞÕß¸Ä±äĞŞ¸ÄÕ¼ÓĞÊôĞÔÖµ
-*º¯Êı¹¦ÄÜÃèÊö : Í¨¹ıËşÖ®Ç°µÄÓµÓĞÕß£¨»ò¹²ÓĞ£¬¼´ÎŞËşNOTOWER£©£¬ÒÔ¼°ÏÖÔÚµÄÓµÓĞÕß£¨Í¬ÉÏ£©£¬ĞŞ¸ÄÖÜÎ§
-                ·½¸ñµÄÕ¼ÓĞÊôĞÔÖµ
-*º¯Êı²ÎÊı : oldOwner<TPlayerID>--Ö®Ç°µÄÓµÓĞÕßID£¬newOwner<TPlayerID>--ÏÖÔÚµÄÓµÓĞÕßID£¬p<TPoint>
-            ---ËşµÄËùÔÚµãÎ»×ø±ê
-*º¯Êı·µ»ØÖµ : ÎŞ
-*×÷Õß : ½ªÓÀÅô
+*å‡½æ•°å :ã€FC18ã€‘modifyOccupyPointæŒ‰å¡”æ‰€æœ‰è€…æ”¹å˜ä¿®æ”¹å æœ‰å±æ€§å€¼
+*å‡½æ•°åŠŸèƒ½æè¿° : é€šè¿‡å¡”ä¹‹å‰çš„æ‹¥æœ‰è€…ï¼ˆæˆ–å…±æœ‰ï¼Œå³æ— å¡”NOTOWERï¼‰ï¼Œä»¥åŠç°åœ¨çš„æ‹¥æœ‰è€…ï¼ˆåŒä¸Šï¼‰ï¼Œä¿®æ”¹å‘¨å›´
+                æ–¹æ ¼çš„å æœ‰å±æ€§å€¼
+*å‡½æ•°å‚æ•° : oldOwner<TPlayerID>--ä¹‹å‰çš„æ‹¥æœ‰è€…IDï¼ŒnewOwner<TPlayerID>--ç°åœ¨çš„æ‹¥æœ‰è€…IDï¼Œp<TPoint>
+            ---å¡”çš„æ‰€åœ¨ç‚¹ä½åæ ‡
+*å‡½æ•°è¿”å›å€¼ : æ— 
+*ä½œè€… : å§œæ°¸é¹
 ***********************************************************************************************/
 void Map::modifyOccupyPoint(TPlayerID oldOwner, TPlayerID newOwner, TPoint p) {
-	if (!withinMap(p)) return;  //µ±Ç°·½¸ñÔÚµØÍ¼Ö®Íâ
+	if (!withinMap(p)) return;  //å½“å‰æ–¹æ ¼åœ¨åœ°å›¾ä¹‹å¤–
 	if (oldOwner != NOTOWER && oldOwner >= 1 && oldOwner <= 4) map[p.m_y][p.m_x].occupyPoint[oldOwner - 1] -= INF;
 	if (newOwner != NOTOWER && newOwner >= 1 && newOwner <= 4) map[p.m_y][p.m_x].occupyPoint[newOwner - 1] += INF;
 	ownerChange(p);
@@ -476,8 +615,8 @@ void Map::modifyOccupyPoint(TPlayerID oldOwner, TPlayerID newOwner, TPoint p) {
 		for (int j = p.m_x - 5; j <= p.m_x + 5; j++) {
 			TPoint currentPoint = { j,i };
 			TDist dist = getDist(currentPoint, p);
-			if (!withinMap(currentPoint) || dist < 1 || dist > 5) continue;//µã²»ÔÚÍ¼ÉÏ£¬ÀëËşÌ«½ü»òÌ«Ô¶
-			if (data->getRound() == 0 && map[i][j].owner == PUBLIC) continue;  //¿ª¾Ö²»¸Ä±ä¹«¹²µØÅÌµÄÕ¼ÓĞÊôĞÔÖµ
+			if (!withinMap(currentPoint) || dist < 1 || dist > 5) continue;//ç‚¹ä¸åœ¨å›¾ä¸Šï¼Œç¦»å¡”å¤ªè¿‘æˆ–å¤ªè¿œ
+			if (data->getRound() == 0 && map[i][j].owner == PUBLIC) continue;  //å¼€å±€ä¸æ”¹å˜å…¬å…±åœ°ç›˜çš„å æœ‰å±æ€§å€¼
 			if (oldOwner != NOTOWER) map[i][j].occupyPoint[oldOwner - 1] -= TowerOccupyPoint[dist - 1];
 			if (newOwner != NOTOWER) map[i][j].occupyPoint[newOwner - 1] += TowerOccupyPoint[dist - 1];
 			ownerChange(currentPoint);
@@ -487,15 +626,15 @@ void Map::modifyOccupyPoint(TPlayerID oldOwner, TPlayerID newOwner, TPoint p) {
 
 
 /***********************************************************************************************
-*º¯ÊıÃû :¡¾FC18¡¿ownerChang¸Ä±ä·½¸ñÓµÓĞÕßº¯Êı
-*º¯Êı¹¦ÄÜÃèÊö : ¸Ä±äÎ»ÖÃp´¦·½¸ñÓµÓĞÕß£¬ÅĞ¶¨¹ı¶ÉÇøÓò
-*º¯Êı²ÎÊı : p<TPoint>---ËùÔÚ·½¸ñµÄTPoint×ø±ê
-*º¯Êı·µ»ØÖµ : <TPlayerID>---Ëşµ±Ç°ËùÔÚ·½¸ñ±ä»¯ºóµÄËùÓĞÕß×ø±ê£¨PUBLIC=0£¬¹«¹²ÇøÓò£¬TRANSITION=-1
-              ¹ı¶ÉÇøÓò£¬OUTOFRANGE=-2ÔÚµØÍ¼Íâ£©
-*×÷Õß : ½ªÓÀÅô
+*å‡½æ•°å :ã€FC18ã€‘ownerChangæ”¹å˜æ–¹æ ¼æ‹¥æœ‰è€…å‡½æ•°
+*å‡½æ•°åŠŸèƒ½æè¿° : æ”¹å˜ä½ç½®på¤„æ–¹æ ¼æ‹¥æœ‰è€…ï¼Œåˆ¤å®šè¿‡æ¸¡åŒºåŸŸ
+*å‡½æ•°å‚æ•° : p<TPoint>---æ‰€åœ¨æ–¹æ ¼çš„TPointåæ ‡
+*å‡½æ•°è¿”å›å€¼ : <TPlayerID>---å¡”å½“å‰æ‰€åœ¨æ–¹æ ¼å˜åŒ–åçš„æ‰€æœ‰è€…åæ ‡ï¼ˆPUBLIC=0ï¼Œå…¬å…±åŒºåŸŸï¼ŒTRANSITION=-1
+              è¿‡æ¸¡åŒºåŸŸï¼ŒOUTOFRANGE=-2åœ¨åœ°å›¾å¤–ï¼‰
+*ä½œè€… : å§œæ°¸é¹
 ***********************************************************************************************/
 TPlayerID Map::ownerChange(TPoint p) {
-	if (!withinMap(p)) return OUTOFRANGE;    //µ±Ç°·½¸ñÔÚµØÍ¼Ö®Íâ
+	if (!withinMap(p)) return OUTOFRANGE;    //å½“å‰æ–¹æ ¼åœ¨åœ°å›¾ä¹‹å¤–
 	int maxOccupyPoint = -1, occupyID = PUBLIC;
 	int maxOccupyCnt = 0;
 	for (int i = 0; i < 4; i++) {
@@ -522,27 +661,92 @@ TPlayerID Map::ownerChange(TPoint p) {
 }
 
 /*****************************s******************************************************************
-*º¯ÊıÃû :¡¾FC18¡¿showOwnerÅĞ¶Ï·½¸ñÓµÓĞÕßº¯Êı
-*º¯Êı¹¦ÄÜÃèÊö : ÅĞ¶Ïµ±Ç°·½¸ñµÄÓµÓĞÕß
-*º¯Êı²ÎÊı : p<TPoint>---ËùÔÚ·½¸ñµÄTPoint×ø±ê
-*º¯Êı·µ»ØÖµ :  <TPlayerID>---Ëşµ±Ç°ËùÔÚ·½¸ñµÄËùÓĞÕß×ø±ê£¨PUBLIC=0£¬¹«¹²ÇøÓò£¬TRANSITION=-1¹ı¶ÉÇø
-               Óò£¬OUTOFRANGE=-2ÔÚµØÍ¼Íâ£©
-*×÷Õß : ½ªÓÀÅô
+*å‡½æ•°å :ã€FC18ã€‘showOwneråˆ¤æ–­æ–¹æ ¼æ‹¥æœ‰è€…å‡½æ•°
+*å‡½æ•°åŠŸèƒ½æè¿° : åˆ¤æ–­å½“å‰æ–¹æ ¼çš„æ‹¥æœ‰è€…
+*å‡½æ•°å‚æ•° : p<TPoint>---æ‰€åœ¨æ–¹æ ¼çš„TPointåæ ‡
+*å‡½æ•°è¿”å›å€¼ :  <TPlayerID>---å¡”å½“å‰æ‰€åœ¨æ–¹æ ¼çš„æ‰€æœ‰è€…åæ ‡ï¼ˆPUBLIC=0ï¼Œå…¬å…±åŒºåŸŸï¼ŒTRANSITION=-1è¿‡æ¸¡åŒº
+               åŸŸï¼ŒOUTOFRANGE=-2åœ¨åœ°å›¾å¤–ï¼‰
+*ä½œè€… : å§œæ°¸é¹
 ***********************************************************************************************/
 TPlayerID Map::showOwner(TPoint p) {
-	if (!withinMap(p)) return OUTOFRANGE;  //µ±Ç°·½¸ñÔÚµØÍ¼Ö®Íâ
+	if (!withinMap(p)) return OUTOFRANGE;  //å½“å‰æ–¹æ ¼åœ¨åœ°å›¾ä¹‹å¤–
 	else return map[p.m_y][p.m_x].owner;
 }
 
 /*****************************s******************************************************************
-*º¯ÊıÃû :¡¾FC18¡¿clearAllÇåÀíµô±øÍÅ±í¸ñ
-*º¯Êı¹¦ÄÜÃèÊö : ÅĞ¶Ïµ±Ç°·½¸ñµÄÓµÓĞÕß
-*º¯Êı²ÎÊı : p<TPoint>---ËùÔÚ·½¸ñµÄTPoint×ø±ê
-*º¯Êı·µ»ØÖµ :  <TPlayerID>---Ëşµ±Ç°ËùÔÚ·½¸ñµÄËùÓĞÕß×ø±ê£¨PUBLIC=0£¬¹«¹²ÇøÓò£¬TRANSITION=-1¹ı¶ÉÇø
-			   Óò£¬OUTOFRANGE=-2ÔÚµØÍ¼Íâ£©
-*×÷Õß : ½ªÓÀÅô
+*å‡½æ•°å :ã€FC18ã€‘clearAllæ¸…ç†æ‰å…µå›¢è¡¨æ ¼
+*å‡½æ•°åŠŸèƒ½æè¿° : åˆ¤æ–­å½“å‰æ–¹æ ¼çš„æ‹¥æœ‰è€…
+*å‡½æ•°å‚æ•° : p<TPoint>---æ‰€åœ¨æ–¹æ ¼çš„TPointåæ ‡
+*å‡½æ•°è¿”å›å€¼ :  <TPlayerID>---å¡”å½“å‰æ‰€åœ¨æ–¹æ ¼çš„æ‰€æœ‰è€…åæ ‡ï¼ˆPUBLIC=0ï¼Œå…¬å…±åŒºåŸŸï¼ŒTRANSITION=-1è¿‡æ¸¡åŒº
+			   åŸŸï¼ŒOUTOFRANGE=-2åœ¨åœ°å›¾å¤–ï¼‰
+*ä½œè€… : å§œæ°¸é¹
 ***********************************************************************************************/
 void Map::clearAll(){
 	delete[] data->players;
 	data->players = nullptr;
+}
+
+
+/*****************************s******************************************************************
+*å‡½æ•°å :ã€FC18ã€‘saveMapä¿å­˜æœ¬è½®åœ°å›¾å‡½æ•°
+*å‡½æ•°åŠŸèƒ½æè¿° : å°†æœ¬è½®æ¸¸æˆçš„åœ°å›¾ä»¥txtæ ¼å¼ä¿å­˜åˆ°æ–‡ä»¶ä¸­
+*å‡½æ•°å‚æ•° : æ— 
+*å‡½æ•°è¿”å›å€¼ :  æ— 
+*ä½œè€… : å§œæ°¸é¹
+***********************************************************************************************/
+void Map::saveMap() {
+	string map_save_path = log_path + ("/rand_map_save.txt");
+	ofstream fileSaver(map_save_path, ios::app);
+	for (int i = 0; i < m_height; i++) {
+		for (int j = 0; j < m_width; j++) {
+			char map_save_unit[256];
+			mapBlock map_unit = map[i][j];
+			sprintf(map_save_unit, "%d %d %d %d %d", j, i, map_unit.type, map_unit.owner, map_unit.TowerIndex);
+			fileSaver << map_save_unit;
+			for (int k = 0; k < 4; k++) {
+				char temp_occupyP[32];
+				sprintf(temp_occupyP, " %d", map_unit.occupyPoint[k]);
+				fileSaver << temp_occupyP;
+			}
+			fileSaver << "\n";
+		}
+	}
+	fileSaver.close();
+}
+
+
+/*****************************s******************************************************************
+*å‡½æ•°å :ã€FC18ã€‘saveMapä¿å­˜æœ¬è½®åœ°å›¾å‡½æ•°
+*å‡½æ•°åŠŸèƒ½æè¿° : å°†æœ¬è½®æ¸¸æˆçš„åœ°å›¾ä»¥txtæ ¼å¼ä¿å­˜åˆ°æ–‡ä»¶ä¸­
+*å‡½æ•°å‚æ•° : æ— 
+*å‡½æ•°è¿”å›å€¼ :  æ— 
+*ä½œè€… : å§œæ°¸é¹
+***********************************************************************************************/
+bool Map::recoverFromMap(vector<pair<TPoint, TPoint>>& towerPoint) {
+	int blockCnt = 0;
+	string map_path = read_path + ("/rand_map_save.txt");
+	ifstream in(map_path);
+	if (!in) return false;
+	string save_map_line;
+	while (getline(in, save_map_line)) {
+		int i, j;
+		mapBlock tempBlock;
+		tempBlock.occupyPoint.resize(4);
+		sscanf(save_map_line.c_str(), "%d %d %d %d %d %d %d %d %d"  , &i
+			                                                        , &j
+			                                                        , &tempBlock.type
+			                                                        , &tempBlock.owner
+			                                                        , &tempBlock.TowerIndex
+			                                                        , &tempBlock.occupyPoint[0]
+			                                                        , &tempBlock.occupyPoint[1]
+		                                                            , &tempBlock.occupyPoint[2]
+		                                                            , &tempBlock.occupyPoint[3]);
+		if (tempBlock.TowerIndex != NOTOWER) {
+			towerPoint[tempBlock.TowerIndex] = { {i, j}, {i ,j} };
+		}
+		map[j][i] = tempBlock;
+		blockCnt++;
+	}
+	if (blockCnt != m_height * m_width) return false;
+	return true;
 }

@@ -1,189 +1,123 @@
 import '../config';
+import { Link } from 'react-router-dom';
 import $ from 'jquery';
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
-import { Tabs, Form, Icon, Input, Button, Card, Modal, Empty, message, Table, Divider, Result } from 'antd';
 import Loading from '../loading.js';
-import AiDetail from './botDetail.js'
+import reqwest from 'reqwest';
+import { Icon, Table, Tooltip } from 'antd';
 import UserShow from '../user/show.js';
-const { confirm } = Modal;
-const { TextArea } = Input;
-const { Column } = Table;
-const { TabPane } = Tabs;
-const { Meta } = Card;
 
 
-class Bot extends Component{
+class ListElement extends Component{
 	state = {
-		aiSelect: null,
-		keyTab: 'list',
+		data: [],
+		pagination: {pageSize: 10, current: 1},
+		loading: false,
 	}
-	
-	getGameInfo = (username=this.props.user.username, game=this.props.game, team=null) => {
-		let url = global.constants.server + 'game/ai/list/';
-		let data = {'game': game};
-		if (team){
-			data.team = team;
-		}else{
-			data.username = username;
+	getTotalCount = (params = {}) => {
+		let data = { ...params, }
+		if (this.props.game){
+			data['game'] = this.props.game
 		}
-		$.get({
+		let url = global.constants.server + 'game/botList/count/';
+		this.totalCountRequest = $.get({
 			url: url,
-			crossDomain: true,
 			data: data,
-			xhrFields: {
-				withCredentials: true,
-			},
-			async: true,
 			success: function (result) {
-				var aiSelect = this.state.aiSelect;
-				if (result.length == 0){
-					aiSelect = null;
-					this.state.keyTab = 'ai';
-				}else if (this.state.ai==null || this.state.ai.length==0){
-					aiSelect = result[0].id;
-				}else if (result.length > this.state.ai.length){
-					aiSelect = result[result.length-1].id;
-                }else if (result.length > this.state.ai.length){
-					aiSelect = result[0].id;
-				}
-				this.setState({ai: result, aiSelect});
-			}.bind(this),
-			error: function (result) {
-				message.error(result.responseText);
-			}.bind(this),
+				this.setState({totalCount : result.number});
+				this.fetch({
+					pageSize: this.state.pagination.pageSize,
+					page: 1,
+				});
+			}.bind(this)
 		})
-	}
-	getTeamInfo = (username=this.props.user.username, contestid=this.props.contest, game=this.props.game) => {
-		let url = global.constants.server + 'team/';
-		$.get({
-			url: url,
-			crossDomain: true,
-			data: {'username': username, 'contest': contestid},
-			xhrFields: {
-				withCredentials: true
-			},
-			async: true,
-			success: function (result) {
-				this.setState({team: result});
-				this.getGameInfo(username, game, result.id);
-			}.bind(this),
-			error: function (result) {
-				//message.error(result.responseText)
-				this.setState({team: null})
-			}.bind(this),
-		})
-	}
-	getInfo = (username=this.props.user.username, contest=this.props.contest, game=this.props.game) => {
-		if (contest){
-			this.getTeamInfo(username, contest, game);
-		}else{
-			this.getGameInfo(username, game);
-		}
 	}
 	componentWillMount(){
-		if (this.props.game && this.props.user){
-			this.getInfo();
-		}
+		this.getTotalCount();
 	}
-	componentWillReceiveProps(nextProps){
-		if (nextProps.game && nextProps.user && (this.props.game!=nextProps.game || this.props.user!=nextProps.user || this.props.contest!=nextProps.contest)){
-			this.getInfo(nextProps.user.username, nextProps.contest, nextProps.game);
+	handleTableChange = (pagination, filters, sorter) => {
+		const pager = { ...this.state.pagination };
+		pager.current = pagination.current;
+		this.setState({
+			pagination: pager,
+		});
+		this.fetch({
+			pageSize: pagination.pageSize,
+			page: pagination.current,
+			sortField: sorter.field,
+			sortOrder: sorter.order,
+			...filters,
+		});
+	};
+	
+	fetch = (params = {}) => {
+		this.setState({ loading: true });
+		let data = { ...params, }
+		if (this.props.game){
+			data['game'] = this.props.game
 		}
-	}
+		reqwest({
+			url: global.constants.server + 'game/botList/',
+			method: 'get',
+			data: data,
+			type: 'json',
+			crossOrigin: true,
+			withCredentials: true,
+		}).then(data => {
+			const pagination = { ...this.state.pagination };
+			// Read total count from server
+			// pagination.total = data.totalCount;
+			pagination.total = this.state.totalCount;
+			this.setState({
+				loading: false,
+				data: data,
+				pagination,
+			});
+		});
+	};
 	render(){
-		if (this.props.user == null){
+		if (this.state.totalCount == null){
 			return (
-				<div>
-					<Result
-						title={
-							<div>
-								Please <Link to='/login'>login</Link> first.
-							</div>
-						}
-					/>
-				</div>
+				<Loading/>
 			)
 		}
-		if (this.state.team === null){
-			return (
-				<Result
-					title="You're not in a team now."
-					extra={
-						<div>
-							<Link to={"/contest/"+this.props.contest+"/admin"}>
-								Create or join a team in contest page.
-							</Link>
-						</div>
-					}
-				/>
-			)
-		}
-		if (this.state.ai === undefined){
-			return (
-				<Loading />
-			)
+		let columns = [
+			{
+				title: 'ID',
+				dataIndex: 'id',
+			},
+			{
+				title: 'AI',
+				dataIndex: 'aiName',
+			},
+			{
+				title: 'Time',
+				dataIndex: 'date',
+			},
+		  ];
+		if (this.props.contest === undefined){
+			columns.splice(2, 0, {
+				title: 'User',
+				dataIndex: 'username',
+			})
+		}else{
+			columns.splice(2, 0, {
+				title: 'Team',
+				dataIndex: 'teamName',
+			})
 		}
 		return (
 			<div className = "root" style = {{padding: this.props.padding!==undefined ? this.props.padding : 60}}>
-				<div style = {{marginLeft: 10, marginRight: 10, display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'flex-start'}}>
-					<div style={{flex: 1, margin: 10, display: 'flex', flexDirection: 'column', alignItems: 'flex-end'}}>
-						{this.state.ai.map(ai =>(
-							<Card hoverable
-								key={ai.id}
-								actions={[
-									<div onClick={() => this.setState({aiSelect: ai.id, keyTab: 'add'})}>
-										<Icon type="plus" key="add" />
-									</div>,
-									<div onClick={() => this.setState({aiSelect: ai.id, keyTab: 'ai'})}>
-										<Icon type="edit" key="edit"/>,
-									</div>
-								]}
-								style={{width: 300, borderRadius: 10, backgroundColor: (ai.id==this.state.aiSelect?'#EEE':'#FFF')}}
-							>
-								<div
-									onClick={() => this.setState({aiSelect: ai.id, keyTab: 'list'})}
-									style={{display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}
-								>
-									<Meta
-										title={(<b>{ai.name}</b>)}
-										description={ai.introduction}
-										style={{width: '65%'}}
-									/>
-									<div style={{width: '35%'}}>
-										{ai.score!==undefined&&(
-											<div>
-												<Icon type="star" theme="filled"/>{ai.score.toFixed(3)}
-											</div>
-										)}
-									</div>
-								</div>
-							</Card>
-						))}
-						<Card
-							hoverable
-							align="center"
-							bodyStyle={{padding: 10, fontSize: 16}}
-							style={{border: '1px dashed black', width: 150, borderRadius: 10}}
-							onClick={() => this.setState({aiSelect: null, keyTab: 'ai'})}
-						>
-							<b>Add AI</b>
-						</Card>
-					</div>
-					<div style={{flex: 4, margin: 10}}>
-						<AiDetail
-							keyTab={this.state.keyTab}
-							tabChange={keyTab => this.setState({keyTab})}
-							getInfo={this.getInfo}
-							id={this.state.aiSelect}
-							game={this.props.game}
-							padding={0}
-						/>
-					</div>
-				</div>
+				<Table
+					columns={columns}
+					rowKey='teamId'
+					dataSource={this.state.data}
+					pagination={this.state.pagination}
+					loading={this.state.loading}
+					onChange={this.handleTableChange}
+				/>
 			</div>
 		)
 	}
 }
-
-export default Bot;
+export default ListElement;

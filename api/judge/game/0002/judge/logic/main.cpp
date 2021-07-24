@@ -1,30 +1,88 @@
-//#2021-1-19 <JYP> ��Ϥ���룬����ע��
+﻿//#2021-1-19 <JYP> 熟悉代码，添加注释
 
 
 #include "game.h"
 #include "player_code.h"
 #include "../controller/Controller.h"
 #include <time.h>
+//#include <direct.h>
 #include <stdio.h>
 
 
 using namespace DAGAN;
 
-//��FC18�������������ļ�
+//【FC18】输出结果排名文件
 void outputResult(Game& game, vector<Player_Code>& players) {
-	//�޸�Ϊ��׼�������������� ���� swn_sxt
 	vector<int> score = game.getScore();
 	for (size_t i = 0; i < score.size(); ++i){
 		printf("%d ", score[i]);
 	}
 	fflush(stdout);
+	//delete it online --swm_sxt
 	/*
-	ofstream ofs("../log_txt/result.txt",ios::trunc);//��txt�ļ�
+	ofstream ofs("../log_txt/result.txt",ios::trunc);//打开txt文件
 
-	vector<TPlayerID> rank = game.getRank();   //��Ϸ�������(vector)
+	vector<TPlayerID> rank = game.getRank();   //游戏结果排名(vector)
 	for (size_t i = 0; i < rank.size(); ++i) {
 		if (rank[i] > players.size() || rank[i] <= 0) continue;
-		ofs << " rank��" << i + 1 << " --> " << players[rank[i] - 1].getName() << endl;   //���������ÿ�����ε����name
+		ofs << " rank：" << i + 1 << " --> " << players[rank[i] - 1].getName() << " | score: " << game.getData().players[rank[i] - 1].getScore() << endl;   //按排名输出每个名次的玩家name
+	}
+	//判断是否平局
+	for (size_t i = 0; i < rank.size() - 1; ++i) {
+		if (game.getData().players[rank[i] - 1].getScore() == game.getData().players[rank[i + 1] - 1].getScore())
+		{
+			ofs << "The game ended in a draw! Play again!" << endl;
+			return;
+		}
+	}
+	*/
+}
+
+//【FC18】选择存档路径
+void recordSavePath(Game& G) {
+	/*
+	cout << "请输入存档文件路径，支持完整路径和相对路径，按回车结束。\n";
+	while (true) {
+		cout << ">>>存档路径：";
+		string path;
+		getline(cin, path);
+		string::size_type pos = 0;
+		while ((pos = path.find_first_of('\\', pos)) != string::npos) {
+			path.insert(pos, "\\");
+			pos = pos + 2;
+		}
+		if (0 != _access(path.c_str(), 0)) {
+			cout << ">>>输入路径不存在！\n";
+			continue;
+		}
+		string map_path = path + "/rand_map_save.txt";
+		if (0 != _access(map_path.c_str(), 4)) {
+			cout << ">>>输入路径中不存在有效的存档文件'rand_map_save.txt'\n";
+			continue;
+		}
+		G.getData().gameMap.setReadPath(path);
+		string cmd_path = path + "/log_info.txt";
+		int gameState = Normal;
+		if (0 == _access(cmd_path.c_str(), 4)) {
+			cout << "请输入存档恢复模式：0 == 直接运行不从存档恢复， 1 == 只恢复地图， 2 == 地图和玩家指令均恢复\n";
+			cout << ">>>恢复模式：";
+			while (true) {
+				
+				cin >> gameState;
+				if (gameState == Normal || gameState == RecoverMap || gameState == RecoverRound)
+					break;
+				cout << ">>>输入恢复模式有误！\n";
+				cout << ">>>恢复模式：";
+			}
+		}
+		G.gameState = gameState;
+		if (G.gameState == RecoverRound) {
+			if (!G.recordOldCommand(cmd_path)) {
+				cout << ">>>改存档已被破坏，请选择其他存档！\n";
+				continue;
+			}
+		}
+		break;
 	}
 	*/
 }
@@ -32,68 +90,69 @@ void outputResult(Game& game, vector<Player_Code>& players) {
 int main(int argc, char** argv)
 {
 	//char buffer[1024];
-	time_t t = time(0);//��¼ʱ��
+	time_t t = time(0);//记录时间
 	//strftime(buffer, sizeof(buffer), "../log_txt/log_%Y%m%d_%H%M%S.txt", localtime(&t));
 #ifdef FC15_DEBUG
-	//freopen(buffer, "w", stdout);  //Debugģʽ��д���µ�txt���ļ�
+	//freopen(buffer, "w", stdout);  //Debug模式，写入新的txt空文件
 #endif // FC15_DEBUG
 	char log_filename[1024];
-	//�ɴ���//strftime(json_filename, sizeof(json_filename), "../log_json/log_%Y%m%d_%H%M%S.json", localtime(&t));
-	//strftime(log_filename, sizeof(log_filename), "record", localtime(&t));
+	//旧代码//strftime(json_filename, sizeof(json_filename), "../log_json/log_%Y%m%d_%H%M%S.json", localtime(&t));
+	//strftime(log_filename, sizeof(log_filename), "../log/%Y%m%d_%H%M%S", localtime(&t));
 	//if (0 != _access(log_filename, 0)) _mkdir(log_filename);
-	//�ĸ����� ���� swm_Sxt
 	string  config_filename = "config18.ini";
-	/*
+	//delete it online --swm_sxt
+/*
 #ifdef _MSC_VER
-		//�ɴ���//"../config_msvc.ini";
+		//旧代码//"../config_msvc.ini";
 		"../config18_msvc.ini";
 #endif
 #ifdef __GNUC__
-		//�ɴ���//"../config_gnu.ini";
+		//旧代码//"../config_gnu.ini";
 		"../config18_gnu.ini";
 #endif
 	if (argc == 2) {
 		config_filename = argv[1];
 	}
 	else if (argc >= 2) {
-#ifdef OUTPUT_DETAIL
 		cout << "usage:												" << endl
 			<< "DAGAN						Load config file	" << endl;
-#endif
 	}
-	*/
+*/
 
-	//��txt�浵�ļ�����������
+	//打开txt存档文件
 	string cmd_txt_name = "log_info.txt";
 	string info_txt_name = "everyround_info.txt";
 	ofstream cmdWriter(cmd_txt_name, ios::app);
 	ofstream infoWriter(info_txt_name, ios::app);
+#ifdef SAVETXT
 	char bufferTXT[64];
 	sprintf(bufferTXT, "round %d\n", 0);
 	cmdWriter << bufferTXT;
 	infoWriter << bufferTXT;
+#endif // !SAVETXT
 
 
-	vector<Player_Code>  players;                       //��FC18�����AI������
-	string          map_filename;                       //��FC18����Ϸ��ͼ�ļ���
-	vector<string>  players_filename;                   //��FC18�����AI�ļ���
-	vector<string>  players_name;                       //��FC18��������������ڳ�ʼ��
-	int player_size;                                    //��FC18��Game�е��������
+	vector<Player_Code>  players;                       //【FC18】玩家AI代码类
+	string          map_filename;                       //【FC18】游戏地图文件名
+	vector<string>  players_filename;                   //【FC18】玩家AI文件名
+	vector<string>  players_name;                       //【FC18】玩家姓名，用于初始化
+	int player_size;                                    //【FC18】Game中的玩家数量
 
 	// load config file
 	ifstream ifs(config_filename.c_str());
 	if (!ifs.is_open()) {
-#ifdef OUTPUT_DETAIL
+#ifdef NOTICE
 		cout << "Failed to load \"" << config_filename << "\". Aborted. " << endl;
+		system("pause");
 #endif
 		return 1;
 	}
 
 	// read config file
-	//�����ļ�
-	//��һ�У���ͼ�ļ�·��
-	//�ڶ��У��������
-	//�����У�ÿ����ҵ�ai·��
+	//配置文件
+	//第一行：地图文件路径
+	//第二行：玩家数量
+	//第三行：每个玩家的ai路径
 	ifs >> map_filename >> player_size;
 	int cnt = 0;
 	while (!ifs.eof() && cnt < player_size) {
@@ -103,36 +162,32 @@ int main(int argc, char** argv)
 		cnt++;
 	}
 	if (players_filename.size() == 0) {
-#ifdef OUTPUT_DETAIL
 		cout << "[Error] player_ai file names expected." << endl;
-#endif
 		return 2;
 	}
 	else if (players_filename.size() != player_size)
 	{
-#ifdef OUTPUT_DETAIL
 		cout << "[Error]" << player_size << " player_ai file required." << endl;
-#endif
 		return 3;
 	}
 
 
-	//�������AI����
-	int valid_cnt = 0; //��Чai������
+	//读入玩家AI代码
+	int valid_cnt = 0; //有效ai的数量
 	for (size_t i = 0; i < players_filename.size(); ++i) {
-		//�ɴ���//Player_Code player(players_filename[i], i);
-		Player_Code player(players_filename[i], i + 1);                     //�����Ŵ�1 ��ʼ
+		//旧代码//Player_Code player(players_filename[i], i);
+		Player_Code player(players_filename[i], i + 1);                     //玩家序号从1 开始
 		string player_name;
 		if (ifs >> player_name && !player_name.empty())
 			player.setName(player_name);
-		if (player.isValid())                //���ai��all���سɹ��᷵��true
+		if (player.isValid())                //玩家ai的all加载成功会返回true
 		{
 			players.push_back(player);
 			players_name.push_back(player_name);
 			valid_cnt++;
 		}
 		else {
-			players.push_back(player); //ѹ��ȥ��������ʱ���ai�������ValidΪfalse
+			players.push_back(player); //压进去充数，此时玩家ai代码类的Valid为false
 			cout << "[Warning] failed to load player_ai " << players_filename[i] << endl;
 			player.setName(player.getName() + "//NOT_VALID");
 			players_name.push_back(player_name+"[N/A]");
@@ -141,56 +196,69 @@ int main(int argc, char** argv)
 #endif
 		}
 	}
-	//�ɴ���//if (players.size() <= 1) {
-		//�ɴ���//cout << "[Error] Not enough player_ais to start the game." << endl;
-		//�ɴ���//return 5;
-	//�ɴ���//}
+	//旧代码//if (players.size() <= 1) {
+		//旧代码//cout << "[Error] Not enough player_ais to start the game." << endl;
+		//旧代码//return 5;
+	//旧代码//}
 	if (players.size() != 4) 
 	{
-#ifdef OUTPUT_DETAIL
 		cout << "[Error] Player num not accord with requirements!\n";
 		cout << "Player num should be 4, however, there are " << players.size() << " players." << endl;
-#endif
 		return 5;
 	}
-#ifdef OUTPUT_DETAIL
+#ifdef NOTICE
 	cout << "[Info] " << valid_cnt << " players loaded." << endl;
 #endif
 
 
 	// load map
-	//��ʼ����ͼ����ҵ��������򡢷����������ŵ���ս��ϵ���ȵ�
+	//初始化地图、玩家的势力区域、防御塔、兵团的作战关系表等等
 	Game G;
-	if (!G.init(map_filename, log_filename, players_name,cmdWriter,infoWriter)) {
-#ifdef OUTPUT_DETAIL
-		cout << "[Error] failed to load " << map_filename << endl;
+	string cmdLine;
+
+#ifdef FC15_SAVEMODE
+	while (true) {
+		cout << ">>>是否从游戏存档中恢复？(y/n)\n";
+		getline(cin, cmdLine);
+		if (cmdLine == "y") {
+			recordSavePath(G);
+			break;
+		}
+		else if (cmdLine == "n")
+			break;
+	}
 #endif
+
+	if (!G.init(map_filename, log_filename, players_name,cmdWriter,infoWriter)) {
+		cout << "[Error] failed to load " << map_filename << endl;
 		return 4;
 	}
-
+	
 
 	// game and controller
 
 	Controller controller(G, players);
 
-	//�ɴ���//for (int i = 0; i < players.size(); i++)
-	//�ɴ���//{
-		//�ɴ���//controller.getData()->root["head"]["playerInfo"][i]["name"] = players[i].getName();
-		//�ɴ���//controller.getData()->commandJsonRoot["head"]["playerInfo"][i]["name"] = players[i].getName();
-	//�ɴ���//}
+	//旧代码//for (int i = 0; i < players.size(); i++)
+	//旧代码//{
+		//旧代码//controller.getData()->root["head"]["playerInfo"][i]["name"] = players[i].getName();
+		//旧代码//controller.getData()->commandJsonRoot["head"]["playerInfo"][i]["name"] = players[i].getName();
+	//旧代码//}
 	// main
-	//һ���غ�һ���غϵ���
-	//system("pause");
+	//一个回合一个回合的跑
+#ifdef PAUSE
+	system("pause");
+#endif // PAUSE
 	while (controller.isValid())
 	{
 		for (int i = 1; i <= 4; i++)
 		{
-			controller.run(i,cmdWriter,infoWriter);   //ÿ������������У��������ID�����и����ָ��
+			controller.run(i,cmdWriter,infoWriter);   //每个玩家依次运行，传入玩家ID，运行该玩家指令
 			if (G.goNext() == false ) {
 				break;
 			}
 		}
-		//�ɴ���//controller.run(json_filename);
+		//旧代码//controller.run(json_filename);
 	}
 
 
@@ -199,6 +267,10 @@ int main(int argc, char** argv)
 	infoWriter.close();
 	outputResult(G, players);
 	//G.printJson();
+#ifdef PAUSE
+	system("pause");
+#endif // PAUSE
+
 
 	return 0;
 

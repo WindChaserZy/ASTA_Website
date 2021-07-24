@@ -5,7 +5,7 @@ import $ from 'jquery';
 import React, { Component } from 'react';
 import Loading from '../loading.js';
 import reqwest from 'reqwest';
-import { Tag, Table, Icon, Card, message, Avatar, Radio, Button } from 'antd';
+import { Tag, Table, Icon, Card, message, Avatar, Radio, Button, Tooltip } from 'antd';
 import UserShow from '../user/show.js';
 const { Meta } = Card;
 const ButtonGroup = Button.Group;
@@ -176,7 +176,7 @@ class ListElement extends Component{
 													</div>
 												)}
 												style={{padding: 5, width: 180}}
-												title={botPlay.ai.name}
+												title={(<Tooltip title={"bot ID : "+botPlay.id}>{botPlay.ai.name}</Tooltip>)}
 												description={botPlay.oldRankingScore.toFixed(3)}
 											/>
 											<div style={{width: 80}} align='center'>

@@ -10,22 +10,22 @@ namespace DAGAN
 {
 	using namespace std;
 
-	TPoint moveDir[4] =    //ÒÆ¶¯·½Ïò£¬Óëenum corpsMoveDirÃ¶¾ÙÀàÐÍ¶ÔÓ¦
+	TPoint moveDir[4] =    //ç§»åŠ¨æ–¹å‘ï¼Œä¸Ženum corpsMoveDiræžšä¸¾ç±»åž‹å¯¹åº”
 	{// dx, dy
-		{0,-1},      //ÉÏ£¬-y
-		{0, 1},      //ÏÂ£¬+y
-		{-1,0},      //×ó£¬-x
-		{1, 0}       //ÓÒ£¬+x
+		{0,-1},      //ä¸Šï¼Œ-y
+		{0, 1},      //ä¸‹ï¼Œ+y
+		{-1,0},      //å·¦ï¼Œ-x
+		{1, 0}       //å³ï¼Œ+x
 	};
 
-	struct rankCmp {  //ÓÃÓÚ¸øÍæ¼ÒÅÅÃûµÄ½á¹¹Ìå
+	struct rankCmp {  //ç”¨äºŽç»™çŽ©å®¶æŽ’åçš„ç»“æž„ä½?
 		TPlayerID ID;
 		TScore score;
-		int CQTowerNum;//¹¥Õ¼ËþÊý
-		int ELCorpsNum;//ÏûÃð±øÍÅÊý
-		int CPCorpsNum;//·ýÂ²±øÍÅÊý
-		int randomCode;//Ëæ»úÂë
-		bool operator < (rankCmp& b) {  //ÖØÔØµÄ±È½ÏÔËËã·û£¬ÓÃÓÚÅÅÃû
+		int CQTowerNum;//æ”»å å¡”æ•°
+		int ELCorpsNum;//æ¶ˆç­å…µå›¢æ•?
+		int CPCorpsNum;//ä¿˜è™å…µå›¢æ•?
+		int randomCode;//éšæœºç ?
+		bool operator < (rankCmp& b) {  //é‡è½½çš„æ¯”è¾ƒè¿ç®—ç¬¦ï¼Œç”¨äºŽæŽ’å?
 			if (score > b.score) return true;
 			else if (score == b.score) {
 				if (CQTowerNum > b.CQTowerNum) return true;
@@ -34,7 +34,7 @@ namespace DAGAN
 					else if (ELCorpsNum == b.ELCorpsNum) {
 						if (CPCorpsNum > b.CPCorpsNum) return true;
 						else {
-							return (randomCode > b.randomCode);   //ÔÚ0,1¼ä·µ»ØËæ»úÊýÀ´Ëæ»ú¸ø³öÅÅÃû
+							return (randomCode > b.randomCode);   //åœ?,1é—´è¿”å›žéšæœºæ•°æ¥éšæœºç»™å‡ºæŽ’å?
 						}
 					}
 					else return false;
@@ -46,7 +46,7 @@ namespace DAGAN
 	};
 
 
-	struct configCmdTool { //Ð´JsonÎÄµµµÄCmd²¿·ÖÍ³Ò»½Ó¿ÚÐèÒª
+	struct configCmdTool { //å†™Jsonæ–‡æ¡£çš„Cmdéƒ¨åˆ†ç»Ÿä¸€æŽ¥å£éœ€è¦?
 		int from_id = -1;
 		int cm_type = -1;
 		int getcm_id = -1;
@@ -59,24 +59,24 @@ namespace DAGAN
 	};
 
 	/***********************************************************************************************
-	*º¯ÊýÃû :¡¾FC18¡¿runµ¥Íæ¼Ò»ØºÏÔËÐÐº¯Êý
-	*º¯Êý¹¦ÄÜÃèÊö : Éú³Éµ±Ç°ÓÎÏ·ÐÅÏ¢£¬ÏòÍæ¼Òai·¢³ö£¬½ÓÊÜÃüÁî±íÖ®ºóÒÀ´ÎÖ´ÐÐ£¬Ö´ÐÐÃ¿¸öÓÐÐ§ÃüÁîºóÐÞ¸Ä
-					DataÐÞ¸ÄDATA::DataÖÐËùÓÐ±ä»¯µÄÊý¾Ý£¬È»ºóµ÷ÓÃº¯ÊýjsonChangeÐÞ¸ÄÃüÁîJsonµÄÊý¾Ý£¬
-					Ö´ÐÐÍêºóÒªÅÐ¶ÏÍæ¼ÒÊÇ·ñ³ö¾ÖÒÔ¼°ÓÎÏ·ÊÇ·ñ¼ÌÐø½øÐÐ¡£ÕâÎ»Íæ¼ÒµÄÃüÁîÈ«²¿Ö´ÐÐÍêºó£¬ÔÙ
-					ÐÞ¸Ä³¡ÉÏÐÅÏ¢µÄJsonÊý¾Ý¡£
-	*º¯Êý²ÎÊý : id<TPlayerID>--µ±Ç°Íæ¼Òid£¬json_filename<char*>--JsonÎÄ¼þÃûÇ°×º
-	*º¯Êý·µ»ØÖµ : ÎÞ
-	*×÷Õß : ½ªÓÀÅô
+	*å‡½æ•°å?:ã€FC18ã€‘runå•çŽ©å®¶å›žåˆè¿è¡Œå‡½æ•?
+	*å‡½æ•°åŠŸèƒ½æè¿° : ç”Ÿæˆå½“å‰æ¸¸æˆä¿¡æ¯ï¼Œå‘çŽ©å®¶aiå‘å‡ºï¼ŒæŽ¥å—å‘½ä»¤è¡¨ä¹‹åŽä¾æ¬¡æ‰§è¡Œï¼Œæ‰§è¡Œæ¯ä¸ªæœ‰æ•ˆå‘½ä»¤åŽä¿®æ”¹
+					Dataä¿®æ”¹DATA::Dataä¸­æ‰€æœ‰å˜åŒ–çš„æ•°æ®ï¼Œç„¶åŽè°ƒç”¨å‡½æ•°jsonChangeä¿®æ”¹å‘½ä»¤Jsonçš„æ•°æ®ï¼Œ
+					æ‰§è¡Œå®ŒåŽè¦åˆ¤æ–­çŽ©å®¶æ˜¯å¦å‡ºå±€ä»¥åŠæ¸¸æˆæ˜¯å¦ç»§ç»­è¿›è¡Œã€‚è¿™ä½çŽ©å®¶çš„å‘½ä»¤å…¨éƒ¨æ‰§è¡Œå®ŒåŽï¼Œå†
+					ä¿®æ”¹åœºä¸Šä¿¡æ¯çš„Jsonæ•°æ®ã€?
+	*å‡½æ•°å‚æ•° : id<TPlayerID>--å½“å‰çŽ©å®¶idï¼Œjson_filename<char*>--Jsonæ–‡ä»¶åå‰ç¼€
+	*å‡½æ•°è¿”å›žå€?: æ—?
+	*ä½œè€?: å§œæ°¸é¹?
 	***********************************************************************************************/
-	void Controller::run(TPlayerID id, ofstream& cmdFile,ofstream& infoFile) {  //@@@¡¾FC18¡¿Ã¿¸öÍæ¼ÒÒÀ´ÎÖ´ÐÐ
-		//Çå¿ÕÉÏÒ»»ØºÏ¼ÇÂ¼µÄJsonÊý¾Ý
+	void Controller::run(TPlayerID id, ofstream& cmdFile,ofstream& infoFile) {  //@@@ã€FC18ã€‘æ¯ä¸ªçŽ©å®¶ä¾æ¬¡æ‰§è¡?
+		//æ¸…ç©ºä¸Šä¸€å›žåˆè®°å½•çš„Jsonæ•°æ®
 		/*data->currentRoundCommandJson.clear();
 		data->currentRoundPlayerJson.clear();
 		data->currentRoundTowerJson.clear();
 		data->currentRoundCorpsJson.clear();
 		data->currentRoundMapJson.clear();*/
 
-		//Çå¿ÕÉÏÒ»»ØºÏËþÔö¼Ó¡¢ËþÏûÊ§¡¢±øÍÅÔö¼Ó¡¢±øÍÅÏûÊ§µÄÊý¾Ý
+		//æ¸…ç©ºä¸Šä¸€å›žåˆå¡”å¢žåŠ ã€å¡”æ¶ˆå¤±ã€å…µå›¢å¢žåŠ ã€å…µå›¢æ¶ˆå¤±çš„æ•°æ®
 		data->newTower.clear();
 		data->dieTower.clear();
 		data->newCorps.clear();
@@ -84,15 +84,17 @@ namespace DAGAN
 		data->changeTowers.clear();
 		data->changeCorps.clear();
 
-		//dataÄÚµÄ»ØºÏÊý¾Ý¸üÐÂ+1
+		//dataå†…çš„å›žåˆæ•°æ®æ›´æ–°+1
 		volatile TRound dataRound = data->addRound();
-		//Json¸üÐÂdataÖÐµÄ»ØºÏÊý¾Ý£¬´ËÊ±gameÖÐ»ØºÏÊý¾Ý»¹±£³ÖÔÚÉÏÒ»»ØºÏ
+		//Jsonæ›´æ–°dataä¸­çš„å›žåˆæ•°æ®ï¼Œæ­¤æ—¶gameä¸­å›žåˆæ•°æ®è¿˜ä¿æŒåœ¨ä¸Šä¸€å›žåˆ
 		//data->currentRoundCommandJson["round"] = Json::Value(std::to_string(dataRound));
 		//data->currentRoundPlayerJson["round"] = Json::Value(std::to_string(dataRound));
 		//data->currentRoundTowerJson["round"] = Json::Value(std::to_string(dataRound));
 		//data->currentRoundCorpsJson["round"] = Json::Value(std::to_string(dataRound));
 
 		//data->currentRoundMapJson["round"] = Json::Value(std::to_string(dataRound));
+
+#ifdef SAVETXT
 		char buffer[64];
 		sprintf(buffer, "\nround %d\n", dataRound);
 		cmdFile << buffer;
@@ -100,35 +102,50 @@ namespace DAGAN
 		char bufferCmd[64];
 		sprintf(bufferCmd, "#command\n");
 		cmdFile << bufferCmd;
+#endif // SAVETXT
 
 		int playerSize = game_.getTotalPlayerNum();
 		volatile TRound round = game_.getCurrentRound() + 1;
-#ifdef OUTPUT_DETAIL
-		if (!silent_mode_) cout << "-=-=-=-=-=-=-=-=-=-=-= Controller: Round[" << round << "] =-=-=-=-=-=-=-=-=-=-=-=-=-" << endl;
-#endif
-		/*if (debug_mode) {
-			game_.DebugPhase();      //@@@µ÷ÊÔ½×¶Î£ºÊä³öµ÷ÊÔÐÅÏ¢
-		}*/
-		game_.setPlayerID(id);		//@@@ÉèÖÃµ±Ç°Íæ¼Ò±àºÅ
-		game_.beginPhase();          //@@@Æô¶¯½×¶Î£ºÍæ¼Ò/Ëþ/±øÍÅ/µØÍ¼Ã¿»ØºÏ¿ªÊ¼Ç°µÄ×¼±¸¹¤×÷·ÅÔÚÕâÀï,ÏÖÒÑ¶ÔFC15´úÂë×¢ÊÍ
-		game_.regeneratePhase();     //@@@»Ö¸´½×¶Î£ºÍæ¼Ò/Ëþ/±øÍÅ/µØÍ¼ÊôÐÔÒª½øÐÐµÄ»Ö¸´·ÅÔÚÕâÀï,ÏÖÒÑ¶ÔFC15´úÂë×¢ÊÍ
 
-		//ÎªÍæ¼ÒµÄAI´úÂëÉú³ÉÊý¾Ý
+		if (!silent_mode_)
+#ifdef NOTICE
+			cout << "-=-=-=-=-=-=-=-=-=-=-= Controller: Round[" << round << "] =-=-=-=-=-=-=-=-=-=-=-=-=-" << endl;
+#endif // NOTICE
+		/*if (debug_mode) {
+			game_.DebugPhase();      //@@@è°ƒè¯•é˜¶æ®µï¼šè¾“å‡ºè°ƒè¯•ä¿¡æ?
+		}*/
+		game_.setPlayerID(id);		//@@@è®¾ç½®å½“å‰çŽ©å®¶ç¼–å·
+		game_.beginPhase();          //@@@å¯åŠ¨é˜¶æ®µï¼šçŽ©å®?å¡?å…µå›¢/åœ°å›¾æ¯å›žåˆå¼€å§‹å‰çš„å‡†å¤‡å·¥ä½œæ”¾åœ¨è¿™é‡?çŽ°å·²å¯¹FC15ä»£ç æ³¨é‡Š
+		game_.regeneratePhase();     //@@@æ¢å¤é˜¶æ®µï¼šçŽ©å®?å¡?å…µå›¢/åœ°å›¾å±žæ€§è¦è¿›è¡Œçš„æ¢å¤æ”¾åœ¨è¿™é‡?çŽ°å·²å¯¹FC15ä»£ç æ³¨é‡Š
+
+		//ä¸ºçŽ©å®¶çš„AIä»£ç ç”Ÿæˆæ•°æ®
 		Info info2Player = game_.generatePlayerInfo(id);
-		CommandList commands; //Ñ¡ÊÖÃüÁî
-		Player_Code& player = players_[id - 1];  //È¡³öÍæ¼Ò¶ÔÓ¦µÄai´úÂëÀà
-		if (player.isValid() && game_.isAlive(id))  //¾ø²»ÔËÐÐ³ö´íµÄai´úÂë£¬¾ø²»ÔËÐÐ³ö¾ÖÍæ¼ÒµÄai´úÂë
+		CommandList commands; //é€‰æ‰‹å‘½ä»¤
+		Player_Code& player = players_[id - 1];  //å–å‡ºçŽ©å®¶å¯¹åº”çš„aiä»£ç ç±?
+		if (player.isValid() && game_.isAlive(id))  //ç»ä¸è¿è¡Œå‡ºé”™çš„aiä»£ç ï¼Œç»ä¸è¿è¡Œå‡ºå±€çŽ©å®¶çš„aiä»£ç 
 		{
 			// µ¥¸öÍæ¼ÒÖ´ÐÐ£¬ÔËÐÐÍæ¼Òai»ñÈ¡Ö¸Áî
-#ifdef OUTPUT_DETAIL
-			if (!silent_mode_) cout << "Calling Player " << (int)id << "'s run() method" << endl;
-#endif
+			if (!silent_mode_)
+#ifdef NOTICE
+				cout << "Calling Player " << (int)id << "'s run() method" << endl;
+#endif // NOTICE
 			//runÔËÐÐdll£¬È»ºó°Ñ¶ÔÓ¦µÄmyCommandList(ÓÉdllÐÞ¸Ä)»Ø´«µ½ÕâÀï
-			if (id == 1 || id == 2 || id == 3 || id == 4)
-				player.run(info2Player);//¡¾FC18¡¿²¹³ä³¬Ê±µÄÅÐ¶¨£¬ÃüÁîÊý¹ý¶àµÄÅÐ¶¨
-			else
-				testPlayerCommand(info2Player);
-			commands = info2Player.myCommandList;
+			if ((data->gameState == RecoverRound || data->gameState == RecoverMap) && data->getRound() == stopRound) {
+				getCmdFromKeyboard(id, commands);
+			}
+			else {
+				if (data->gameState == RecoverRound) {
+					if (data->memoCommand.size() - 1 < data->getRound()) commands = CommandList();
+					else commands = data->memoCommand[data->getRound()];
+				}
+				else if (data->gameState == Normal || data->gameState == RecoverMap) {
+					if(id == 1 || id == 2 || id == 3 || id == 4)
+						player.run(info2Player);//¡¾FC18¡¿²¹³ä³¬Ê±µÄÅÐ¶¨£¬ÃüÁîÊý¹ý¶àµÄÅÐ¶¨
+					else
+						testPlayerCommand(info2Player);
+					commands = info2Player.myCommandList;
+				}
+			}
 		}
 		else
 		{
@@ -136,124 +153,120 @@ namespace DAGAN
 			commands = CommandList();
 		}
 		commandRead = 0;
-		//Êä³öÍæ¼ÒÃüÁîµÄ±êÌâ
-#ifdef OUTPUT_DETAIL
+		//è¾“å‡ºçŽ©å®¶å‘½ä»¤çš„æ ‡é¢?
 #ifdef _COMMAND_OUTPUT_ENABLED_
+#ifdef NOTICE
 		if (file_output_enabled_)
 			cout << "Player " << id << "'s commands:" << endl;
-#endif
+#endif // NOTICE
 #endif
 		/*for (Command c : commands.getCommand())
 		{
 			outPutCommand(id, c);
 		}*/
-		//Ñ­»·Ö´ÐÐÍæ¼ÒÃüÁî
-		set<TTowerID> towerBanned;//²»ÄÜÔÙÖ´ÐÐ²Ù×÷µÄËþ
-		set<TCorpsID> corpsBanned;//²»ÄÜÔÙÖ´ÐÐ²Ù×÷µÄ±øÍÅ
-		if (commands.size() > MAX_CMD_NUM) {    //ÃüÁîÊý³¬¹ýÏÞÖÆÊÇ·Ç·¨µÄ£¬ËµÃ÷Ñ¡ÊÖ¸Ä¶¯ÁË²»¸Ä¸ÄµÄ¶«Î÷£¬Ö±½Ó³ö¾Ö
+		//å¾ªçŽ¯æ‰§è¡ŒçŽ©å®¶å‘½ä»¤
+		set<TTowerID> towerBanned;//ä¸èƒ½å†æ‰§è¡Œæ“ä½œçš„å¡?
+		set<TCorpsID> corpsBanned;//ä¸èƒ½å†æ‰§è¡Œæ“ä½œçš„å…µå›¢
+		if (commands.size() > MAX_CMD_NUM) {    //å‘½ä»¤æ•°è¶…è¿‡é™åˆ¶æ˜¯éžæ³•çš„ï¼Œè¯´æ˜Žé€‰æ‰‹æ”¹åŠ¨äº†ä¸æ”¹æ”¹çš„ä¸œè¥¿ï¼Œç›´æŽ¥å‡ºå±€
 			data->players[id - 1].Kill();
-#ifdef OUTPUT_DETAIL
 			cout << "Player " << id << " break the rules! Out!" << endl;
-#endif
 		}
 		if (id == 1)
 			int a = 0;
-		//»ØºÏÊýÔö¼Ó1
+		//å›žåˆæ•°å¢žåŠ?
 		game_.addRound();
-		//Ö´ÐÐ±¾»ØºÏÃüÁî
+		//æ‰§è¡Œæœ¬å›žåˆå‘½ä»?
 		for (Command c : commands.getCommand()) {
-			commandRead++;  //¸üÐÂ¶ÁÈ¡Ö¸ÁîÊý£¬ÓÐÐ§¡¢ÎÞÐ§Ö¸Áî¶¼Òª¶ÁÈ¡
+			commandRead++;  //æ›´æ–°è¯»å–æŒ‡ä»¤æ•°ï¼Œæœ‰æ•ˆã€æ— æ•ˆæŒ‡ä»¤éƒ½è¦è¯»å?
 			if (c.cmdType == corpsCommand) {
-				if (c.parameters.size() != CorpsOperaNumNeed[c.parameters[0]]) continue;   //ÅÐ¶Ï²Ù×÷ÊýºÏ·¨ÐÔ
-				if (data->newCorps.find(c.parameters[1]) != data->newCorps.end() || corpsBanned.find(c.parameters[1]) != corpsBanned.end()) continue;     //Õâ¸ö±øÍÅ±¾»ØºÏ²»ÄÜ(ÔÙ)½ÓÊÜ²Ù×÷£¬ÇëÇó²µ»Ø
-				if (handleCorpsCommand(id, c) == true) {   //¼ÇÂ¼²»ÄÜÔÙ½øÐÐÆäËû²Ù×÷µÄ±øÍÅÐòºÅ
-					jsonChange(id, c,cmdFile);   //¸üÐÂÓÐÐ§µÄÖ¸ÁîJson
-					//outPutCommand(id, c);  //¸´¶Á±»Ö´ÐÐµÄÃüÁî£¬Î´Ö´ÐÐµÄ²»¸´¶Á
+				if (c.parameters.size() != CorpsOperaNumNeed[c.parameters[0]]) continue;   //åˆ¤æ–­æ“ä½œæ•°åˆæ³•æ€?
+				if (data->newCorps.find(c.parameters[1]) != data->newCorps.end() || corpsBanned.find(c.parameters[1]) != corpsBanned.end()) continue;     //è¿™ä¸ªå…µå›¢æœ¬å›žåˆä¸èƒ?å†?æŽ¥å—æ“ä½œï¼Œè¯·æ±‚é©³å›?
+				if (handleCorpsCommand(id, c) == true) {   //è®°å½•ä¸èƒ½å†è¿›è¡Œå…¶ä»–æ“ä½œçš„å…µå›¢åºå·
+					jsonChange(id, c,cmdFile);   //æ›´æ–°æœ‰æ•ˆçš„æŒ‡ä»¤Json
+					//outPutCommand(id, c);  //å¤è¯»è¢«æ‰§è¡Œçš„å‘½ä»¤ï¼Œæœªæ‰§è¡Œçš„ä¸å¤è¯»
 					switch (c.parameters[0]) {
 					//case(CStation):
 					case(CStationTower):
 					case(CBuild):
 					case(CRepair):
 					case(CChangeTerrain):
-						corpsBanned.insert(c.parameters[1]);//¼ÇÂ¼²»ÄÜ¼ÌÐø²Ù×÷µÄ±øÍÅID
+						corpsBanned.insert(c.parameters[1]);//è®°å½•ä¸èƒ½ç»§ç»­æ“ä½œçš„å…µå›¢ID
 						break;
 					default:;
 					}
 				}
-				else continue; //Ö¸ÁîÖ´ÐÐÊ§°Ü£¬¶ªÆú£¬¶ÁÈ¡ÏÂÒ»Ìõ
+				else continue; //æŒ‡ä»¤æ‰§è¡Œå¤±è´¥ï¼Œä¸¢å¼ƒï¼Œè¯»å–ä¸‹ä¸€æ?
 			}
 			else if (c.cmdType == towerCommand) {
-				if (c.parameters.size() != towerOperaNumNeed[c.parameters[0]]) continue;   //ÅÐ¶Ï²Ù×÷ÊýµÄÊýÁ¿ÊÇ·ñºÏ·¨
-				if (data->newTower.find(c.parameters[1]) != data->newTower.end() || towerBanned.find(c.parameters[1]) != towerBanned.end()) continue; //Õâ¸öËþµ±Ç°»ØºÏ²»ÄÜ(ÔÙ)²Ù×÷£¬ÇëÇó²µ»Ø
-				if (handleTowerCommand(id, c) == true) {   //¼ÇÂ¼²»ÄÜÔÙ½øÐÐÆäËû²Ù×÷µÄËþÐòºÅ
-					jsonChange(id, c,cmdFile);   //¸üÐÂÓÐÐ§µÄÖ¸ÁîJson
-				    //outPutCommand(id, c);  //¸´¶Á±»Ö´ÐÐµÄÃüÁî£¬Î´Ö´ÐÐµÄ²»¸´¶Á
+				if (c.parameters.size() != towerOperaNumNeed[c.parameters[0]]) continue;   //åˆ¤æ–­æ“ä½œæ•°çš„æ•°é‡æ˜¯å¦åˆæ³•
+				if (data->newTower.find(c.parameters[1]) != data->newTower.end() || towerBanned.find(c.parameters[1]) != towerBanned.end()) continue; //è¿™ä¸ªå¡”å½“å‰å›žåˆä¸èƒ?å†?æ“ä½œï¼Œè¯·æ±‚é©³å›?
+				if (handleTowerCommand(id, c) == true) {   //è®°å½•ä¸èƒ½å†è¿›è¡Œå…¶ä»–æ“ä½œçš„å¡”åºå?
+					jsonChange(id, c,cmdFile);   //æ›´æ–°æœ‰æ•ˆçš„æŒ‡ä»¤Json
+				    //outPutCommand(id, c);  //å¤è¯»è¢«æ‰§è¡Œçš„å‘½ä»¤ï¼Œæœªæ‰§è¡Œçš„ä¸å¤è¯»
 					switch (c.parameters[0]) {
 					case(TProduct):
 					case(TAttackCorps):
-						towerBanned.insert(c.parameters[1]);//¼ÇÂ¼²»ÄÜ¼ÌÐø²Ù×÷µÄËþID
+						towerBanned.insert(c.parameters[1]);//è®°å½•ä¸èƒ½ç»§ç»­æ“ä½œçš„å¡”ID
 						break;
 					default:;
 					}
 				}
-				else continue; //Ö¸ÁîÖ´ÐÐÊ§°Ü£¬¶ªÆú£¬¶ÁÈ¡ÏÂÒ»Ìõ
+				else continue; //æŒ‡ä»¤æ‰§è¡Œå¤±è´¥ï¼Œä¸¢å¼ƒï¼Œè¯»å–ä¸‹ä¸€æ?
 			}
-			else continue;   //Ö¸ÁîÓÐÎó£¬Ö±½Ó¶ªÆú
-			//Ö¸ÁîÕý³£Ö´ÐÐºó²Å»áµ½ÕâÀï
-			killPlayers();  //ÅÐ¶ÏÉèÖÃÍæ¼Ò³ö¾Ö
-			if (game_.goNext() == false) {   //ÉèÖÃ¿ØÖÆÆ÷ÎÞÐ§£¬ÓÎÏ·½áÊø£¬ÍË³ö¶ÁÈ¡ÃüÁîµÄÑ­»·
-				setValid(false);  //¹Ø±ÕController£¬ÖÐ¶ÏÓÎÏ·£¬Ö±½Ógame_over
+			else continue;   //æŒ‡ä»¤æœ‰è¯¯ï¼Œç›´æŽ¥ä¸¢å¼?
+			//æŒ‡ä»¤æ­£å¸¸æ‰§è¡ŒåŽæ‰ä¼šåˆ°è¿™é‡Œ
+			killPlayers();  //åˆ¤æ–­è®¾ç½®çŽ©å®¶å‡ºå±€
+			if (game_.goNext() == false) {   //è®¾ç½®æŽ§åˆ¶å™¨æ— æ•ˆï¼Œæ¸¸æˆç»“æŸï¼Œé€€å‡ºè¯»å–å‘½ä»¤çš„å¾ªçŽ¯
+				setValid(false);  //å…³é—­Controllerï¼Œä¸­æ–­æ¸¸æˆï¼Œç›´æŽ¥game_over
 				break;
 			}
-			if (moreCommand(id, towerBanned, corpsBanned) == false) break;  //½ÓÊÕ²»ÁË¸ü¶àÃüÁîÁË£¬Ö±½ÓÌø³ö
+			if (moreCommand(id, towerBanned, corpsBanned) == false) break;  //æŽ¥æ”¶ä¸äº†æ›´å¤šå‘½ä»¤äº†ï¼Œç›´æŽ¥è·³å‡º
 		}
 		game_.endPhase(Corpslastcmd,id);
-		getGameRank();   //»ñÈ¡ÓÎÏ·ÖÐÍæ¼ÒÅÅÃû
+		getGameRank();   //èŽ·å–æ¸¸æˆä¸­çŽ©å®¶æŽ’å?
 
 		isValid_ = game_.isValid();
 		if (!isValid())
 		{
 			if (!silent_mode_)
 			{
-#ifdef OUTPUT_DETAIL
+#ifdef NOTICE
 				cout << "-=-=-=-=-=-=-=-=-=-=-= GAME OVER ! =-=-=-=-=-=-=-=-=-=-=-=-=-" << endl;
 				cout << "Rank:" << endl;
-#endif
 				int rank = 0;
 				for (TPlayerID r : game_.getRank())
 				{
 					//
-#ifdef OUTPUT_DETAIL
 					cout << "Rank " << ++rank << " : player " << players_[r - 1].getName() << endl;
-#endif
 				}
 				for (int playerID = 1; playerID <= 4; playerID++) {
-#ifdef OUTPUT_DETAIL
 					cout << "ID: " << playerID << " score: " << data->players[playerID - 1].getScore() << " deadround: " << data->players[playerID - 1].getdeadRound() << "\n";
-#endif
 				}
+#endif // NOTICE
 			}
 		}
 
 
-		//#json save£¬±£´æJson´æµµÊý¾Ý
+		//#json saveï¼Œä¿å­˜Jsonå­˜æ¡£æ•°æ®
 		{
 			game_.roundTime.push_back(clock());
 			//data->currentRoundCommandJson["runDuration"] =
 				//Json::Value(std::to_string(int(game_.roundTime[game_.roundTime.size() - 1] - game_.roundTime[game_.roundTime.size() - 2])));
+#ifdef SAVETXT
 			game_.saveJson(infoFile);//±£´æ¼°Ð´ÈëJsonÎÄµµ
+#endif // !SAVETXT
 		}
 	}
 
 	/***********************************************************************************************
-	*º¯ÊýÃû :¡¾FC18¡¿jsonChangeÃüÁîJsonÐÞ¸Äº¯Êý
-	*º¯Êý¹¦ÄÜÃèÊö : ½«IDÎªidµÄÍæ¼ÒÏÂ´ïµÄÃüÁîcÂ¼Èëµ±Ç°»ØºÏÃüÁîJsonÖÐ
-	                ×¢Òâ£¬¸ÃÍæ¼ÒµÄÃüÁîÊÇ°´ËüÃüÁî±íÖÐË³Ðò´ÓÏÈÖÁºó½øÐÐ
-					µÄ¡£²¢ÇÒµ÷ÓÃ±¾º¯ÊýÇ°ÇëÈ·±£ÃüÁîÖ´ÐÐ¹ý£¬Ò²¾ÍÊÇÒªÈ·
-					±£Ã¿¸ö²ÎÊý¶¼ºÏ·¨£¬²¢ÇÒÓë³¡ÉÏÇé¿ö¶ÔÓ¦¡£
-	*º¯Êý²ÎÊý : id<TPlayerID>--µ±Ç°Íæ¼ÒµÄID£¬c<Command&>--µ±Ç°Ö¸Áî
-	*º¯Êý·µ»ØÖµ : ÎÞ
-	*×÷Õß : ½ªÓÀÅô
+	*å‡½æ•°å?:ã€FC18ã€‘jsonChangeå‘½ä»¤Jsonä¿®æ”¹å‡½æ•°
+	*å‡½æ•°åŠŸèƒ½æè¿° : å°†IDä¸ºidçš„çŽ©å®¶ä¸‹è¾¾çš„å‘½ä»¤cå½•å…¥å½“å‰å›žåˆå‘½ä»¤Jsonä¸?
+	                æ³¨æ„ï¼Œè¯¥çŽ©å®¶çš„å‘½ä»¤æ˜¯æŒ‰å®ƒå‘½ä»¤è¡¨ä¸­é¡ºåºä»Žå…ˆè‡³åŽè¿›è¡Œ
+					çš„ã€‚å¹¶ä¸”è°ƒç”¨æœ¬å‡½æ•°å‰è¯·ç¡®ä¿å‘½ä»¤æ‰§è¡Œè¿‡ï¼Œä¹Ÿå°±æ˜¯è¦ç¡?
+					ä¿æ¯ä¸ªå‚æ•°éƒ½åˆæ³•ï¼Œå¹¶ä¸”ä¸Žåœºä¸Šæƒ…å†µå¯¹åº”ã€?
+	*å‡½æ•°å‚æ•° : id<TPlayerID>--å½“å‰çŽ©å®¶çš„IDï¼Œc<Command&>--å½“å‰æŒ‡ä»¤
+	*å‡½æ•°è¿”å›žå€?: æ—?
+	*ä½œè€?: å§œæ°¸é¹?
 	***********************************************************************************************/
 	
 	
@@ -273,12 +286,13 @@ namespace DAGAN
 			//newCmd["cT"] = Json::Value(std::to_string(int(corpsCommand)));
 			//newCmd["tp"] = Json::Value(std::to_string(int(c.parameters[0])));
 			//newCmd["id"] = Json::Value(std::to_string(int(c.parameters[1])));
-			switch (c.parameters[0])  //µÚ0¸ö²ÎÊý
+			switch (c.parameters[0])  //ç¬?ä¸ªå‚æ•?
 			{
 			case(CMove):
 				newCmd.cm_type = JMove;
 				newCmd.aim_x = point.m_x /*+ DAGAN::moveDir[c.parameters[2]].m_x*/;
 				newCmd.aim_z = point.m_y /*+ DAGAN::moveDir[c.parameters[2]].m_y*/;
+				newCmd.pT = c.parameters[2];  //é—®é—®UIè¿™ä¸ªä¼šä¸ä¼šæœ‰é—®é¢˜
 				//newCmd["mv"] = Json::Value(std::to_string(int(c.parameters[2])));
 				//newCmd["dir"] = Json::Value(std::to_string(std::atan2(DAGAN::moveDir[c.parameters[2]].m_y, DAGAN::moveDir[c.parameters[2]].m_x)));
 				break;
@@ -301,10 +315,10 @@ namespace DAGAN
 				//newCmd["dEC"] = Json::Value(std::to_string(int(c.parameters[2])));
 				//TPoint dirTPoint = point2 - point;
 				//newCmd["dir"] = Json::Value(std::to_string(std::atan2(dirTPoint.m_y, dirTPoint.m_x)));
-				if (data->dieCorps.find(c.parameters[1]) == data->dieCorps.end() && data->dieCorps.find(c.parameters[2]) == data->dieCorps.end()) newCmd.result = 0;     //¶¼»¹ÔÚ
-				else if (data->dieCorps.find(c.parameters[1]) == data->dieCorps.end() && data->dieCorps.find(c.parameters[2]) != data->dieCorps.end()) newCmd.result = 1;    //×Ô¼º»¹ÔÚ£¬¶Ô·½Ã»ÁË
-				else if (data->dieCorps.find(c.parameters[1]) != data->dieCorps.end() && data->dieCorps.find(c.parameters[2]) == data->dieCorps.end()) newCmd.result = 2;    //×Ô¼ºÃ»ÁË£¬¶Ô·½»¹ÔÚ
-				else  newCmd.result = 3;    //¶¼Ã»ÁË
+				if (data->dieCorps.find(c.parameters[1]) == data->dieCorps.end() && data->dieCorps.find(c.parameters[2]) == data->dieCorps.end()) newCmd.result = 0;     //éƒ½è¿˜åœ?
+				else if (data->dieCorps.find(c.parameters[1]) == data->dieCorps.end() && data->dieCorps.find(c.parameters[2]) != data->dieCorps.end()) newCmd.result = 1;    //è‡ªå·±è¿˜åœ¨ï¼Œå¯¹æ–¹æ²¡äº?
+				else if (data->dieCorps.find(c.parameters[1]) != data->dieCorps.end() && data->dieCorps.find(c.parameters[2]) == data->dieCorps.end()) newCmd.result = 2;    //è‡ªå·±æ²¡äº†ï¼Œå¯¹æ–¹è¿˜åœ?
+				else  newCmd.result = 3;    //éƒ½æ²¡äº?
 				break;
 			case(CAttackTower):
 				newCmd.cm_type = JAttackTower;
@@ -318,10 +332,10 @@ namespace DAGAN
 				//newCmd["dET"] = Json::Value(std::to_string(int(c.parameters[2])));
 				//TPoint dirTPoint = point2 - point;
 				//newCmd["dir"] = Json::Value(std::to_string(std::atan2(dirTPoint.m_y, dirTPoint.m_x)));
-				if (data->dieCorps.find(c.parameters[1]) == data->dieCorps.end() && data->dieTower.find(c.parameters[2]) == data->dieTower.end()) newCmd.result = 0;    //¶¼»¹ÔÚ
-				else if (data->dieCorps.find(c.parameters[1]) == data->dieCorps.end() && data->dieTower.find(c.parameters[2]) != data->dieTower.end()) newCmd.result = 1;     //×Ô¼º»¹ÔÚ£¬¶Ô·½Ã»ÁË
-				else if (data->dieCorps.find(c.parameters[1]) != data->dieCorps.end() && data->dieTower.find(c.parameters[2]) == data->dieTower.end()) newCmd.result = 2;     //×Ô¼ºÃ»ÁË£¬¶Ô·½»¹ÔÚ
-				else  newCmd.result = 3;    //¶¼Ã»ÁË
+				if (data->dieCorps.find(c.parameters[1]) == data->dieCorps.end() && data->dieTower.find(c.parameters[2]) == data->dieTower.end()) newCmd.result = 0;    //éƒ½è¿˜åœ?
+				else if (data->dieCorps.find(c.parameters[1]) == data->dieCorps.end() && data->dieTower.find(c.parameters[2]) != data->dieTower.end()) newCmd.result = 1;     //è‡ªå·±è¿˜åœ¨ï¼Œå¯¹æ–¹æ²¡äº?
+				else if (data->dieCorps.find(c.parameters[1]) != data->dieCorps.end() && data->dieTower.find(c.parameters[2]) == data->dieTower.end()) newCmd.result = 2;     //è‡ªå·±æ²¡äº†ï¼Œå¯¹æ–¹è¿˜åœ?
+				else  newCmd.result = 3;    //éƒ½æ²¡äº?
 				break;
 			/*case(CRegroup):
 				newCmd.cm_type = JRegroup;
@@ -370,7 +384,7 @@ namespace DAGAN
 				newCmd.aim_x = point3.m_x;
 				newCmd.aim_z = point3.m_y;
 				newCmd.another_id = c.parameters[2];
-				if (data->dieCorps.find(c.parameters[2]) != data->dieCorps.end()) newCmd.result = 1;   //¶Ô·½Ã»ÁË
+				if (data->dieCorps.find(c.parameters[2]) != data->dieCorps.end()) newCmd.result = 1;   //å¯¹æ–¹æ²¡äº†
 				//pos["x"] = Json::Value(std::to_string(point.m_x));
 				//pos["z"] = Json::Value(std::to_string(point.m_y));
 				//newCmd["pos"] = pos;
@@ -402,6 +416,7 @@ namespace DAGAN
 		newCommand["pT"] = newCmd.pT;
 		newCommand["aid"] = newCmd.another_id;
 		data->currentRoundCommandJson["command"].append(newCommand);*/
+#ifdef SAVETXT
 		char bufferCmd[512];
 		sprintf(bufferCmd, "%d %d %d %d %d %d %d %d %d\n", newCmd.from_id,
 			                                               newCmd.cm_type, 
@@ -413,55 +428,56 @@ namespace DAGAN
 			                                               newCmd.pT,
 			                                               newCmd.another_id);
 		cmdFile << bufferCmd;
+#endif // SAVETXT
 	}
 	/***********************************************************************************************
-	*º¯ÊýÃû :¡¾FC18¡¿moreCommandÅÐ¶ÏÍæ¼Ò»¹ÄÜ·ñ¼ÌÐøÏÂÒ»ÌõÖ¸Áî
-	*º¯Êý¹¦ÄÜÃèÊö : Ëþ²»ÄÜÔÙ²Ù×÷Ìõ¼þ£ºÕâ¸öËþ¹¥»÷¹ýÒ»´Î|Õâ¸öËþÕýÔÚÖ´ÐÐÉú²úÈÎÎñ
-	                ¹¤³Ì±øÍÅ²»ÄÜÔÙ²Ù×÷Ìõ¼þ£º¹¤³Ì±øÍÅÒÑ¾­ÏÂ´ï¹¤×÷ÃüÁî|ÔÚ×¤Ôú
-					Õ½¶·±øÍÅ²»ÄÜÔÙ²Ù×÷Ìõ¼þ£ºÕ½¶·±øÍÅÔÚ×¤Ôú
-					ÕâÈý¸öÌõ¼þÂú×ãÆäÒ»£¬»òÕß£º
-					ÒÑ¾­Ö´ÐÐµÄ²Ù×÷Êý´ïµ½×î´ó²Ù×÷Êý£¬¾Í²»ÔÙ½ÓÊÜÃüÁî
-	*º¯Êý²ÎÊý : id<TPlayerID>---Íæ¼Òid£¬tBanned<set<TTowerID>&>---²»ÄÜÖ´ÐÐ²Ù×÷µÄËþID£¬cBanned
-	            <set<TCorpsID>&>---²»ÄÜÖ´ÐÐ²Ù×÷µÄ±øÍÅID
-	*º¯Êý·µ»ØÖµ : <bool>---ÄÜ·ñ¶ÁÏÂÒ»ÌõÖ¸Áî£¬false---²»ÄÜ£¬true---ÄÜ
-	*×÷Õß : ½ªÓÀÅô
+	*å‡½æ•°å?:ã€FC18ã€‘moreCommandåˆ¤æ–­çŽ©å®¶è¿˜èƒ½å¦ç»§ç»­ä¸‹ä¸€æ¡æŒ‡ä»?
+	*å‡½æ•°åŠŸèƒ½æè¿° : å¡”ä¸èƒ½å†æ“ä½œæ¡ä»¶ï¼šè¿™ä¸ªå¡”æ”»å‡»è¿‡ä¸€æ¬¡|è¿™ä¸ªå¡”æ­£åœ¨æ‰§è¡Œç”Ÿäº§ä»»åŠ?
+	                å·¥ç¨‹å…µå›¢ä¸èƒ½å†æ“ä½œæ¡ä»¶ï¼šå·¥ç¨‹å…µå›¢å·²ç»ä¸‹è¾¾å·¥ä½œå‘½ä»¤|åœ¨é©»æ‰?
+					æˆ˜æ–—å…µå›¢ä¸èƒ½å†æ“ä½œæ¡ä»¶ï¼šæˆ˜æ–—å…µå›¢åœ¨é©»æ‰?
+					è¿™ä¸‰ä¸ªæ¡ä»¶æ»¡è¶³å…¶ä¸€ï¼Œæˆ–è€…ï¼š
+					å·²ç»æ‰§è¡Œçš„æ“ä½œæ•°è¾¾åˆ°æœ€å¤§æ“ä½œæ•°ï¼Œå°±ä¸å†æŽ¥å—å‘½ä»¤
+	*å‡½æ•°å‚æ•° : id<TPlayerID>---çŽ©å®¶idï¼ŒtBanned<set<TTowerID>&>---ä¸èƒ½æ‰§è¡Œæ“ä½œçš„å¡”IDï¼ŒcBanned
+	            <set<TCorpsID>&>---ä¸èƒ½æ‰§è¡Œæ“ä½œçš„å…µå›¢ID
+	*å‡½æ•°è¿”å›žå€?: <bool>---èƒ½å¦è¯»ä¸‹ä¸€æ¡æŒ‡ä»¤ï¼Œfalse---ä¸èƒ½ï¼Œtrue---èƒ?
+	*ä½œè€?: å§œæ°¸é¹?
 	***********************************************************************************************/
 	bool Controller::moreCommand(TPlayerID id, set<TTowerID>& tBanned, set<TCorpsID>& cBanned) {
-		bool towerFree = false;  //ÄÜ½øÐÐËþ²Ù×÷
-		bool corpsFree = false;  //ÄÜ½øÐÐ±øÍÅ²Ù×÷
+		bool towerFree = false;  //èƒ½è¿›è¡Œå¡”æ“ä½œ
+		bool corpsFree = false;  //èƒ½è¿›è¡Œå…µå›¢æ“ä½?
 		for (TTowerID i : data->players[id - 1].getTower()) {
-			if (tBanned.find(i) == tBanned.end())//ÓÃ»§ÏÖ´æµÄËþ»¹ÓÐÄÜ½øÐÐ²Ù×÷µÄ
+			if (tBanned.find(i) == tBanned.end())//ç”¨æˆ·çŽ°å­˜çš„å¡”è¿˜æœ‰èƒ½è¿›è¡Œæ“ä½œçš„
 			{
 				towerFree = true;
 				break;
 			}
 		}
-		if (!towerFree)   //ÈôËþ²»ÄÜ²Ù×÷ÁË
+		if (!towerFree)   //è‹¥å¡”ä¸èƒ½æ“ä½œäº?
 		{
 			for (TCorpsID i : data->players[id - 1].getCrops()) {
-				if (cBanned.find(i) == cBanned.end())//ÓÃ»§ÏÖ´æµÄ±øÍÅ»¹ÓÐÄÜ½øÐÐ²Ù×÷µÄ
+				if (cBanned.find(i) == cBanned.end())//ç”¨æˆ·çŽ°å­˜çš„å…µå›¢è¿˜æœ‰èƒ½è¿›è¡Œæ“ä½œçš?
 				{
 					corpsFree = true;
 					break;
 				}
 			}
 		}
-		if (commandRead >= MAX_CMD_NUM || (!towerFree && !corpsFree))//³¬¹ý×î´óÃüÁîÌõÊý£¬»òÕßÃ»ÓÐ¿É²Ù×÷ÐÔµÄËþ»ò±øÍÅÁË
+		if (commandRead >= MAX_CMD_NUM || (!towerFree && !corpsFree))//è¶…è¿‡æœ€å¤§å‘½ä»¤æ¡æ•°ï¼Œæˆ–è€…æ²¡æœ‰å¯æ“ä½œæ€§çš„å¡”æˆ–å…µå›¢äº?
 			return false;
 		else return true;
 	}
 
 
 	/***********************************************************************************************
-	*º¯ÊýÃû :¡¾FC18¡¿killPlayersÅÐ¶ÏÍæ¼Ò³ö¾Öº¯Êý
-	*º¯Êý¹¦ÄÜÃèÊö : ¿´¿´ÄÄ¸öÍæ¼Ò·ÀÓùËþÊý¼õµ½0£¬ÈÃËû³ö¾Ö
-	*º¯Êý²ÎÊý : ÎÞ
-	*º¯Êý·µ»ØÖµ : ÎÞ
-	*×÷Õß : ½ªÓÀÅô
+	*å‡½æ•°å?:ã€FC18ã€‘killPlayersåˆ¤æ–­çŽ©å®¶å‡ºå±€å‡½æ•°
+	*å‡½æ•°åŠŸèƒ½æè¿° : çœ‹çœ‹å“ªä¸ªçŽ©å®¶é˜²å¾¡å¡”æ•°å‡åˆ°0ï¼Œè®©ä»–å‡ºå±€
+	*å‡½æ•°å‚æ•° : æ—?
+	*å‡½æ•°è¿”å›žå€?: æ—?
+	*ä½œè€?: å§œæ°¸é¹?
 	***********************************************************************************************/
 	void Controller::killPlayers() {
 		for (int i = 0; i < 4; i++) {
-			if (data->players[i].isAlive() == true && data->players[i].getTower().size() <= 0)  //Ã»ÓÐ·ÀÓùËþµÄÍæ¼ÒÖ±½Ó³ö¾Ö£¬´ò³ö¾Ö»ØºÏµÄ±êÇ©
+			if (data->players[i].isAlive() == true && data->players[i].getTower().size() <= 0)  //æ²¡æœ‰é˜²å¾¡å¡”çš„çŽ©å®¶ç›´æŽ¥å‡ºå±€ï¼Œæ‰“å‡ºå±€å›žåˆçš„æ ‡ç­?
 			{
 				data->players[i].Kill();
 			}
@@ -470,15 +486,14 @@ namespace DAGAN
 
 
 	/***********************************************************************************************
-	*º¯ÊýÃû :¡¾FC18¡¿outPutCommandÖ¸ÁîÊä³öº¯Êý
-	*º¯Êý¹¦ÄÜÃèÊö : Êä³öµ±Ç°Íæ¼ÒÊµ¼ÊÖ´ÐÐµÄÖ¸Áî
-	*º¯Êý²ÎÊý : ÎÞ
-	*º¯Êý·µ»ØÖµ : ÎÞ
-	*×÷Õß : ½ªÓÀÅô
+	*å‡½æ•°å?:ã€FC18ã€‘outPutCommandæŒ‡ä»¤è¾“å‡ºå‡½æ•°
+	*å‡½æ•°åŠŸèƒ½æè¿° : è¾“å‡ºå½“å‰çŽ©å®¶å®žé™…æ‰§è¡Œçš„æŒ‡ä»?
+	*å‡½æ•°å‚æ•° : æ—?
+	*å‡½æ•°è¿”å›žå€?: æ—?
+	*ä½œè€?: å§œæ°¸é¹?
 	***********************************************************************************************/
 	void Controller::outPutCommand(TPlayerID id, Command& c) {
-		// Ö±½ÓÊä³ö´ËÍæ¼ÒµÄ²Ù×÷
-#ifdef OUTPUT_DETAIL
+		// ç›´æŽ¥è¾“å‡ºæ­¤çŽ©å®¶çš„æ“ä½œ
 #ifdef _COMMAND_OUTPUT_ENABLED_
 		if (file_output_enabled_ && game_.isAlive(id))
 		{
@@ -502,7 +517,7 @@ namespace DAGAN
 					cout << " with corps " << c.parameters[2];
 					break;*/
 				case(CChangeTerrain):
-					cout << " of (" << data->myCorps[c.parameters[1]].getPos().m_x << "," << data->myCorps[c.parameters[1]].getPos().m_y << ")" << " to " << Terrain[c.parameters[2] - 1];
+					cout << " of (" << data->myCorps[c.parameters[1]].getPos().m_x << "," << data->myCorps[c.parameters[1]].getPos().m_y << ")" << " to " << Terrain[c.parameters[2]];
 					break;
 				default:;
 				}
@@ -524,34 +539,33 @@ namespace DAGAN
 		}
 		if (file_output_enabled_) cout  << endl;
 #endif
-#endif
 	}
 
 	/***********************************************************************************************
-	*º¯ÊýÃû :¡¾FC18¡¿handleCorpsCommand±øÍÅÖ¸ÁîÖ´ÐÐº¯Êý
-	*º¯Êý¹¦ÄÜÃèÊö : Ö´ÐÐµ±Ç°±øÍÅÖ¸Áî£¬²¢·µ»ØÊÇ·ñÖ´ÐÐ³É¹¦
-	*º¯Êý²ÎÊý : Áîid<TPlayerID>---µ±Ç°Íæ¼ÒID,c<Command&>---µ±Ç°Ö¸
-	*º¯Êý·µ»ØÖµ : <bool>Ö¸ÁîÖ´ÐÐÇé¿öfalse---Ö´ÐÐ³É¹¦£¬true---Ã»ÓÐÖ´ÐÐ³É¹¦
-	*×÷Õß : ½ªÓÀÅô
+	*å‡½æ•°å?:ã€FC18ã€‘handleCorpsCommandå…µå›¢æŒ‡ä»¤æ‰§è¡Œå‡½æ•°
+	*å‡½æ•°åŠŸèƒ½æè¿° : æ‰§è¡Œå½“å‰å…µå›¢æŒ‡ä»¤ï¼Œå¹¶è¿”å›žæ˜¯å¦æ‰§è¡ŒæˆåŠŸ
+	*å‡½æ•°å‚æ•° : ä»¤id<TPlayerID>---å½“å‰çŽ©å®¶ID,c<Command&>---å½“å‰æŒ?
+	*å‡½æ•°è¿”å›žå€?: <bool>æŒ‡ä»¤æ‰§è¡Œæƒ…å†µfalse---æ‰§è¡ŒæˆåŠŸï¼Œtrue---æ²¡æœ‰æ‰§è¡ŒæˆåŠŸ
+	*ä½œè€?: å§œæ°¸é¹?
 	***********************************************************************************************/
 	bool Controller::handleCorpsCommand(TPlayerID ID, Command& c) {
-		//ÐèÒªreturn·µ»ØÃüÁîÖ´ÐÐÊÇ·ñ³É¹¦<bool>
+		//éœ€è¦returnè¿”å›žå‘½ä»¤æ‰§è¡Œæ˜¯å¦æˆåŠŸ<bool>
 		bool bCmdSucs = false;
 		TCorpsID id = c.parameters[1];
 		if (c.parameters[0] == CMove && ID == 2)
 			int a = 0;
 		if (ID == 2 && data->myCorps[id].getType()!=Construct)
 			int a = 0;
-		//Èç¹û±øÍÅidÔ½½ç
+		//å¦‚æžœå…µå›¢idè¶Šç•Œ
 		if(id < 0 || id >= data->myCorps.size())
 			return false;
-		//Èç¹û±øÍÅid²»ÊôÓÚ¸ÃÍæ¼Ò
+		//å¦‚æžœå…µå›¢idä¸å±žäºŽè¯¥çŽ©å®¶
 		if(data->myCorps[id].getPlayerID() != ID)
 		{
 			return false;
 		}
 
-		//±øÍÅÒÑËÀÍö£¬ÅÐ¶¨ÃüÁîÊ§°Ü
+		//å…µå›¢å·²æ­»äº¡ï¼Œåˆ¤å®šå‘½ä»¤å¤±è´¥
 		if (data->myCorps[id].bAlive() == false)
 		{
 			return false;
@@ -560,23 +574,23 @@ namespace DAGAN
 		//data->myCorps[id].haveCmd();
 		switch (c.parameters[0]) {
 		case(CMove):
-			//±øÍÅÒÆ¶¯µÄ²Ù×÷
+			//å…µå›¢ç§»åŠ¨çš„æ“ä½?
 			{
 				int dir = c.parameters[2];
 				bCmdSucs = data->myCorps[id].Move(dir);
 			}
 			break;
 			
-		/*case(CStation)://±øÍÅÃ»ÓÐÊôÐÔÖµ¸Ä±ä
-			//±øÍÅÔ­µØ×¤ÔúµÄ²Ù×÷
+		/*case(CStation)://å…µå›¢æ²¡æœ‰å±žæ€§å€¼æ”¹å?
+			//å…µå›¢åŽŸåœ°é©»æ‰Žçš„æ“ä½?
 			{
 				bCmdSucs = data->myCorps[id].GoRest();
 			}
 			break;
 			*/
-			/*¸Ã²Ù×÷²»´æÔÚ£¬±øÍÅ×Ô¶¯×¤Ôú
-		case(CStationTower)://±øÍÅÃ»ÓÐÊôÐÔÖµ¸Ä±ä
-			//±øÍÅ×¤Ôúµ±Ç°¸ñ·ÀÓùËþµÄ²Ù×÷
+			/*è¯¥æ“ä½œä¸å­˜åœ¨ï¼Œå…µå›¢è‡ªåŠ¨é©»æ‰?
+		case(CStationTower)://å…µå›¢æ²¡æœ‰å±žæ€§å€¼æ”¹å?
+			//å…µå›¢é©»æ‰Žå½“å‰æ ¼é˜²å¾¡å¡”çš„æ“ä½?
 			{
 				bCmdSucs = data->myCorps[id].StationInTower();
 			}
@@ -584,25 +598,25 @@ namespace DAGAN
 			*/
 		case(CAttackCorps):
 		case(CAttackTower):
-			//±øÍÅ¹¥»÷µÄ²Ù×÷
+			//å…µå›¢æ”»å‡»çš„æ“ä½?
 			{
 				int type = c.parameters[0];
 				TCorpsID enemyid = c.parameters[2];
-				if (type == CAttackCorps && (enemyid < 0 || enemyid >= data->myCorps.size())) return false;   //Ô½½ç£º²Ù×÷Êý·Ç·¨
-				if (type == CAttackTower && (enemyid < 0 || enemyid >= data->myTowers.size())) return false;   //Ô½½ç£º²Ù×÷Êý·Ç·¨
+				if (type == CAttackCorps && (enemyid < 0 || enemyid >= data->myCorps.size())) return false;   //è¶Šç•Œï¼šæ“ä½œæ•°éžæ³•
+				if (type == CAttackTower && (enemyid < 0 || enemyid >= data->myTowers.size())) return false;   //è¶Šç•Œï¼šæ“ä½œæ•°éžæ³•
 				bCmdSucs = data->myCorps[id].Attack(type,enemyid,c);
 			}
 			break;
-		/*case(CRegroup)://Õâ¸ö²Ù×÷¾Í²»ÒªÁË
-			//±øÍÅÕû±àµÄ²Ù×÷
+		/*case(CRegroup)://è¿™ä¸ªæ“ä½œå°±ä¸è¦äº†
+			//å…µå›¢æ•´ç¼–çš„æ“ä½?
 			{
 				TCorpsID target = c.parameters[2];
-				if (target < 0 || target >= data->myCorps.size()) return false;     //Ô½½ç£º²Ù×÷Êý·Ç·¨
+				if (target < 0 || target >= data->myCorps.size()) return false;     //è¶Šç•Œï¼šæ“ä½œæ•°éžæ³•
 				bCmdSucs = data->myCorps[id].MergeCrops(target);
 			}
 			break;*/
 		case(CBuild):
-			//±øÍÅÐÞ½¨ÐÂËþµÄ²Ù×÷
+			//å…µå›¢ä¿®å»ºæ–°å¡”çš„æ“ä½?
 			{
 				if (data->players[ID - 1].towerNumControl() == true) 
 					return false;
@@ -610,15 +624,15 @@ namespace DAGAN
 			}
 			break;
 		case(CRepair):
-			//±øÍÅÐÞÀí·ÀÓùËþµÄ²Ù×÷
+			//å…µå›¢ä¿®ç†é˜²å¾¡å¡”çš„æ“ä½œ
 			{
 				bCmdSucs = data->myCorps[id].MendTower();
 			}
 			break;
 		case(CChangeTerrain):
-			//±øÍÅ¸Ä±ä·½¸ñµØÐÎµÄ²Ù×÷
+			//å…µå›¢æ”¹å˜æ–¹æ ¼åœ°å½¢çš„æ“ä½?
 			{
-				//Èç¹ûµØÐÎ²ÎÊý²»·ûºÏÒªÇó
+				//å¦‚æžœåœ°å½¢å‚æ•°ä¸ç¬¦åˆè¦æ±?
 				if(c.parameters[2] < 1 || c.parameters[2] > 5)
 				{
 					return false;
@@ -640,18 +654,18 @@ namespace DAGAN
 	}
 
 	/***********************************************************************************************
-	*º¯ÊýÃû :¡¾FC18¡¿handleTowerCommand·ÀÓùËþÖ¸ÁîÖ´ÐÐº¯Êý
-	*º¯Êý¹¦ÄÜÃèÊö : Ö´ÐÐµ±Ç°·ÀÓùËþÖ¸Áî£¬²¢·µ»ØÊÇ·ñÖ´ÐÐ³É¹¦
-	*º¯Êý²ÎÊý : id<TPlayerID>---µ±Ç°Íæ¼ÒID,c<Command&>---µ±Ç°Ö¸Áî
-	*º¯Êý·µ»ØÖµ : <bool>Ö¸ÁîÖ´ÐÐÇé¿öfalse---Ö´ÐÐ³É¹¦£¬true---Ã»ÓÐÖ´ÐÐ³É¹¦
-	*×÷Õß : ½ªÓÀÅô
+	*å‡½æ•°å?:ã€FC18ã€‘handleTowerCommandé˜²å¾¡å¡”æŒ‡ä»¤æ‰§è¡Œå‡½æ•?
+	*å‡½æ•°åŠŸèƒ½æè¿° : æ‰§è¡Œå½“å‰é˜²å¾¡å¡”æŒ‡ä»¤ï¼Œå¹¶è¿”å›žæ˜¯å¦æ‰§è¡ŒæˆåŠ?
+	*å‡½æ•°å‚æ•° : id<TPlayerID>---å½“å‰çŽ©å®¶ID,c<Command&>---å½“å‰æŒ‡ä»¤
+	*å‡½æ•°è¿”å›žå€?: <bool>æŒ‡ä»¤æ‰§è¡Œæƒ…å†µfalse---æ‰§è¡ŒæˆåŠŸï¼Œtrue---æ²¡æœ‰æ‰§è¡ŒæˆåŠŸ
+	*ä½œè€?: å§œæ°¸é¹?
 	***********************************************************************************************/
 	bool Controller::handleTowerCommand(TPlayerID ID, Command& c) {
-		//ÐèÒªreturn·µ»ØÃüÁîÖ´ÐÐÊÇ·ñ³É¹¦<bool>
+		//éœ€è¦returnè¿”å›žå‘½ä»¤æ‰§è¡Œæ˜¯å¦æˆåŠŸ<bool>
 		bool bCmdSucs = false;
 		TCorpsID id = c.parameters[1];
 		int pdtType = c.parameters[2];
-		//ËþidÔ½½ç
+		//å¡”idè¶Šç•Œ
 		if (id < 0 || id >= data->myTowers.size())
 			return false;  
 		if (data->myTowers[id].getexsit() == false)
@@ -660,14 +674,14 @@ namespace DAGAN
 		case(TProduct):
 			if ((pdtType == PWarrior || pdtType == PArcher || pdtType == PCavalry) && data->players[ID - 1].battleNumControl() == true) return false;
 			else if ((pdtType == PBuilder || pdtType == PExtender) && data->players[ID - 1].constructNumControl() == true) return false;
-			//ÉèÖÃÉú²úÈÎÎñ£¬ÈÎÎñÖÖÀà²»Ô½½ç¾ÍÅÐ¶¨³É¹¦
-			bCmdSucs = data->myTowers[id].set_producttype(productType(pdtType));
+			//è®¾ç½®ç”Ÿäº§ä»»åŠ¡ï¼Œä»»åŠ¡ç§ç±»ä¸è¶Šç•Œå°±åˆ¤å®šæˆåŠ?
+			bCmdSucs = data->myTowers[id].set_producttype((enum productType)(pdtType));
 			return bCmdSucs;
 			break;
 		case(TAttackCorps):
-			//by lxj£ºº¯ÊýÄÚ°üº¬´ËÅÐ¶Ï
-			//ÉèÖÃ¹¥»÷Ä¿±ê
-			//Ô½½ç£º²Ù×÷Êý·Ç·¨
+			//by lxjï¼šå‡½æ•°å†…åŒ…å«æ­¤åˆ¤æ–?
+			//è®¾ç½®æ”»å‡»ç›®æ ‡
+			//è¶Šç•Œï¼šæ“ä½œæ•°éžæ³•
 			//if (c.parameters[2] < 0 || c.parameters[2] >= data->myCorps.size()) 
 			//	return false;   
 			bCmdSucs = data->myTowers[id].set_attacktarget(c.parameters[2]);
@@ -679,14 +693,14 @@ namespace DAGAN
 		return bCmdSucs;
 	}
 	/***********************************************************************************************
-	*º¯ÊýÃû :¡¾FC18¡¿getGameRank»ñÈ¡¸üÐÂÓÎÏ·ÅÅÃûº¯Êýº¯Êý
-	*º¯Êý¹¦ÄÜÃèÊö : ¼ÆËãÍæ¼ÒÓÎÏ·ÅÅÃû£¬µÃµ½½µÐòÅÅÐò·Åµ½Game::RankÀïÃæ
-	                µÚÒ»¹Ø¼ü×Ö---Íæ¼ÒµÃ·Ö£¬µÚ¶þ¹Ø¼ü×Ö---Íæ¼ÒÕ¼Áì·ÀÓùËþ¸öÊý
-					µÚÈý¹Ø¼ü×Ö---Íæ¼ÒÏûÃðµÐ·½±øÍÅ¸öÊý£¬µÚËÄ¹Ø¼ü×Ö---Íæ¼Ò·ýÂ²µÐ·½±øÍÅ¸öÊý
-					Ö®ºó½«Ëæ»úÅÅÐò
-	*º¯Êý²ÎÊý : ÎÞ
-	*º¯Êý·µ»ØÖµ : ÎÞ
-	*×÷Õß : ½ªÓÀÅô
+	*å‡½æ•°å?:ã€FC18ã€‘getGameRankèŽ·å–æ›´æ–°æ¸¸æˆæŽ’åå‡½æ•°å‡½æ•°
+	*å‡½æ•°åŠŸèƒ½æè¿° : è®¡ç®—çŽ©å®¶æ¸¸æˆæŽ’åï¼Œå¾—åˆ°é™åºæŽ’åºæ”¾åˆ°Game::Ranké‡Œé¢
+	                ç¬¬ä¸€å…³é”®å­?--çŽ©å®¶å¾—åˆ†ï¼Œç¬¬äºŒå…³é”®å­—---çŽ©å®¶å é¢†é˜²å¾¡å¡”ä¸ªæ•?
+					ç¬¬ä¸‰å…³é”®å­?--çŽ©å®¶æ¶ˆç­æ•Œæ–¹å…µå›¢ä¸ªæ•°ï¼Œç¬¬å››å…³é”®å­—---çŽ©å®¶ä¿˜è™æ•Œæ–¹å…µå›¢ä¸ªæ•°
+					ä¹‹åŽå°†éšæœºæŽ’åº?
+	*å‡½æ•°å‚æ•° : æ—?
+	*å‡½æ•°è¿”å›žå€?: æ—?
+	*ä½œè€?: å§œæ°¸é¹?
 	***********************************************************************************************/
 	void Controller::getGameRank() {
 		vector<rankCmp> Ranker;
@@ -712,7 +726,7 @@ namespace DAGAN
 			Ranker.push_back(playerRanker);
 			data->players[i].setScore(playerRanker.score);
 		}
-		std::sort(Ranker.begin(), Ranker.end());  //¶ÔÍæ¼ÒÅÅÐò£¬°´Ãû´ÎÉýÐòÅÅÐò
+		std::sort(Ranker.begin(), Ranker.end());  //å¯¹çŽ©å®¶æŽ’åºï¼ŒæŒ‰åæ¬¡å‡åºæŽ’åº?
 		for (int i = 1; i <= 4; i++) {
 			int Rank = 0;
 			for (int j = 0; j < 4; j++) {
@@ -726,11 +740,11 @@ namespace DAGAN
 		}
 	}
 	/***********************************************************************************************
-	*º¯ÊýÃû :¡¾FC18¡¿testPlayerCommandÄ£ÄâAI¸ø³öÍæ¼ÒÃüÁîº¯Êý
-	*º¯Êý¹¦ÄÜÃèÊö : Ä£ÄâÍæ¼ÒAI£¬¸ø³öÓÎÏ·Ö¸Áî£¬·½±ãµ÷ÊÔ
-	*º¯Êý²ÎÊý : Info& info
-	*º¯Êý·µ»ØÖµ : ÎÞ
-	*×÷Õß : ½ªÓÀÅô
+	*å‡½æ•°å?:ã€FC18ã€‘testPlayerCommandæ¨¡æ‹ŸAIç»™å‡ºçŽ©å®¶å‘½ä»¤å‡½æ•°
+	*å‡½æ•°åŠŸèƒ½æè¿° : æ¨¡æ‹ŸçŽ©å®¶AIï¼Œç»™å‡ºæ¸¸æˆæŒ‡ä»¤ï¼Œæ–¹ä¾¿è°ƒè¯•
+	*å‡½æ•°å‚æ•° : Info& info
+	*å‡½æ•°è¿”å›žå€?: æ—?
+	*ä½œè€?: å§œæ°¸é¹?
 	***********************************************************************************************/
 	void Controller::testPlayerCommand(Info& info) {
 		TPlayerID m_ID = info.myID;
@@ -742,38 +756,156 @@ namespace DAGAN
 					break;
 				}
 			}
-			//	if(info.totalRounds >= 6&&info.totalRounds <= 9 && (m_ID == 1 || m_ID == 2)) info.myCommandList.addCommand(towerCommand, { TProduct,t,PArcher });   //ÈÃÍæ¼ÒµÄËùÓÐËþÉú²ú½¨ÔìÕß
-			//	if (info.totalRounds >= 6&&info.totalRounds <= 9 && (m_ID == 3 || m_ID == 4)) info.myCommandList.addCommand(towerCommand, { TProduct,t,PExtender });   //ÈÃÍæ¼ÒµÄËùÓÐËþÉú²ú¿ªÍØÕß
-			info.myCommandList.addCommand(towerCommand, { TProduct,t,PCavalry });
+			//	if(info.totalRounds >= 6&&info.totalRounds <= 9 && (m_ID == 1 || m_ID == 2)) info.myCommandList.addCommand(towerCommand, { TProduct,t,PArcher });   //è®©çŽ©å®¶çš„æ‰€æœ‰å¡”ç”Ÿäº§å»ºé€ è€?
+			//	if (info.totalRounds >= 6&&info.totalRounds <= 9 && (m_ID == 3 || m_ID == 4)) info.myCommandList.addCommand(towerCommand, { TProduct,t,PExtender });   //è®©çŽ©å®¶çš„æ‰€æœ‰å¡”ç”Ÿäº§å¼€æ‹“è€?
+			if(info.totalRounds <= 100 )info.myCommandList.addCommand(towerCommand, { TProduct,t,PBuilder });
+			else info.myCommandList.addCommand(towerCommand, { TProduct,t,PCavalry });
 		}
 		if (info.playerInfo[1].tower.size() == 0)
 			return;
-		TTowerID target = *(info.playerInfo[1].tower.begin());
+		int enemyID = 0;
+		if (info.myID == 1)  enemyID = 2;
+		else if (info.myID == 2) enemyID = 1;
+		TTowerID target = *(info.playerInfo[enemyID - 1].tower.begin());
 		int dir = -1;
 		for (TCorpsID t : info.playerInfo[m_ID - 1].corps)
 		{
+			if (data->myCorps[t].getType() == Construct)
+			{
+				info.myCommandList.addCommand(corpsCommand, { CMove,t,generateRanInt(0,3) });
+				if(info.totalRounds % 2 == 0)
+					info.myCommandList.addCommand(corpsCommand, { CChangeTerrain,t,TRForest });
+				else
+					info.myCommandList.addCommand(corpsCommand, { CChangeTerrain,t,TRPlain });
+				continue;
+			}
 			if (data->myCorps[t].getType() != Battle)
 				continue;
+			for (int i = 0; i < data->myCorps.size(); i++)
+				if (data->myCorps[i].bAlive() && data->myCorps[i].getPlayerID() == enemyID)
+					info.myCommandList.addCommand(corpsCommand, { CAttackCorps,t,i });
+			for (int i = 0; i < data->myTowers.size(); i++)
+				if (data->myTowers[i].getexsit() && data->myTowers[i].getPlayerID() == enemyID)
+					info.myCommandList.addCommand(corpsCommand, { CAttackTower,t,i });
 			if (data->myCorps[t].getPos().m_x < data->myTowers[target].getPosition().m_x)
 				dir = CRight;
 			else if (data->myCorps[t].getPos().m_x > data->myTowers[target].getPosition().m_x)
 				dir = CLeft;
 			else if (data->myCorps[t].getPos().m_y < data->myTowers[target].getPosition().m_y)
-				dir = CDown;
-			else if (data->myCorps[t].getPos().m_y > data->myTowers[target].getPosition().m_y)
 				dir = CUp;
+			else if (data->myCorps[t].getPos().m_y > data->myTowers[target].getPosition().m_y)
+				dir = CDown;
 			if(dir!=-1)
 				info.myCommandList.addCommand(corpsCommand, { CMove,t,dir });
-			for(int i = 0;i<data->myCorps.size(); i++)
-				if (data->myCorps[i].bAlive() && data->myCorps[i].getPlayerID() == 2)
-					info.myCommandList.addCommand(corpsCommand, { CAttackCorps,t,i });
-			for (int i = 0; i < data->myTowers.size(); i++)
-				if(data->myTowers[i].getexsit()&& data->myTowers[i].getPlayerID() == 2)
-					info.myCommandList.addCommand(corpsCommand, { CAttackTower,t,i });
 		}
 		if (info.totalRounds >= 150)
 			int a = 0;
 		//cout << (*info.gameMapInfo)[4][5].type << "\n";
+	}
+
+
+	/***********************************************************************************************
+	*å‡½æ•°å?:ã€FC18ã€‘getCmdFromKeyboardä»Žé”®ç›˜è¯»å…¥æŒ‡ä»¤å‡½æ•?
+	*å‡½æ•°åŠŸèƒ½æè¿° : ä»Žé”®ç›˜è¯»å…¥çŽ©å®¶æŒ‡ä»?
+	*å‡½æ•°å‚æ•° : CommandList& commands
+	*å‡½æ•°è¿”å›žå€?: æ—?
+	*ä½œè€?: å§œæ°¸é¹?
+	***********************************************************************************************/
+	void Controller::getCmdFromKeyboard(TPlayerID id, CommandList& commands) {
+		cin.clear();
+		if(data->getRound() == 1) cin.ignore();
+		cout << ">>>å½“å‰æ˜¯ç¬¬ " << data->getRound() << " å›žåˆã€‚\n";
+		cout << ">>>å½“å‰æœ‰æƒæ“ä½œçš„çŽ©å®¶æ˜¯çŽ©å®¶ " << id << " \n";
+		cout << ">>>å­˜æ¡£ä¸­çŽ©å®¶æœ¬å›žåˆçš„å‘½ä»¤ï¼š\n";
+		if (data->memoCommand[data->getRound()].size() == 0)
+			cout << "(ç©?\n";
+		else {
+			for (Command c : data->memoCommand[data->getRound()]) {
+				cout << ">>>";
+				outPutCommand(id, c);
+			}
+		}
+cout << ">>>è¯·è¾“å…¥çŽ©å®¶æœ¬å›žåˆéœ€è¦æ‰§è¡Œçš„æŒ‡ä»¤ï¼ŒæŒ‰ç…?æŒ‡ä»¤ç±»åž‹><å‚æ•°1><å‚æ•°2><å‚æ•°...>çš„é¡ºåºè¾“å…¥æ•´æ•°ï¼Œä¹‹é—´ä»¥ç©ºæ ¼åˆ†éš?è¾“å…¥å¤§å†™å­—æ¯EOFç»“æŸ)ï¼š\n";
+		while (true) {
+			cout << ">>>è¯·è¾“å…¥æŒ‡ä»¤ï¼š";
+			string tempCmd;
+			bool cmdCorrect = true;
+  			getline(cin, tempCmd);
+			if (tempCmd == "EOF") break;
+			int posOfBlank[7] = { -1 };
+			int index = 1;
+			for (int i = 1; i < 6; i++) {
+				posOfBlank[i] = tempCmd.find(" ", index);
+				index += 2;
+			}
+			for (int i = 1; i <= 6; i++)
+				if (posOfBlank[i] <= 0) posOfBlank[i] = INF;
+			int parameters[6] = { 0, 0 };
+			string parameter;
+			for (int i = 0; i < 6 ; i++) {
+				int dist = posOfBlank[i + 1] - posOfBlank[i] - 1;
+				/*if (dist <= 0) {
+					cout << ">>>æŒ‡ä»¤æ— æ•ˆï¼\n";
+					cmdCorrect = false;
+					break;
+				}*/
+				if (posOfBlank[i] + 1 >= tempCmd.size()) {
+					parameters[i] = -1;
+					continue;
+				}
+				parameter = tempCmd.substr(posOfBlank[i] + 1, dist);
+				parameters[i] = atoi(parameter.c_str());
+			}
+			int commandType, paramNum;
+			commandType = parameters[1];
+			if (!cmdCorrect) continue;
+			vector<int> paramVector;
+			switch (parameters[0]) {
+			case(corpsCommand):
+				if (!(commandType >= 0 && commandType <= 9)) {
+					cout << ">>>æŒ‡ä»¤æ— æ•ˆï¼\n";
+					continue;
+				}
+				paramNum = CorpsOperaNumNeed[parameters[1]];
+				break;
+			case(towerCommand):
+				if (!(commandType >= 0 && commandType <= 1)) {
+
+				}
+				paramNum = towerOperaNumNeed[parameters[1]];
+				break;
+			default:
+				cout << ">>>æŒ‡ä»¤æ— æ•ˆï¼\n";
+				continue;
+			}
+			if (paramNum < INF) {
+				paramVector.resize(paramNum);
+				for (int i = 1; i <= paramNum; i++) {
+					paramVector[i - 1] = parameters[i];
+				}
+			}
+			else {
+				cout << ">>>æŒ‡ä»¤æ— æ•ˆï¼\n";
+				continue;
+			}
+			Command c = { (enum commandType)(parameters[0]), paramVector };
+			commands.addCommand((enum commandType)(parameters[0]), paramVector);
+			outPutCommand(id, c);
+			if (commands.size() >= MAX_CMD_NUM) break;
+			cout << "æŒ‡ä»¤è¾“å…¥æˆåŠŸï¼Œè¯·è¾“å…¥ä¸‹ä¸€æ¡æŒ‡ä»¤ï¼š\n";
+		}
+		cout << ">>>æŒ‡ä»¤è¾“å…¥ç»“æŸ!\n";
+		cout << ">>>è¯·æŒ‡å®šä¸‹æ¬¡åœæ­¢è¿è¡Œçš„å›žåˆæ•?\n";
+		while (true) {
+			cout << "è¯·è¾“å…¥å›žåˆæ•°ï¼?";
+			string roundline;
+			getline(cin, roundline);
+			int expectRound = atoi(roundline.c_str());
+			if (expectRound > data->getRound() && expectRound <= data->memoCommand.size() - 1) {
+				stopRound = expectRound;
+				break;
+			}
+		}
 	}
 }
 
