@@ -94,6 +94,9 @@ def register(request):
 	name = ''
 	if (request.POST.get('name')):
 		name = request.POST.get('name')
+	wechatId = ''
+	if (request.POST.get('wechatId')):
+		wechatId = request.POST.get('wechatId')
 		
 		
 	email = request.POST.get('email')
@@ -108,7 +111,7 @@ def register(request):
 	if (len(User.objects.filter(username = username)) > 0):
 		return HttpResponse("Username exists.", status = 400)
 	
-	user = User.objects.create_user(username=username, password=password, email = email, studentId = studentId, name = name, className = className)
+	user = User.objects.create_user(username=username, password=password, email = email, studentId = studentId, name = name, className = className, wechatId = wechatId)
 	return HttpResponse("Register successfully.")
 
 
@@ -171,7 +174,6 @@ def modify(request):
 	
 	user = request.user
 	
-	
 	if (request.FILES and request.FILES.get('avatar')):
 		avatar = request.FILES.get('avatar')
 		if (avatar.size >= 2*1024*1024):
@@ -184,6 +186,8 @@ def modify(request):
 	name = user.name
 	className = user.className
 	studentId = user.studentId
+	wechatId = user.wechatId
+	
 	if (request.POST and request.POST.get('username') != None and request.POST.get('username') != user.username):
 		tmp = User.objects.filter(username = request.POST.get('username'))
 		if (len(tmp) > 0):
@@ -195,10 +199,14 @@ def modify(request):
 		className = request.POST.get('className')
 	if (request.POST and request.POST.get('studentId') != None):
 		studentId = int(request.POST.get('studentId'))
+	if (request.POST and request.POST.get('studentId') != None):
+		wechatId = request.POST.get('wechatId')
+
 	user.username = username
 	user.name = name
 	user.className = className
 	user.studentId = studentId
+	user.wechatId = wechatId
 	user.save()
 		
 		

@@ -39,7 +39,7 @@ function beforeUpload(file) {
 	}
 	return isJpgOrPng && isLt2M;
 }
-class Informathion extends Component{
+class Informathion extends Component {
 	state = {
 		avatarUploading: false,
 		uploadLoading: false,
@@ -55,7 +55,8 @@ class Informathion extends Component{
 			this.props.updateUser()
 			this.setState({
 				avatarUploading: false,
-				avatarUrl: info.file.response});
+				avatarUrl: info.file.response
+			});
 		}
 	}
 	handleSubmit = (e) => {
@@ -81,17 +82,17 @@ class Informathion extends Component{
 			}
 		});
 	}
-	render(){
+	render() {
 		const { user } = this.props;
 		const { getFieldDecorator } = this.props.form;
 		if (user == null) {
 			return (
-				<div id = 'root' >
+				<div id='root' >
 					<Result
 						title={(<div>Please <Link to="/login">log in</Link> first.</div>)}
 						extra={
 							<div>
-								This is a page to show your <b>personal information</b>. <br/>
+								This is a page to show your <b>personal information</b>. <br />
 								You must log in to your account or <Link to="/register">register</Link> a new one.
 							</div>
 						}
@@ -100,7 +101,7 @@ class Informathion extends Component{
 			)
 		}
 		return (
-			<div className = "root" style={{ alignItems : 'center', justifyContent: 'center', display : 'flex', flexDirection: 'column' }}>
+			<div className="root" style={{ alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
 				<Upload
 					name="avatar"
 					listType="picture-card"
@@ -111,17 +112,17 @@ class Informathion extends Component{
 					beforeUpload={beforeUpload}
 					onChange={this.avatarUploadChange}
 				>
-					{this.state.avatarUploading?(
+					{this.state.avatarUploading ? (
 						<div>
 							<Icon type='loading' />
 							<div className="ant-upload-text">Uploading</div>
 						</div>
-					):(
-						<img alt="avatar" src = {global.constants.server + (this.state.avatarUrl ? this.state.avatarUrl : user.avatar)} className="avatar"/>
+					) : (
+						<img alt="avatar" src={global.constants.server + (this.state.avatarUrl ? this.state.avatarUrl : user.avatar)} className="avatar" />
 					)}
 				</Upload>
-				
-				<Card style = {{width: '50%'}}>
+
+				<Card style={{ width: '50%' }}>
 					<Form {...formItemLayout} onSubmit={this.handleSubmit} className="form">
 						<Form.Item label="邮箱">
 							{getFieldDecorator('email', {
@@ -174,12 +175,21 @@ class Informathion extends Component{
 								/>,
 							)}
 						</Form.Item>
-						<Form.Item {...tailFormItemLayout} style = {{ textAlign : 'center'}}>
+						<Form.Item label="微信号">
+							{getFieldDecorator('className', {
+								initialValue: user.className,
+							})(
+								<Input
+								prefix={<Icon type="wechat" style={{ color: 'rgba(0,0,0,.25)' }} />}
+								/>
+							)}
+						</Form.Item>
+						<Form.Item {...tailFormItemLayout} style={{ textAlign: 'center' }}>
 							<Button type="primary" htmlType="submit" className="form-button">
 								Modify
 							</Button>
 						</Form.Item>
-						<div style = {{ textAlign : 'center'}}>
+						<div style={{ textAlign: 'center' }}>
 							<Link to="/resetPassword">Reset password</Link>
 						</div>
 					</Form>

@@ -26,17 +26,17 @@ const tailFormItemLayout = {
 		},
 	},
 };
-class Register extends Component{
+class Register extends Component {
 	state = {
 	}
-	componentWillReceiveProps(nextProps){
-		if (nextProps.unLogin === false){
+	componentWillReceiveProps(nextProps) {
+		if (nextProps.unLogin === false) {
 			this.props.history.push('/')
 		}
 	}
 	sendToken = () => {
 		let email = this.props.form.getFieldValue('email')
-		if (this.props.form.getFieldValue('email') == null){
+		if (this.props.form.getFieldValue('email') == null) {
 			message.error('Please input your email')
 			return
 		}
@@ -44,7 +44,7 @@ class Register extends Component{
 		console.log(email)
 		$.get({
 			url: url,
-			data: {email: email},
+			data: { email: email },
 			crossDomain: true,
 			xhrFields: {
 				withCredentials: true
@@ -91,12 +91,12 @@ class Register extends Component{
 		}
 	}
 
-	render(){
+	render() {
 		const { getFieldDecorator } = this.props.form;
 		return (
-			<div	className = "root" style={{ alignItems : 'center', justifyContent: 'center', display : 'flex', flexDirection: 'column' }}>
+			<div className="root" style={{ alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
 				<span className="title">Register</span>
-				<Card style = {{width: '70%'}}>
+				<Card style={{ width: '70%' }}>
 					<Form {...formItemLayout} onSubmit={this.handleSubmit} className="form">
 						<Form.Item label="邮箱">
 							{getFieldDecorator('email', {
@@ -148,9 +148,9 @@ class Register extends Component{
 						<Form.Item label="确认密码">
 							{getFieldDecorator('password_again', {
 								rules: [
-										{ required: true, message: 'Please input your password!' },
-										{ validator: this.compareToFirstPassword, },
-									],
+									{ required: true, message: 'Please input your password!' },
+									{ validator: this.compareToFirstPassword, },
+								],
 							})(
 								<Input
 									prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
@@ -183,12 +183,20 @@ class Register extends Component{
 								/>,
 							)}
 						</Form.Item>
-						<Form.Item {...tailFormItemLayout} style = {{ textAlign : 'center'}}>
+						<Form.Item label="微信号">
+							{getFieldDecorator('wechatId')(
+								<Input
+								prefix={<Icon type="wechat" style={{ color: 'rgba(0,0,0,.25)' }} />}
+								placeholder="Wechat"
+								/>
+							)}
+						</Form.Item>
+						<Form.Item {...tailFormItemLayout} style={{ textAlign: 'center' }}>
 							<Button type="primary" htmlType="submit" className="form-button">
 								Register
 							</Button>
 						</Form.Item>
-						<div style = {{ textAlign : 'center'}}>
+						<div style={{ textAlign: 'center' }}>
 							or <Link to="/login">Login</Link> now
 						</div>
 					</Form>
