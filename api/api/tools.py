@@ -12,7 +12,7 @@ class myAES:
     def __init__(self, key, iv):
         self.key = key
         self.iv = iv
-    
+
     def encrypt(self, start, end):
         #输入两个时间，加密为字�?�串
         text = str(start.timestamp())+' '+str(end.timestamp())
@@ -23,7 +23,7 @@ class myAES:
         res = self.aes.encrypt(text.encode('utf-8'))
         res_b64 = base64.b64encode(res)
         return res_b64
-    
+
     def decrypt(self, text):
         #输入密文解密为开始、结束时�?
         self.aes = AES.new(self.key, AES.MODE_CBC, self.iv)
@@ -44,13 +44,14 @@ def userToDict(user, detail = False):
 		result['email'] = user.email
 		result['name'] = user.name
 		result['className'] = user.className
+		result['wechatId'] = user.wechatId
 		result['isStaff'] = user.is_staff
-		
+
 	result['id'] = user.id
 	result['avatar'] = 'media/' + str(user.avatar)
 	result['username'] = user.username
 	return result
-	
+
 def userToJson(user, detail = False):
 	return json.dumps(userToDict(user, detail))
 
@@ -132,7 +133,7 @@ def avaiTimeToDict(avaiTime):
 	result['startTime'] = datetime2timestamp(avaiTime.startTime.timestamp())
 	result['endTime'] = datetime2timestamp(avaiTime.endTime.timestamp())
 	return result
-	
+
 def rsrvProjectToDict(project, detail = False):
 	result = {}
 	result['id'] = project.id
@@ -143,24 +144,24 @@ def rsrvProjectToDict(project, detail = False):
 	if project.contest:
 		result['contest'] = project.contest.id
 	return result
-	
+
 def teamToDict(team, detail = False):
 	result = {'id': team.id, 'name': team.name, 'introduction': team.introduction, 'captain': team.captain.username, 'members': [], 'candidates': []}
 	if detail:
 		candidateList = team.candidates.all()
 		for candidate in candidateList:
 			result['candidates'].append(userToDict(candidate, True))
-	
+
 	memberList = team.members.all()
 	for member in memberList:
 		if not member==team.captain:
 			result['members'].append(userToDict(member, detail))
-	
+
 	return result
-	
+
 def teamToJson(team, detail = False):
 	return json.dumps(teamToDict(team, detail))
-	
+
 def blogToDict(blog, detail=False):
 	result = {}
 	result['id'] = blog.id
@@ -234,7 +235,7 @@ def updateHighestScore(submission, inContest = False):
 		team = None
 		if (inContest):
 			team = submission.team
-		
+
 		ProblemHighestScore(user = submission.user, problem = submission.problem, team = team, submission = submission).save()
 	elif (record[0].submission.score < submission.score):
 		s = record[0]
@@ -276,10 +277,10 @@ def userHasAiPermission(user, game):
 		return True
 	if (game.user and game.user!=user):
 		return False
-		
+
 	if (game.team and isUserInTeam(user, game.team)==False):
 		return False
-	
+
 	return True
 
 def getBotByUserGame(user, game):
@@ -296,4 +297,3 @@ def getBotByUserGame(user, game):
 		return bot[0]
 	else:
 		return None
-		

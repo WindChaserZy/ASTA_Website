@@ -176,8 +176,8 @@ class Informathion extends Component {
 							)}
 						</Form.Item>
 						<Form.Item label="微信号">
-							{getFieldDecorator('className', {
-								initialValue: user.className,
+							{getFieldDecorator('wechatId', {
+								initialValue: user.wechatId,
 							})(
 								<Input
 								prefix={<Icon type="wechat" style={{ color: 'rgba(0,0,0,.25)' }} />}
