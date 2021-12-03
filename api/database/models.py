@@ -11,6 +11,7 @@ class User(AbstractUser):
 	name = models.CharField(max_length=20, default='', blank=True)
 	className = models.CharField(max_length=10, default='', blank=True)
 	wechatId = models.CharField(max_length=60, default='', blank=True)
+	introduction = models.CharField(max_length=1024, default='', blank=True)
 
 class Token(models.Model):
 	email = models.CharField(max_length=60, default='', primary_key=True)

@@ -48,8 +48,12 @@ def userToDict(user, detail = False):
 		result['isStaff'] = user.is_staff
 
 	result['id'] = user.id
+	result['email'] = user.email
+	result['name'] = user.name
+	result['className'] = user.className
 	result['avatar'] = 'media/' + str(user.avatar)
 	result['username'] = user.username
+	result['introduction'] = user.introduction
 	return result
 
 def userToJson(user, detail = False):

@@ -201,12 +201,15 @@ def modify(request):
 		studentId = int(request.POST.get('studentId'))
 	if (request.POST and request.POST.get('studentId') != None):
 		wechatId = request.POST.get('wechatId')
+	if (request.POST and request.POST.get('introduction') != None):
+		introduction = request.POST.get('introduction')
 
 	user.username = username
 	user.name = name
 	user.className = className
 	user.studentId = studentId
 	user.wechatId = wechatId
+	user.introduction = introduction
 	user.save()
 		
 		

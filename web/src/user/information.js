@@ -3,7 +3,9 @@ import $ from 'jquery';
 import { Link } from 'react-router-dom';
 import React, { Component } from 'react';
 import './information.css';
+import MarkdownEditor from '../markdown/edit.js';
 import { Upload, Button, message, Descriptions, Icon, Form, Input, Card, Result } from 'antd';
+import TextArea from 'antd/lib/input/TextArea';
 
 const formItemLayout = {
 	labelCol: {
@@ -181,6 +183,15 @@ class Informathion extends Component {
 							})(
 								<Input
 								prefix={<Icon type="wechat" style={{ color: 'rgba(0,0,0,.25)' }} />}
+								/>
+							)}
+						</Form.Item>
+						<Form.Item label="自我介绍">
+							{getFieldDecorator('introduction', {
+								initialValue: user.introduction,
+							})(
+								<MarkdownEditor
+									style={{height: 300}}
 								/>
 							)}
 						</Form.Item>

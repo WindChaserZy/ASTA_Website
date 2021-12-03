@@ -56,16 +56,20 @@ class UserShow extends Component{
 			let {user} = this.state;
 			if (this.props.mode && this.props.mode == 'mini'){
 				return (
-					<Tooltip title={user.username}>
-						<Avatar size={24} src = {global.constants.server + user.avatar} />
-					</Tooltip>
+					<Link to={"/user/" + user.username}>
+						<Tooltip title={user.username}>
+							<Avatar size={24} src = {global.constants.server + user.avatar} />
+						</Tooltip>
+					</Link>
 				)
 			}else{
 				return (
-					<span>
-						<Avatar size={32} src = {global.constants.server + user.avatar} />
-						<span className='username'>{user.username}</span>
-					</span>
+					<Link to={"/user/" + user.username}>
+						<span>
+							<Avatar size={32} src = {global.constants.server + user.avatar} />
+							<span className='username'>{user.username}</span>
+						</span>
+					</Link>
 				)
 			}
 		}

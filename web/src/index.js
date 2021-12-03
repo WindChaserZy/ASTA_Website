@@ -12,6 +12,7 @@ import Login from './user/login.js';
 import Register from './user/register.js';
 import ResetPassword from './user/resetPassword.js';
 import Information from './user/information.js';
+import UserDetail from './user/detail.js';
 import ContestList from './contest/list.js';
 import ContestDetail from './contest/detail.js';
 import BlogList from './blog/list.js';
@@ -117,6 +118,11 @@ class App extends React.Component {
 						<span>Information</span>
 					</Link>
 				</Menu.Item>
+				<Menu.Item key="user" >
+					<Link to={"/user/" + this.state.user.username}>
+						<span>User</span>
+					</Link>
+				</Menu.Item>
 				<Menu.Item key="logout" onClick={this.logout}>Log out</Menu.Item>
 			</SubMenu>
 			)
@@ -209,6 +215,12 @@ class App extends React.Component {
 								<Information
 									user={this.state.user}
 									updateUser={this.updateUser.bind(this)}
+									{...props} 
+								/>}
+							/>
+							<Route path="/user/:username" render={props => 
+								<UserDetail
+									user={this.state.user}
 									{...props} 
 								/>}
 							/>
