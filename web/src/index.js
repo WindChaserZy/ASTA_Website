@@ -358,10 +358,10 @@ class App extends React.Component {
 							/>
 						</Content>
 						<Footer className = 'noSelect' style={{ textAlign: 'center' }}>
-							&copy; ASTA, 2020 京ICP备2020038246号
+							&copy; ASTA, 2022 <a href="https://beian.miit.gov.cn/" target="_blank">京ICP备2020038246号</a>
 							<div>
 								<img src={record_logo} style={{display:'inline'}}/>
-								<span>京公网安备 11010802033147号</span>
+								<span><a href="https://www.beian.gov.cn/" target="_blank">京公网安备 11010802033147号</a></span>
 							</div>
 						</Footer>
 					</Layout>

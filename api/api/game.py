@@ -380,7 +380,7 @@ def recordDownload(request):
 	file = open(path, 'rb')
 	response = FileResponse(file)
 	response['Content-Type'] = 'application/octet-stream'
-	response['Content-Disposition'] = 'attachment;filename=reacord_%08d.zip'%id
+	response['Content-Disposition'] = 'attachment;filename=record_%08d.zip'%id
 	return response
 
 def recordGet(request):

@@ -3,5 +3,9 @@ upload.bat
 upload.sh
 api/judge/data/
 api/asta.ini
+api/*.sqlite3
 *.pyc
 .vscode
+.DS_Store
+.idea/
+dump.rdb

@@ -187,6 +187,7 @@ def modify(request):
 	className = user.className
 	studentId = user.studentId
 	wechatId = user.wechatId
+	introduction = user.introduction
 	
 	if (request.POST and request.POST.get('username') != None and request.POST.get('username') != user.username):
 		tmp = User.objects.filter(username = request.POST.get('username'))
@@ -199,7 +200,7 @@ def modify(request):
 		className = request.POST.get('className')
 	if (request.POST and request.POST.get('studentId') != None):
 		studentId = int(request.POST.get('studentId'))
-	if (request.POST and request.POST.get('studentId') != None):
+	if (request.POST and request.POST.get('wechatId') != None):
 		wechatId = request.POST.get('wechatId')
 	if (request.POST and request.POST.get('introduction') != None):
 		introduction = request.POST.get('introduction')

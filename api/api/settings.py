@@ -22,7 +22,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 config=ConfigParser(allow_no_value=True)
 config.read(os.path.join(BASE_DIR, 'asta.ini'), encoding="utf-8")
@@ -147,8 +147,10 @@ CORS_ORIGIN_WHITELIST = [
 	'http://127.0.0.1:3000',
 	'http://166.111.73.151:5001',
 	'http://182.92.230.1',
-	'http://www.thuasta.cn',
-	'https://www.thuasta.cn',
+	'http://thuasta.cn',
+	'https://thuasta.cn',
+        'http://www.thuasta.cn',
+        'https://www.thuasta.cn',
 ]
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
