@@ -1,4 +1,4 @@
-from database.models import User, Team, Blog, Tag
+from database.models import User, Team, Blog, Tag, Material
 from database.models import RsrvProject, RsrvTimeAvailable, RsrvTimeUsed
 from database.models import Problem, ProblemSubmission, ProblemHighestScore, ProblemJudgeDetail
 from database.models import Game, GameAi, GameBot, GameRecord
@@ -178,6 +178,18 @@ def blogToDict(blog, detail=False):
 		result['tags'].append(tag.name)
 	if detail:
 		result['content'] = blog.content
+	return result
+
+def materialToDict(material, detail=False):
+	result = {}
+	result['id'] = material.id
+	result['title'] = material.title
+	result['author'] = material.author.username
+	result['time'] = material.timestamp.strftime('%Y-%m-%d %H:%M:%S')
+	result['grade'] = material.grade
+	result['subject'] = material.subject
+	if detail:
+		result['content'] = material.content
 	return result
 
 def problemToDict(problem, detail = True):

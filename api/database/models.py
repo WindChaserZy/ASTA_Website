@@ -12,6 +12,8 @@ class User(AbstractUser):
 	className = models.CharField(max_length=10, default='', blank=True)
 	wechatId = models.CharField(max_length=60, default='', blank=True)
 	introduction = models.CharField(max_length=1024, default='', blank=True)
+	def	__str__(self):
+		return self.username
 
 class Token(models.Model):
 	email = models.CharField(max_length=60, default='', primary_key=True)
@@ -21,13 +23,42 @@ class Token(models.Model):
 	
 class Tag(models.Model):
 	name = models.CharField(max_length=100, primary_key=True)
-
+	
 class Blog(models.Model):
 	title = models.CharField(max_length=128, default='')
 	author = models.ForeignKey(to=User, on_delete=models.SET_NULL, null=True)
 	content = MDTextField()
 	timestamp = models.DateTimeField(auto_now_add=True)
 	tags = models.ManyToManyField(to=Tag, blank=True)
+	def	__str__(self):
+		return self.title
+
+def Mt_dirpath(instance, filename):
+
+	fileType = filename.split('.')[-1]
+	# if (not (fileType in ['cpp', 'zip'])):
+	# 	fileType = 'zip'
+	Ftime = instance.timestamp.strftime('%Y%m%d%H%M%S')
+	return './material/%s.%s'%(Ftime, fileType)
+
+class Material(models.Model):
+	title = models.CharField(max_length=128, default='')
+	author = models.ForeignKey(to=User, on_delete=models.SET_NULL, null=True)
+	content = MDTextField()
+	timestamp = models.DateTimeField(auto_now_add=True)
+	grade = models.CharField(max_length=128, default='')
+	subject = models.CharField(max_length=128, default='')
+	#file = models.FileField(upload_to=Mt_dirpath, null=True, blank=True)
+	def	__str__(self):
+		return self.title
+
+class MFile(models.Model):
+	title = models.CharField(max_length=128, default='')
+	author = models.ForeignKey(to=User, on_delete=models.SET_NULL, null=True)
+	timestamp = models.DateTimeField(auto_now_add=True)
+	file = models.FileField(upload_to=Mt_dirpath, null=True, blank=True)
+	material = models.ForeignKey(to=Material, on_delete=models.SET_NULL, null=True)
+	#TODO: Download times
 
 class Comment(models.Model):
 	content = MDTextField()
@@ -35,6 +66,11 @@ class Comment(models.Model):
 	author = models.ForeignKey(to=User, on_delete=models.SET_NULL, null=True)
 	blog = models.ForeignKey(to=Blog, on_delete=models.SET_NULL, null=True)
 
+class MComment(models.Model):
+	content = MDTextField()
+	timestamp = models.DateTimeField(auto_now_add=True)
+	author = models.ForeignKey(to=User, on_delete=models.SET_NULL, null=True)
+	material = models.ForeignKey(to=Material, on_delete=models.SET_NULL, null=True)
 
 class Contest(models.Model):
 	name = models.CharField(max_length=100, default='', blank=True)
@@ -44,6 +80,8 @@ class Contest(models.Model):
 	limitOfMember = models.IntegerField(default=100)
 	registerTimeUp = models.DateTimeField()
 	timeUp = models.DateTimeField()
+	def	__str__(self):
+		return self.name
 
 class Team(models.Model):
 	name = models.CharField(max_length=100, default='')
@@ -52,6 +90,8 @@ class Team(models.Model):
 	contest = models.ForeignKey(to=Contest, on_delete=models.SET_NULL, null=True)
 	members = models.ManyToManyField(to=User, blank=True, through='Membership', related_name='belong')
 	candidates = models.ManyToManyField(to=User, blank=True, through='Application', related_name='apply')
+	def __str__(self):
+		return self.name
 
 #描述用户和队伍之间的归属关系、申请情况
 class Membership(models.Model):
@@ -72,6 +112,8 @@ class Problem(models.Model):
 	contest = models.ForeignKey(to=Contest, on_delete=models.SET_NULL, null=True, blank=True, related_name='problems')
 	timestamp = models.DateTimeField(default=timezone.now)
 	author = models.ForeignKey(to=User, on_delete=models.SET_NULL, null=True, blank=True)
+	def __str__(self):
+		return self.title
 
 def PS_dirpath(instance, filename):
 	fileType = filename.split('.')[-1]
@@ -113,6 +155,8 @@ class Game(models.Model):
 	contest = models.ForeignKey(to=Contest, on_delete=models.SET_NULL, null=True, blank=True, related_name='game')
 	judgeWeight = models.IntegerField(default=0)
 	playerNumber = models.IntegerField(default=0)
+	def	__str__(self):
+		return self.name
 
 class GameAi(models.Model):
 	name = models.CharField(max_length=128, default='')
@@ -120,6 +164,8 @@ class GameAi(models.Model):
 	user = models.ForeignKey(to=User, on_delete=models.CASCADE, null=True, blank=True, related_name='ai')
 	team = models.ForeignKey(to=Team, on_delete=models.CASCADE, null=True, blank=True, related_name='ai')
 	game = models.ForeignKey(to=Game, on_delete=models.CASCADE, null=True, blank=True, related_name='ai')
+	def	__str__(self):
+		return self.name
 
 def GameBot_dirpath(instance, filename):
 	fileType = filename.split('.')[-1]
@@ -135,6 +181,8 @@ class GameBot(models.Model):
 	compileStatus = models.IntegerField(default=0) # 0:waiting   1: compiling   2: fault   3: succeed
 	score = models.FloatField(default=0)
 	ranking = models.BooleanField(default=False)
+	def	__str__(self):
+		return self.ai.name
 
 
 class GameRecord(models.Model):
@@ -164,6 +212,8 @@ class RsrvProject(models.Model):
 	haveToken = models.BooleanField(blank=True, default=False)
 	#预约需要在开始前多长时间
 	timeLimit = models.IntegerField(default=0)
+	def	__str__(self):
+		return self.name
 
 class RsrvTimeAvailable(models.Model):
 	project = models.ForeignKey(to=RsrvProject, on_delete=models.SET_NULL, null=True)
@@ -175,3 +225,6 @@ class RsrvTimeUsed(models.Model):
 	endTime = models.DateTimeField()
 	availableTime = models.ForeignKey(to=RsrvTimeAvailable, on_delete=models.SET_NULL, null=True)
 	user = models.ForeignKey(to=User, on_delete=models.SET_NULL, null=True)
+
+
+

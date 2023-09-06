@@ -22,7 +22,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 config=ConfigParser(allow_no_value=True)
 config.read(os.path.join(BASE_DIR, 'asta.ini'), encoding="utf-8")
@@ -134,12 +134,12 @@ USE_TZ = False
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
-X_FRAME_OPTIONS = 'SAMEORIGIN'
+X_FRAME_OPTIONS = 'SAMEORIGIN' 
 
 SESSION_COOKIE_SAMESITE = None
 CSRF_COOKIE_SAMESITE = None
 #CORS_ORIGIN_ALLOW_ALL=True
-CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_CREDENTIALS = True 
 #SESSION_COOKIE_SAMESITE = 'lax'
 CORS_ORIGIN_WHITELIST = [
 	'http://localhost:3000',

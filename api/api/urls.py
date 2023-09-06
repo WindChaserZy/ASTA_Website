@@ -20,16 +20,19 @@ from django.conf.urls import url
 from django.views.static import serve
 from django.urls import include
 from api import settings
-from api import user, contest, blog, team, reservation, problem, game
+from . import user, contest, blog, team, reservation, problem, game, material
 from . import scheduler_job
 
 urlpatterns = [
-	#for mdeditor
+	#for mdeditor 
 	url(r'mdeditor/', include('mdeditor.urls')),
 	
 	url(r'^media/editor/(?P<path>.*)$', serve, {"document_root": os.path.join(settings.MEDIA_ROOT, 'editor')}),
 	url(r'^media/avatars/(?P<path>.*)$', serve, {"document_root": os.path.join(settings.MEDIA_ROOT, 'avatars')}),
 	
+	#by 刘笑雨，测试pdf显示
+	url(r'^media/(?P<path>.*)$', serve, {"document_root": os.path.join(settings.MEDIA_ROOT)}),
+
 	url(r'^static/(?P<path>.*)$', serve, {"document_root": settings.STATIC_ROOT}),
 	
 	path('admin/', admin.site.urls),
@@ -62,9 +65,19 @@ urlpatterns = [
 	path('blog/edit/', blog.edit),
 	path('blog/delete/', blog.delete),
 	
-	
 	path('comment/add/', blog.addComment),
 	path('comment/list/', blog.commentList),
+
+	path('material/', material.detail),
+	path('material/list/', material.list),
+	path('material/edit/', material.edit),
+	path('material/delete/', material.delete),
+	path('material/download/',material.MtDownload),
+	
+	path('mcomment/list/',material.commentList),
+	path('mcomment/add/',material.addComment),
+	path('mfile/list/',material.FileList),
+	path('mfile/download/',material.MFDownload),
 	
 	
 	path('team/', team.detail),

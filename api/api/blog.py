@@ -2,7 +2,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from database.models import Contest, Team, Tag, Blog, Comment
 from django.contrib import auth
-from api import tools
+from . import tools
 import json
 
 def list(request):
