@@ -31,7 +31,6 @@ itsdangerous==2.1.2
 kombu==3.0.37
 MarkupPy==1.14
 Naked==0.1.31
-numpy==1.21.6
 odfpy==1.4.1
 openpyxl==3.0.10
 Pillow==9.2.0
